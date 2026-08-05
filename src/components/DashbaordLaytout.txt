@@ -1,0 +1,170 @@
+import React, { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { 
+  LayoutDashboard, 
+  Users, 
+  UserPlus, 
+  // Menu, 
+  // X, 
+  Bell, 
+  // Search,
+  LogOut,
+  // Settings
+  
+} from "lucide-react";
+import View from "./view";
+import Text from "./text";
+import Button from "./button";
+import Input from "./input";
+
+interface SidebarItemProps {
+  icon?: React.ReactNode;
+  label: string;
+  href: string;
+  active: boolean;
+}
+
+const SidebarItem: React.FC<SidebarItemProps> = ({ icon, label, href, active }) => {
+  return (
+    <Link
+      to={href}
+      className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+        active 
+          ? "bg-primary-50 text-primary-600 font-medium" 
+          : "text-text-light hover:bg-neutral-100"
+      }`}
+    >
+      <View className="text-current">{icon}</View>
+      <Text as="span">{label}</Text>
+    </Link>
+  );
+};
+
+interface DashboardLayoutProps {
+  children: React.ReactNode;
+}
+
+const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const location = useLocation();
+  
+  const sidebarItems = [
+    {
+      icon: <LayoutDashboard size={20} />,
+      label: "Dashboard",
+      href: "/dashboard"
+    },
+    {
+      icon: <Users size={20} />,
+      label: "Users",
+      href: "/user-list"
+    },
+    {
+      icon: <UserPlus size={20} />,
+      label: "Patients",
+      href: "/patient-list"
+    }
+  ];
+
+  return (
+    <View className="flex h-screen bg-secondary">
+      {/* Sidebar */}
+      <aside
+        className={`fixed inset-y-0 left-0 z-20 flex flex-col bg-white shadow-card transition-all duration-300 md:static ${
+          sidebarOpen ? "w-64" : "w-0 -translate-x-full md:w-20 md:translate-x-0"
+        }`}
+      >
+        {/* Sidebar Header */}
+        <View className="flex h-16 items-center justify-between gap-2 border-b border-neutral-200 px-4">
+          <Link to="/dashboard" className="flex items-center gap-2">
+            {sidebarOpen ? (
+              <Text as="h1" className="text-xl font-bold text-primary-600">MedCare</Text>
+            ) : (
+              <View className="h-8 w-8 rounded-full bg-primary-100 flex items-center justify-center">
+                <Text as="span" className="text-sm font-bold text-primary-600">M</Text>
+              </View>
+            )}
+          </Link>
+          <Button
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="hidden rounded-lg p-1.5 text-neutral-500 hover:bg-neutral-100 md:block"
+          >
+            {sidebarOpen ? <Text as="p">Hide Sidebar</Text> : <Text as="p">Show Sidebar</Text>}
+            {/* {sidebarOpen ? <p>Hide Sidebar</p> <X size={20} /> : <p>Show Sidebar</p> <Menu size={20} />} */}
+          </Button>
+        </View>
+
+        {/* Sidebar Content */}
+        <View className="flex-1 overflow-y-auto py-4 px-3">
+          <nav className="space-y-1">
+            {sidebarItems.map((item,index) => (
+              <SidebarItem
+                key={index}
+                icon={item.icon}
+                label={item.label}
+                href={item.href}
+                active={location.pathname === item.href}
+              />
+            ))}
+          </nav>
+        </View>
+
+        {/* Sidebar Footer */}
+        <View className="border-t border-neutral-200 p-4">
+          <Link
+            to="/login"
+            className="flex items-center gap-3 px-4 py-2 rounded-lg text-text-light hover:bg-neutral-100 transition-colors"
+          >
+            <LogOut size={20} />
+            {sidebarOpen && <Text as="span">Logout</Text>}
+          </Link>
+        </View>
+      </aside>
+
+      {/* Main Content */}
+      <View className="flex flex-1 flex-col overflow-hidden">
+        {/* Top Navigation */}
+        <header className="h-16 border-b border-neutral-200 bg-white shadow-sm">
+          <View className="flex h-full items-center justify-between px-4">
+            <Button
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              className="rounded-lg p-1.5 text-neutral-500 hover:bg-neutral-100 md:hidden"
+            >
+              {/* <Menu size={20} /> */}
+            </Button>
+
+            {/* Search */}
+            <View className="hidden md:block relative w-64">
+              <View className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                {/* <Search className="w-4 h-4 text-text-lighter" /> */}
+              </View>
+              <Input
+                type="search"
+                placeholder="Search..."
+                className="pl-10 pr-4 py-2 w-full bg-neutral-100 border-none rounded-lg focus:ring-2 focus:ring-primary-300 focus:outline-none"
+              />
+            </View>
+
+            {/* User Menu & Notifications */}
+            <View className="flex items-center gap-3">
+              <Button className="relative p-1.5 text-neutral-500 hover:bg-neutral-100 rounded-lg">
+                <Bell size={20} />
+                <Text as="span" className="absolute top-0 right-0 h-2 w-2 rounded-full bg-primary-500"></Text>
+              </Button>
+              <Button className="flex items-center gap-2">
+                <View className="h-8 w-8 rounded-full bg-primary-100 flex items-center justify-center">
+                  <Text as="span" className="text-sm font-medium text-primary-600">JD</Text>
+                </View>
+              </Button>
+            </View>
+          </View>
+        </header>
+
+        {/* Page Content */}
+        <main className="flex-1 overflow-y-auto p-4 md:p-6">{children}</main>
+      </View>
+    </View>
+  );
+};
+
+export default DashboardLayout;

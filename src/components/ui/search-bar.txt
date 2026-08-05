@@ -1,0 +1,178 @@
+import React, { useState, useRef, useEffect } from "react";
+import { Search, X } from "lucide-react";
+import Button from "../button";
+import View from "../view";
+import Input from "../input";
+
+interface SearchBarProps {
+  placeholder?: string;
+  className?: string;
+  value?: string;
+  onChange?: (value: string | null) => void;
+  onSearch?: (value: string | null) => void;
+  onClear?: () => void;
+  autoFocus?: boolean;
+  disabled?: boolean;
+  variant?: "default" | "filled" | "outlined";
+  size?: "sm" | "md" | "lg";
+  debounceMs?: number;
+  showClearButton?: boolean;
+  ariaLabel?: string;
+}
+
+const SearchBar: React.FC<SearchBarProps> = ({
+  placeholder = "Search...",
+  className = "",
+  value: controlledValue,
+  onChange,
+  onSearch,
+  onClear,
+  autoFocus = false,
+  disabled = false,
+  variant = "default",
+  size = "md",
+  debounceMs = 800,
+  showClearButton = true,
+  ariaLabel = "Search"
+}) => {
+  // State for uncontrolled component
+  const [internalValue, setInternalValue] = useState("");
+  const [isFocused, setIsFocused] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Determine if component is controlled or uncontrolled
+  const isControlled = controlledValue !== undefined;
+  const value = isControlled ? controlledValue : internalValue;
+
+  // Clear the debounce timer on unmount
+  useEffect(() => {
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
+  }, []);
+
+  // Auto focus the input if autoFocus is true
+  useEffect(() => {
+    if (autoFocus && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [autoFocus]);
+
+  // Handle input change with debounce
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value;
+    
+
+    // Update internal state if uncontrolled
+    if (!isControlled) {
+      setInternalValue(newValue);
+    }
+
+    // Call onChange handler immediately
+    if (onChange) {
+      onChange(newValue);
+    }
+
+    // Debounce the onSearch call
+    if (onSearch) {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+
+      debounceTimerRef.current = setTimeout(() => {
+        onSearch(newValue);
+      }, debounceMs);
+    }
+  };
+
+  // Handle search submission
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (onSearch) {
+      onSearch(value);
+    }
+  };
+
+  // Handle clearing the input
+  const handleClear = () => {
+    if (!isControlled) {
+      setInternalValue("");
+    }
+
+    if (onChange) {
+      onChange("");
+    }
+
+    if (onClear) {
+      onClear();
+    }
+
+    if (onSearch) {
+      onSearch("");
+    }
+
+    // Focus the input after clearing
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  };
+
+  // Size classes
+  const sizeClasses = {
+    sm: "pl-8 pr-8 py-1.5 text-sm",
+    md: "pl-10 pr-10 py-2",
+    lg: "pl-12 pr-12 py-3 text-lg"
+  };
+
+  // Variant classes
+  const variantClasses = {
+    default: "bg-neutral-100 dark:bg-background border-none rounded-lg focus:outline-none",
+    filled: "bg-white dark:bg-background border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none",
+    outlined: "bg-transparent border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none"
+  };
+
+  // Icon size based on search bar size
+  const iconSize = {
+    sm: "w-3.5 h-3.5",
+    md: "w-4 h-4",
+    lg: "w-5 h-5"
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className={`relative ${className}`}>
+      <View className={`absolute inset-y-0 left-0 flex items-center ${size === 'sm' ? 'pl-2.5' : size === 'lg' ? 'pl-4' : 'pl-3'} pointer-events-none`}>
+        <Search className={`${iconSize[size]} text-text-lighter dark:text-gray-400`} aria-hidden="true" />
+      </View>
+
+      <Input
+        ref={inputRef}
+        type="text"
+        value={value}
+        onChange={handleChange}
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setIsFocused(false)}
+        placeholder={placeholder}
+        disabled={disabled}
+        aria-label={ariaLabel}
+        className={`${sizeClasses[size]} ${variantClasses[variant]} w-full transition-colors duration-200 dark:text-white dark:placeholder-gray-400 ${isFocused ? 'ring-2 ring-primary-300 dark:ring-primary-600' : ''} ${disabled ? 'opacity-60 cursor-not-allowed' : ''}`}
+      />
+
+      {showClearButton && value && (
+        <Button
+          variant="ghost"
+          type="button"
+          onPress={handleClear}
+          className={`absolute inset-y-0 right-0 flex items-center ${size === 'sm' ? 'pr-2.5' : size === 'lg' ? 'pr-4' : 'pr-3'} text-gray-400 hover:text-gray-500 dark:text-gray-400 dark:hover:text-gray-300 focus:outline-none`}
+          aria-label="Clear search"
+        >
+          <X className={iconSize[size]} aria-hidden="true" />
+        </Button>
+      )}
+    </form>
+  );
+};
+
+export default SearchBar;

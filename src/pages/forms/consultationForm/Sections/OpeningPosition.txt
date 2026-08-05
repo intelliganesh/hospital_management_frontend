@@ -1,0 +1,99 @@
+import { RootState } from "@/actions/store";
+import Button from "@/components/button";
+import Input from "@/components/input";
+import View from "@/components/view";
+import { Consultation } from "@/interfaces/consultation";
+import useForm from "@/utils/custom-hooks/use-form";
+import { BadgePlus, X } from "lucide-react";
+import React, { useState } from "react";
+import { useSelector } from "react-redux";
+
+const OpeningPosition: React.FC<{ position: any }> = ({ position }) => {
+  const consultationDetailData = useSelector(
+    (state: RootState) => state.consultation.consultationDetailData
+  );
+  const consultationDetail = {
+    ...consultationDetailData?.proctologyOrNonProctology,
+    ...consultationDetailData?.vitals,
+    ...consultationDetailData?.consultations,
+  };
+
+  const { values, onSetHandler } = useForm<Consultation | null>(
+    consultationDetail
+  );
+  const [secondaryOpeningPosition, setSecondaryOpeningPosition] = useState([
+    "",
+  ]);
+  return (
+    <React.Fragment>
+      {secondaryOpeningPosition.map((_, index) => (
+        <View className="mt-4 border p-2 rounded" key={index}>
+          <View className="flex justify-end items-center gap-8">
+            <Button type="button">
+              <X size={16} />
+            </Button>
+            <Button
+              type="button"
+              onPress={() => {
+                setSecondaryOpeningPosition((prev: any) => {
+                  return [
+                    ...prev,
+                    {
+                      secondary_anal_valve: "",
+                      secondary_opening_position: "",
+                    },
+                  ];
+                });
+              }}
+            >
+              <BadgePlus size={16} />
+            </Button>
+          </View>
+          <View className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <View className="flex flex-col gap-4">
+              <Input
+                name="secondary_opening_position"
+                label="Secondary Opening Position"
+                value={
+                  values?.secondary_opening_position
+                    ? values?.secondary_opening_position?.split(" ")[0]
+                    : ""
+                }
+                onChange={(value: any) => {
+                  onSetHandler(
+                    "secondary_opening_position",
+                    value.target.value
+                  );
+                }}
+                placeholder="Ex: 6"
+              />
+              <Input
+                //  name = 'position'
+                // label="Position suffixed with"
+                value={position}
+                readOnly={true}
+              />
+            </View>
+            <View>
+              <Input
+                name="secondary_anal_valve"
+                label="Secondary Anal Valve"
+                value={
+                  values?.secondary_anal_valve
+                    ? values?.secondary_anal_valve?.split(" ")[0]
+                    : ""
+                }
+                onChange={(value: any) => {
+                  onSetHandler("secondary_anal_valve", value.target.value);
+                }}
+                placeholder="Ex: 6"
+              />
+            </View>
+          </View>
+        </View>
+      ))}
+    </React.Fragment>
+  );
+};
+
+export default OpeningPosition;

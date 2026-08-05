@@ -1,0 +1,1025 @@
+import React, { useState } from "react";
+import * as yup from "yup";
+// import { toast } from "@/hooks/use-toast";
+import Input from "@/components/input";
+import Button from "@/components/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/RadioGroup";
+import { Separator } from "@/components/ui/separator";
+import { Sun, Moon, Laptop, Save, Building, Upload } from "lucide-react";
+import {
+  ColorFormat,
+  Theme,
+  SystemSettings,
+} from "@/interfaces/systemSettings";
+
+// Demo initial values
+const defaultSettings: SystemSettings = {
+  hospital_logo: new URL("https://example.com/logo.png"),
+  hospital_name: "MedCare Hospital",
+  hospital_prefix: "HOS",
+  patient_prefix: "PAT",
+  ipd_prefix: "IPD",
+  opd_prefix: "OPD",
+  appointment_prefix: "APT",
+  payment_prefix: "PAY",
+  test_prefix: "TEST",
+  primary_color: "#1A73E8",
+  bg_primary_color: "#F5F9FF",
+  text_primary_color: "#FFFFFF",
+  secondary_color: "#36B37E",
+  bg_secondary_color: "#F0FAF5",
+  text_secondary_color: "#FFFFFF",
+  tertiary_color: "#FBBC05",
+  bg_tertiary_color: "#FEF7CD",
+  text_tertiary_color: "#000000",
+  currency_symbol: "$",
+  currency: "USD",
+  theme: Theme.LIGHT,
+};
+
+// Create validation schema with Yup
+const validationSchema = yup.object().shape({
+  hospital_name: yup
+    .string()
+    .required("Hospital name is required")
+    .min(2, "Hospital name must be at least 2 characters"),
+  hospital_prefix: yup.string().required("Prefix is required").min(3, "Prefix must be  3 characters").max(3, "Prefix must be  3 characters"),
+  patient_prefix: yup.string().required("Prefix is required").min(3, "Prefix must be  3 characters").max(3, "Prefix must be  3 characters"),
+  ipd_prefix: yup.string().required("Prefix is required").min(3, "Prefix must be  3 characters").max(3, "Prefix must be  3 characters"),
+  opd_prefix: yup.string().required("Prefix is required").min(3, "Prefix must be  3 characters").max(3, "Prefix must be  3 characters"),
+  appointment_prefix: yup.string().required("Prefix is required").min(3, "Prefix must be  3 characters").max(3, "Prefix must be  3 characters"),
+  payment_prefix: yup.string().required("Prefix is required").min(3, "Prefix must be  3 characters").max(3, "Prefix must be  3 characters"),
+  test_prefix: yup.string().required("Prefix is required").min(3, "Prefix must be  3 characters").max(3, "Prefix must be  3 characters"),
+  primary_color: yup
+    .string()
+    .required("Color is required")
+    .matches(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, "Invalid hex color"),
+  bg_primary_color: yup
+    .string()
+    .required("Color is required")
+    .matches(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, "Invalid hex color"),
+  text_primary_color: yup
+    .string()
+    .required("Color is required")
+    .matches(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, "Invalid hex color"),
+  secondary_color: yup
+    .string()
+    .required("Color is required")
+    .matches(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, "Invalid hex color"),
+  bg_secondary_color: yup
+    .string()
+    .required("Color is required")
+    .matches(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, "Invalid hex color"),
+  text_secondary_color: yup
+    .string()
+    .required("Color is required")
+    .matches(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, "Invalid hex color"),
+  tertiary_color: yup
+    .string()
+    .required("Color is required")
+    .matches(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, "Invalid hex color"),
+  bg_tertiary_color: yup
+    .string()
+    .required("Color is required")
+    .matches(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, "Invalid hex color"),
+  text_tertiary_color: yup
+    .string()
+    .required("Color is required")
+    .matches(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, "Invalid hex color"),
+  currency_symbol: yup.string().required("Currency symbol is required"),
+  currency: yup.string().required("Currency is required"),
+  theme: yup.string().required("Theme is required").oneOf(Object.values(Theme)),
+});
+
+const SystemSettingsPage = () => {
+  const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState(defaultSettings);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  // Handle input changes
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
+
+  // Handle radio button changes
+  const handleRadioChange = (value: string, name: string) => {
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
+
+  // Handle file upload for logo
+  const handleLogoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setLogoPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  // Handle form submission with Yup validation
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setErrors({});
+
+    try {
+      // Validate form data using Yup
+      await validationSchema.validate(formData, { abortEarly: false });
+
+      // Simulate API call
+      setTimeout(() => {
+        // toast({
+        //   title: "Settings saved",
+        //   description: "Your system settings have been updated successfully.",
+        // });
+        setIsSubmitting(false);
+      }, 1500);
+    } catch (err) {
+      if (err instanceof yup.ValidationError) {
+        const validationErrors: Record<string, string> = {};
+        err.inner.forEach((error) => {
+          if (error.path) {
+            validationErrors[error.path] = error.message;
+          }
+        });
+        setErrors(validationErrors);
+      }
+      setIsSubmitting(false);
+    }
+  };
+
+  // Color preview component
+  const ColorPreview = ({ color }: { color: string }) => (
+    <div
+      className="w-6 h-6 rounded-md border border-neutral-300 inline-block mr-2"
+      style={{ backgroundColor: color }}
+    />
+  );
+
+  return (
+    <React.Fragment>
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold text-text-DEFAULT">
+            System Settings
+          </h1>
+          <p className="text-text-light">
+            Customize your hospital management system
+          </p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-8">
+          {/* General Settings Section */}
+          <Card className="bg-white">
+            <CardHeader>
+              <CardTitle>Hospital Information</CardTitle>
+              <CardDescription>
+                Update your hospital details and global settings
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {/* Hospital Logo */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Hospital Logo</label>
+                <div className="flex items-start space-x-4">
+                  <div className="w-24 h-24 bg-neutral-100 rounded-md border border-neutral-300 flex items-center justify-center overflow-hidden">
+                    {logoPreview ? (
+                      <img
+                        src={logoPreview}
+                        alt="Logo preview"
+                        className="object-contain w-full h-full"
+                      />
+                    ) : (
+                      <Building className="h-12 w-12 text-neutral-400" />
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      className="flex items-center gap-1.5 relative border border-neutral-300 hover:bg-neutral-100 text-xs"
+                    >
+                      <Upload className="h-4 w-4" />
+                      Upload Logo
+                      <input
+                        type="file"
+                        className="absolute inset-0 opacity-0 cursor-pointer"
+                        accept="image/*"
+                        onChange={handleLogoChange}
+                      />
+                    </Button>
+                    <p className="text-xs text-text-light">
+                      Recommended size: 400x400px. Max file size: 2MB.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Hospital Name */}
+              <div className="space-y-2">
+                <label htmlFor="hospital_name" className="text-sm font-medium">
+                  Hospital Name
+                </label>
+                <Input
+                  id="hospital_name"
+                  name="hospital_name"
+                  value={formData.hospital_name}
+                  onChange={handleInputChange}
+                  placeholder="Enter hospital name"
+                  className={errors.hospital_name ? "border-red-500" : ""}
+                />
+                {errors.hospital_name && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.hospital_name}
+                  </p>
+                )}
+                <p className="text-xs text-text-light">
+                  This name will appear on reports, invoices, and the system
+                  header.
+                </p>
+              </div>
+
+              {/* Currency Settings */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label
+                    htmlFor="currency_symbol"
+                    className="text-sm font-medium"
+                  >
+                    Currency Symbol
+                  </label>
+                  <Input
+                    id="currency_symbol"
+                    name="currency_symbol"
+                    value={formData.currency_symbol}
+                    onChange={handleInputChange}
+                    placeholder="$"
+                    className={errors.currency_symbol ? "border-red-500" : ""}
+                  />
+                  {errors.currency_symbol && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.currency_symbol}
+                    </p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <label htmlFor="currency" className="text-sm font-medium">
+                    Currency
+                  </label>
+                  <Input
+                    id="currency"
+                    name="currency"
+                    value={formData.currency}
+                    onChange={handleInputChange}
+                    placeholder="USD"
+                    className={errors.currency ? "border-red-500" : ""}
+                  />
+                  {errors.currency && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.currency}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Prefixes Section */}
+          <Card className="bg-white">
+            <CardHeader>
+              <CardTitle>System Prefixes</CardTitle>
+              <CardDescription>
+                Configure prefixes for various system identifiers
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label
+                    htmlFor="hospital_prefix"
+                    className="text-sm font-medium"
+                  >
+                    Hospital ID Prefix
+                  </label>
+                  <Input
+                    id="hospital_prefix"
+                    name="hospital_prefix"
+                    value={formData.hospital_prefix}
+                    onChange={handleInputChange}
+                    placeholder="HOS-"
+                    className={errors.hospital_prefix ? "border-red-500" : ""}
+                  />
+                  {errors.hospital_prefix && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.hospital_prefix}
+                    </p>
+                  )}
+                  <p className="text-xs text-text-light">
+                    Used for hospital identifiers
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <label
+                    htmlFor="patient_prefix"
+                    className="text-sm font-medium"
+                  >
+                    Patient ID Prefix
+                  </label>
+                  <Input
+                    id="patient_prefix"
+                    name="patient_prefix"
+                    value={formData.patient_prefix}
+                    onChange={handleInputChange}
+                    placeholder="PAT-"
+                    className={errors.patient_prefix ? "border-red-500" : ""}
+                  />
+                  {errors.patient_prefix && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.patient_prefix}
+                    </p>
+                  )}
+                  <p className="text-xs text-text-light">
+                    Used for patient identifiers
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <label htmlFor="ipd_prefix" className="text-sm font-medium">
+                    IPD Prefix
+                  </label>
+                  <Input
+                    id="ipd_prefix"
+                    name="ipd_prefix"
+                    value={formData.ipd_prefix}
+                    onChange={handleInputChange}
+                    placeholder="IPD-"
+                    className={errors.ipd_prefix ? "border-red-500" : ""}
+                  />
+                  {errors.ipd_prefix && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.ipd_prefix}
+                    </p>
+                  )}
+                  <p className="text-xs text-text-light">
+                    For inpatient department
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <label htmlFor="opd_prefix" className="text-sm font-medium">
+                    OPD Prefix
+                  </label>
+                  <Input
+                    id="opd_prefix"
+                    name="opd_prefix"
+                    value={formData.opd_prefix}
+                    onChange={handleInputChange}
+                    placeholder="OPD-"
+                    className={errors.opd_prefix ? "border-red-500" : ""}
+                  />
+                  {errors.opd_prefix && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.opd_prefix}
+                    </p>
+                  )}
+                  <p className="text-xs text-text-light">
+                    For outpatient department
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <label
+                    htmlFor="appointment_prefix"
+                    className="text-sm font-medium"
+                  >
+                    Appointment Prefix
+                  </label>
+                  <Input
+                    id="appointment_prefix"
+                    name="appointment_prefix"
+                    value={formData.appointment_prefix}
+                    onChange={handleInputChange}
+                    placeholder="APT-"
+                    className={
+                      errors.appointment_prefix ? "border-red-500" : ""
+                    }
+                  />
+                  {errors.appointment_prefix && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.appointment_prefix}
+                    </p>
+                  )}
+                  <p className="text-xs text-text-light">For appointments</p>
+                </div>
+
+                <div className="space-y-2">
+                  <label
+                    htmlFor="payment_prefix"
+                    className="text-sm font-medium"
+                  >
+                    Payment Prefix
+                  </label>
+                  <Input
+                    id="payment_prefix"
+                    name="payment_prefix"
+                    value={formData.payment_prefix}
+                    onChange={handleInputChange}
+                    placeholder="PAY-"
+                    className={errors.payment_prefix ? "border-red-500" : ""}
+                  />
+                  {errors.payment_prefix && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.payment_prefix}
+                    </p>
+                  )}
+                  <p className="text-xs text-text-light">
+                    For payment receipts
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <label htmlFor="test_prefix" className="text-sm font-medium">
+                    Test Prefix
+                  </label>
+                  <Input
+                    id="test_prefix"
+                    name="test_prefix"
+                    value={formData.test_prefix}
+                    onChange={handleInputChange}
+                    placeholder="TEST-"
+                    className={errors.test_prefix ? "border-red-500" : ""}
+                  />
+                  {errors.test_prefix && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.test_prefix}
+                    </p>
+                  )}
+                  <p className="text-xs text-text-light">For medical tests</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Theme Settings */}
+          {/* <Card className="bg-white">
+            <CardHeader>
+              <CardTitle>Theme Settings</CardTitle>
+              <CardDescription>
+                Choose a theme for your system interface
+              </CardDescription>
+            </CardHeader>
+             <CardContent>
+              <div className="space-y-3">
+                <label className="text-sm font-medium">Theme Mode</label>
+                <RadioGroup
+                  value={formData.theme}
+                  onValueChange={(value) => handleRadioChange(value, 'theme')}
+                  className="flex space-x-4"
+                >
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value={Theme.LIGHT} id="theme-light" />
+                    <label htmlFor="theme-light" className="flex items-center cursor-pointer text-sm">
+                      <Sun className="h-4 w-4 mr-1.5" />
+                      Light
+                    </label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value={Theme.DARK} id="theme-dark" />
+                    <label htmlFor="theme-dark" className="flex items-center cursor-pointer text-sm">
+                      <Moon className="h-4 w-4 mr-1.5" />
+                      Dark
+                    </label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value={Theme.SYSTEM} id="theme-system" />
+                    <label htmlFor="theme-system" className="flex items-center cursor-pointer text-sm">
+                      <Laptop className="h-4 w-4 mr-1.5" />
+                      System
+                    </label>
+                  </div>
+                </RadioGroup>
+                {errors.theme && (
+                  <p className="text-red-500 text-xs mt-1">{errors.theme}</p>
+                )}
+              </div>
+            </CardContent>
+          </Card> */}
+
+          <Card className="bg-white">
+            <CardHeader>
+              <CardTitle>Theme Settings</CardTitle>
+              <CardDescription>
+                Choose a theme for your system interface
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                <label className="text-sm font-medium">Theme Mode</label>
+                <RadioGroup
+                  value={formData.theme}
+                  onValueChange={(value) => handleRadioChange(value, "theme")}
+                  name="theme"
+                >
+                  <RadioGroupItem
+                    value={Theme.LIGHT}
+                    id="theme-light"
+                    icon={<Sun className="h-4 w-4" />}
+                    label="Light"
+                  />
+                  <RadioGroupItem
+                    value={Theme.DARK}
+                    id="theme-dark"
+                    icon={<Moon className="h-4 w-4" />}
+                    label="Dark"
+                  />
+                  <RadioGroupItem
+                    value={Theme.SYSTEM}
+                    id="theme-system"
+                    icon={<Laptop className="h-4 w-4" />}
+                    label="System"
+                  />
+                </RadioGroup>
+                {errors.theme && (
+                  <p className="text-red-500 text-xs mt-1">{errors.theme}</p>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Color Scheme */}
+          <Card className="bg-white">
+            <CardHeader>
+              <CardTitle>Color Scheme</CardTitle>
+              <CardDescription>
+                Customize the system color scheme
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {/* Primary Colors */}
+              <div>
+                <h3 className="text-lg font-medium mb-3">Primary Colors</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <label
+                      htmlFor="primary_color"
+                      className="flex items-center text-sm font-medium"
+                    >
+                      <ColorPreview color={formData.primary_color} />
+                      Primary
+                    </label>
+                    <div className="flex gap-2">
+                      <Input
+                        type="color"
+                        id="primary_color_picker"
+                        name="primary_color"
+                        value={formData.primary_color}
+                        onChange={handleInputChange}
+                        className="w-10 h-10 p-1"
+                      />
+                      <Input
+                        type="text"
+                        id="primary_color"
+                        name="primary_color"
+                        value={formData.primary_color}
+                        onChange={handleInputChange}
+                        placeholder="#1A73E8"
+                        className={`w-full ${
+                          errors.primary_color ? "border-red-500" : ""
+                        }`}
+                      />
+                    </div>
+                    {errors.primary_color && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {errors.primary_color}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <label
+                      htmlFor="bg_primary_color"
+                      className="flex items-center text-sm font-medium"
+                    >
+                      <ColorPreview color={formData.bg_primary_color} />
+                      Background
+                    </label>
+                    <div className="flex gap-2">
+                      <Input
+                        type="color"
+                        id="bg_primary_color_picker"
+                        name="bg_primary_color"
+                        value={formData.bg_primary_color}
+                        onChange={handleInputChange}
+                        className="w-10 h-10 p-1"
+                      />
+                      <Input
+                        type="text"
+                        id="bg_primary_color"
+                        name="bg_primary_color"
+                        value={formData.bg_primary_color}
+                        onChange={handleInputChange}
+                        placeholder="#F5F9FF"
+                        className={`w-full ${
+                          errors.bg_primary_color ? "border-red-500" : ""
+                        }`}
+                      />
+                    </div>
+                    {errors.bg_primary_color && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {errors.bg_primary_color}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <label
+                      htmlFor="text_primary_color"
+                      className="flex items-center text-sm font-medium"
+                    >
+                      <ColorPreview color={formData.text_primary_color} />
+                      Text
+                    </label>
+                    <div className="flex gap-2">
+                      <Input
+                        type="color"
+                        id="text_primary_color_picker"
+                        name="text_primary_color"
+                        value={formData.text_primary_color}
+                        onChange={handleInputChange}
+                        className="w-10 h-10 p-1"
+                      />
+                      <Input
+                        type="text"
+                        id="text_primary_color"
+                        name="text_primary_color"
+                        value={formData.text_primary_color}
+                        onChange={handleInputChange}
+                        placeholder="#FFFFFF"
+                        className={`w-full ${
+                          errors.text_primary_color ? "border-red-500" : ""
+                        }`}
+                      />
+                    </div>
+                    {errors.text_primary_color && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {errors.text_primary_color}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <Separator />
+
+              {/* Secondary Colors */}
+              <div>
+                <h3 className="text-lg font-medium mb-3">Secondary Colors</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <label
+                      htmlFor="secondary_color"
+                      className="flex items-center text-sm font-medium"
+                    >
+                      <ColorPreview color={formData.secondary_color} />
+                      Secondary
+                    </label>
+                    <div className="flex gap-2">
+                      <Input
+                        type="color"
+                        id="secondary_color_picker"
+                        name="secondary_color"
+                        value={formData.secondary_color}
+                        onChange={handleInputChange}
+                        className="w-10 h-10 p-1"
+                      />
+                      <Input
+                        type="text"
+                        id="secondary_color"
+                        name="secondary_color"
+                        value={formData.secondary_color}
+                        onChange={handleInputChange}
+                        placeholder="#36B37E"
+                        className={`w-full ${
+                          errors.secondary_color ? "border-red-500" : ""
+                        }`}
+                      />
+                    </div>
+                    {errors.secondary_color && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {errors.secondary_color}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <label
+                      htmlFor="bg_secondary_color"
+                      className="flex items-center text-sm font-medium"
+                    >
+                      <ColorPreview color={formData.bg_secondary_color} />
+                      Background
+                    </label>
+                    <div className="flex gap-2">
+                      <Input
+                        type="color"
+                        id="bg_secondary_color_picker"
+                        name="bg_secondary_color"
+                        value={formData.bg_secondary_color}
+                        onChange={handleInputChange}
+                        className="w-10 h-10 p-1"
+                      />
+                      <Input
+                        type="text"
+                        id="bg_secondary_color"
+                        name="bg_secondary_color"
+                        value={formData.bg_secondary_color}
+                        onChange={handleInputChange}
+                        placeholder="#F0FAF5"
+                        className={`w-full ${
+                          errors.bg_secondary_color ? "border-red-500" : ""
+                        }`}
+                      />
+                    </div>
+                    {errors.bg_secondary_color && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {errors.bg_secondary_color}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <label
+                      htmlFor="text_secondary_color"
+                      className="flex items-center text-sm font-medium"
+                    >
+                      <ColorPreview color={formData.text_secondary_color} />
+                      Text
+                    </label>
+                    <div className="flex gap-2">
+                      <Input
+                        type="color"
+                        id="text_secondary_color_picker"
+                        name="text_secondary_color"
+                        value={formData.text_secondary_color}
+                        onChange={handleInputChange}
+                        className="w-10 h-10 p-1"
+                      />
+                      <Input
+                        type="text"
+                        id="text_secondary_color"
+                        name="text_secondary_color"
+                        value={formData.text_secondary_color}
+                        onChange={handleInputChange}
+                        placeholder="#FFFFFF"
+                        className={`w-full ${
+                          errors.text_secondary_color ? "border-red-500" : ""
+                        }`}
+                      />
+                    </div>
+                    {errors.text_secondary_color && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {errors.text_secondary_color}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <Separator />
+
+              {/* Tertiary Colors */}
+              <div>
+                <h3 className="text-lg font-medium mb-3">Tertiary Colors</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <label
+                      htmlFor="tertiary_color"
+                      className="flex items-center text-sm font-medium"
+                    >
+                      <ColorPreview color={formData.tertiary_color} />
+                      Tertiary
+                    </label>
+                    <div className="flex gap-2">
+                      <Input
+                        type="color"
+                        id="tertiary_color_picker"
+                        name="tertiary_color"
+                        value={formData.tertiary_color}
+                        onChange={handleInputChange}
+                        className="w-10 h-10 p-1"
+                      />
+                      <Input
+                        type="text"
+                        id="tertiary_color"
+                        name="tertiary_color"
+                        value={formData.tertiary_color}
+                        onChange={handleInputChange}
+                        placeholder="#FBBC05"
+                        className={`w-full ${
+                          errors.tertiary_color ? "border-red-500" : ""
+                        }`}
+                      />
+                    </div>
+                    {errors.tertiary_color && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {errors.tertiary_color}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <label
+                      htmlFor="bg_tertiary_color"
+                      className="flex items-center text-sm font-medium"
+                    >
+                      <ColorPreview color={formData.bg_tertiary_color} />
+                      Background
+                    </label>
+                    <div className="flex gap-2">
+                      <Input
+                        type="color"
+                        id="bg_tertiary_color_picker"
+                        name="bg_tertiary_color"
+                        value={formData.bg_tertiary_color}
+                        onChange={handleInputChange}
+                        className="w-10 h-10 p-1"
+                      />
+                      <Input
+                        type="text"
+                        id="bg_tertiary_color"
+                        name="bg_tertiary_color"
+                        value={formData.bg_tertiary_color}
+                        onChange={handleInputChange}
+                        placeholder="#FEF7CD"
+                        className={`w-full ${
+                          errors.bg_tertiary_color ? "border-red-500" : ""
+                        }`}
+                      />
+                    </div>
+                    {errors.bg_tertiary_color && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {errors.bg_tertiary_color}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <label
+                      htmlFor="text_tertiary_color"
+                      className="flex items-center text-sm font-medium"
+                    >
+                      <ColorPreview color={formData.text_tertiary_color} />
+                      Text
+                    </label>
+                    <div className="flex gap-2">
+                      <Input
+                        type="color"
+                        id="text_tertiary_color_picker"
+                        name="text_tertiary_color"
+                        value={formData.text_tertiary_color}
+                        onChange={handleInputChange}
+                        className="w-10 h-10 p-1"
+                      />
+                      <Input
+                        type="text"
+                        id="text_tertiary_color"
+                        name="text_tertiary_color"
+                        value={formData.text_tertiary_color}
+                        onChange={handleInputChange}
+                        placeholder="#000000"
+                        className={`w-full ${
+                          errors.text_tertiary_color ? "border-red-500" : ""
+                        }`}
+                      />
+                    </div>
+                    {errors.text_tertiary_color && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {errors.text_tertiary_color}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Color Preview */}
+              <div className="mt-8 p-6 border rounded-lg">
+                <h3 className="text-lg font-medium mb-4">Live Preview</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div
+                    className="p-4 rounded-md flex flex-col items-center justify-center h-24 text-center"
+                    style={{
+                      backgroundColor: formData.primary_color,
+                      color: formData.text_primary_color,
+                    }}
+                  >
+                    <span className="font-medium">Primary</span>
+                    <span className="text-xs mt-1">
+                      {formData.primary_color}
+                    </span>
+                  </div>
+
+                  <div
+                    className="p-4 rounded-md flex flex-col items-center justify-center h-24 text-center"
+                    style={{
+                      backgroundColor: formData.secondary_color,
+                      color: formData.text_secondary_color,
+                    }}
+                  >
+                    <span className="font-medium">Secondary</span>
+                    <span className="text-xs mt-1">
+                      {formData.secondary_color}
+                    </span>
+                  </div>
+
+                  <div
+                    className="p-4 rounded-md flex flex-col items-center justify-center h-24 text-center"
+                    style={{
+                      backgroundColor: formData.tertiary_color,
+                      color: formData.text_tertiary_color,
+                    }}
+                  >
+                    <span className="font-medium">Tertiary</span>
+                    <span className="text-xs mt-1">
+                      {formData.tertiary_color}
+                    </span>
+                  </div>
+
+                  <div
+                    className="p-4 rounded-md flex flex-col items-center justify-center h-24 text-center"
+                    style={{
+                      backgroundColor: formData.bg_primary_color,
+                      color: formData.primary_color,
+                    }}
+                  >
+                    <span className="font-medium">Primary BG</span>
+                    <span className="text-xs mt-1">
+                      {formData.bg_primary_color}
+                    </span>
+                  </div>
+
+                  <div
+                    className="p-4 rounded-md flex flex-col items-center justify-center h-24 text-center"
+                    style={{
+                      backgroundColor: formData.bg_secondary_color,
+                      color: formData.secondary_color,
+                    }}
+                  >
+                    <span className="font-medium">Secondary BG</span>
+                    <span className="text-xs mt-1">
+                      {formData.bg_secondary_color}
+                    </span>
+                  </div>
+
+                  <div
+                    className="p-4 rounded-md flex flex-col items-center justify-center h-24 text-center"
+                    style={{
+                      backgroundColor: formData.bg_tertiary_color,
+                      color: formData.tertiary_color,
+                    }}
+                  >
+                    <span className="font-medium">Tertiary BG</span>
+                    <span className="text-xs mt-1">
+                      {formData.bg_tertiary_color}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <div className="flex justify-end">
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+              className="flex items-center gap-1.5"
+            >
+              <Save className="h-4 w-4" />
+              {isSubmitting ? "Saving..." : "Save Settings"}
+            </Button>
+          </div>
+        </form>
+      </div>
+    </React.Fragment>
+  );
+};
+
+export default SystemSettingsPage;

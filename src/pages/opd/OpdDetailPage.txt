@@ -1,0 +1,253 @@
+import React, { useEffect, useState } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Calendar, Clock, User, Info } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/actions/store";
+import { useParams } from "react-router-dom";
+import { useOpd } from "@/actions/calls/opd";
+import { clearOpdDetailSlice } from "@/actions/slices/opd";
+import dayjs from "dayjs";
+import { Link } from "react-router-dom";
+import { APPOINTMENT_DETAILS_URL, PATIENT_DETAIL_URL } from "@/utils/urls/frontend";
+
+const getStatusColor = (status: string): string => {
+  switch (status?.toLowerCase()) {
+    case "pending":
+      return "bg-amber-100 text-amber-800 hover:bg-amber-100";
+    case "completed":
+      return "bg-green-100 text-green-800 hover:bg-green-100";
+    case "cancelled":
+      return "bg-red-100 text-red-800 hover:bg-red-100";
+    case "active":
+      return "bg-blue-100 text-blue-800 hover:bg-blue-100";
+    case "discharged":
+      return "bg-purple-100 text-purple-800 hover:bg-purple-100";
+    case "converted to ipd":
+      return "bg-indigo-100 text-indigo-800 hover:bg-indigo-100";
+    default:
+      return "bg-gray-100 text-gray-800 hover:bg-gray-100";
+  }
+};
+
+const OpdDetail: React.FC = () => {
+  const { id } = useParams();
+  const dispatch = useDispatch();
+  const [loading, setLoading] = useState(true);
+  const { opdDetailHandler, cleanUp } = useOpd();
+
+  const opdData = useSelector(
+    (state: RootState) => state.opd.opdFullDetailData
+  );
+
+  useEffect(() => {
+    if (id) {
+      opdDetailHandler(id, () => {});
+      setLoading(false);
+    }
+    return () => {
+      cleanUp();
+      dispatch(clearOpdDetailSlice());
+    };
+  }, []);
+
+  if (loading || !opdData) {
+    return (
+      <div className="text-center text-muted py-10">Loading OPD data...</div>
+    );
+  }
+
+  return (
+    <div className="container mx-auto p-4 md:p-6">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold mb-2">OPD Details</h1>
+        <p className="text-gray-600">
+          Viewing details for OPD number {opdData?.opd?.opd_number}
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* OPD Information Card */}
+        <Card className="lg:col-span-1">
+          <CardHeader className="flex flex-col">
+            <CardTitle className="flex items-center gap-2">
+              <Info className="h-5 w-5" />
+              OPD Information
+            </CardTitle>
+            <CardDescription>
+              Details about the outpatient department visit
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <div className="text-sm font-medium text-gray-500">
+                OPD Number
+              </div>
+              <div className="font-medium">{opdData?.opd?.opd_number}</div>
+            </div>
+
+            <div>
+              <div className="text-sm font-medium text-gray-500">Status</div>
+              <Badge className={`mt-1 ${getStatusColor(opdData?.opd?.status)}`}>
+                {opdData?.opd?.status}
+              </Badge>
+            </div>
+
+            <div>
+              <div className="text-sm font-medium text-gray-500">
+                Visit Date
+              </div>
+              <div className="flex items-center gap-2">
+                <Calendar className="h-4 w-4 text-gray-500" />
+                <span>
+                  {dayjs(opdData?.opd?.visit_date).format(
+                    "YYYY-MM-DD HH:mm:ss"
+                  )}
+                </span>
+              </div>
+            </div>
+
+            <div>
+              <div className="text-sm font-medium text-gray-500">
+                Appointment ID
+              </div>
+              <Link
+                className="font-medium"
+                to={`${APPOINTMENT_DETAILS_URL}/${opdData?.appointment?.id}`}
+              >
+                {opdData?.appointment?.number}
+              </Link>
+            </div>
+
+            <div>
+              <div className="text-sm font-medium text-gray-500">Complaint</div>
+              <div className="p-3 bg-gray-50 rounded-md mt-1 text-black">
+                {opdData?.opd?.complaint}
+              </div>
+            </div>
+
+            <div>
+              <div className="text-sm font-medium text-gray-500">
+                Referred To Doctor 
+              </div>
+              <div className="font-medium">
+                {opdData?.doctor?.name}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Patient Information Card */}
+        <Card className="lg:col-span-2">
+          <CardHeader className="flex flex-col">
+            <CardTitle className="flex items-center gap-2">
+              <User className="h-5 w-5" />
+              Patient Information
+            </CardTitle>
+            <CardDescription>
+              Personal and contact details of the patient
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-4">
+                <div>
+                  <div className="text-sm font-medium text-gray-500">
+                    Patient Name
+                  </div>
+                  <div className="font-medium">
+                    {opdData?.patient?.first_name} {opdData?.patient?.last_name}
+                  </div>
+                </div>
+
+                <div>
+                  <div className="text-sm font-medium text-gray-500">
+                    Patient Number
+                  </div>
+                  <Link className="font-medium" to={`${PATIENT_DETAIL_URL}/${opdData?.patient?.id}`}>
+                    {opdData?.patient?.patient_number}
+                  </Link>
+                </div>
+
+                <div>
+                  <div className="text-sm font-medium text-gray-500">
+                    Date of Birth
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Clock className="h-4 w-4 text-gray-500" />
+                    <span>{opdData?.patient?.dob}</span>
+                  </div>
+                </div>
+
+                <div>
+                  <div className="text-sm font-medium text-gray-500">
+                    Age & Gender
+                  </div>
+                  <div className="font-medium">
+                    {opdData?.patient?.age} years,{" "}
+                    {opdData?.patient?.gender}
+                  </div>
+                </div>
+
+                <div>
+                  <div className="text-sm font-medium text-gray-500">
+                    Phone Number
+                  </div>
+                  <div className="font-medium">
+                    {opdData?.patient?.phone_no}
+                  </div>
+                </div>
+
+                <div>
+                  <div className="text-sm font-medium text-gray-500">Email</div>
+                  <div className="font-medium">{opdData?.patient?.email}</div>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <div className="text-sm font-medium text-gray-500">
+                    Address
+                  </div>
+                  <div className="font-medium">
+                    {opdData?.patient?.address}, <br />
+                    {opdData?.patient?.city}, {opdData?.patient?.state} <br />
+                    {opdData?.patient?.country}, {opdData?.patient?.pincode}
+                  </div>
+                </div>
+
+                <div>
+                  <div className="text-sm font-medium text-gray-500">
+                    Insurance Provider
+                  </div>
+                  <div className="font-medium">
+                    {opdData?.patient?.insurance_provider}
+                  </div>
+                </div>
+
+                <div>
+                  <div className="text-sm font-medium text-gray-500">
+                    Insurance Policy Number
+                  </div>
+                  <div className="font-medium">
+                    {opdData?.patient?.insurance_policy_no}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+};
+
+export default OpdDetail;
+
+

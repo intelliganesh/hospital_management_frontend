@@ -1,0 +1,130 @@
+import Button from "@/components/button";
+import Text from "@/components/text";
+import View from "@/components/view";
+import { Role } from "@/interfaces/roles";
+import { useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import SectionOne from "./SectionOne";
+import { validationForm } from "./validationForm";
+import { useRoles } from "@/actions/calls/roles";
+import { toast } from "@/utils/custom-hooks/use-toast";
+import { FormTypeProps } from "@/interfaces/dashboard";
+
+const RolesForm: React.FC<FormTypeProps> = ({ formType = "add" }) => {
+  const navigate = useNavigate();
+  const { id } = useParams();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const { addRole, updateRole } = useRoles();
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const roleFormObj: Partial<Role> = {};
+
+    try {
+      for (let [key, value] of formData.entries()) {
+
+        roleFormObj[key as keyof Role] = value as any;
+      }
+      await validationForm.validate(roleFormObj, { abortEarly: false });
+      setErrors({});
+      setIsSubmitting(true);
+      if (formType === "add") {
+        addRole(roleFormObj, (success) => {
+          setIsSubmitting(false);
+          if (success) {
+            toast({
+              title: "Success!",
+              description: "Role created successfully.",
+              variant: "success",
+            });
+            navigate(-1);
+          } else {
+            // toast({
+            //   title: "Error!",
+            //   description: response?.message,
+            //   variant: "destructive",
+            // });
+          }
+        });
+      } else if (id) {
+        updateRole(id, roleFormObj, (success: boolean) => {
+          if (success) {
+            navigate(-1);
+            toast({
+              title: "Success!",
+              description: "Role Updated successfully.",
+              variant: "success",
+            });
+          } else {
+            setIsSubmitting(false);
+            // toast({
+            //   title: "Error!",
+            //   description: "Failed to update Role",
+            //   variant: "destructive",
+            // });
+          }
+          setIsSubmitting(false);
+        });
+      }
+    } catch (error: any) {
+      setIsSubmitting(false);
+      if (error.inner) {
+        const validationErrors: Record<string, string> = {};
+        error.inner.forEach((e: any) => {
+          validationErrors[e.path] = e.message;
+        });
+        setErrors(validationErrors);
+      }
+    }
+  };
+  return (
+    <View className="min-h-screen bg-slate-50 dark:bg-slate-900 flex flex-col items-center p-4">
+      <View className="bg-white dark:bg-slate-800 rounded-xl shadow-soft dark:shadow-none border border-slate-200 dark:border-slate-700 w-full max-w-4xl p-6 md:p-8 mb-8">
+        <View className="flex items-center justify-between mb-6">
+          <View>
+            <Text
+              as="h2"
+              weight="font-bold"
+              className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-1"
+            >
+              {formType === "add" ? "New Role" : "Edit Role"}
+            </Text>
+            <Text as="p" className="text-slate-600 dark:text-slate-400 text-sm">
+              Fill in the role details
+            </Text>
+          </View>
+          <Button
+            onPress={() => navigate(-1)}
+            variant="outline"
+            className="flex items-center gap-2"
+          >
+            Back
+          </Button>
+        </View>
+        <form onSubmit={handleSubmit}>
+          <SectionOne
+            formType={formType}
+            errorsName={errors.name}
+            errorsDescription={errors.description}
+            errorsStatus={errors.status}
+          />
+          <View className="col-span-2 mt-6">
+            <Button
+              htmlType="submit"
+              loading={isSubmitting}
+              onPress={() => handleSubmit}
+              className="w-full bg-primary text-white rounded-md py-3 font-medium hover:bg-primary-600 transition focus:outline-none focus:ring-2 focus:ring-primary-300 focus:ring-offset-2"
+            >
+              {isSubmitting ? "Submitting..." : "Submit"}
+            </Button>
+          </View>
+        </form>
+      </View>
+    </View>
+  );
+};
+export default RolesForm;

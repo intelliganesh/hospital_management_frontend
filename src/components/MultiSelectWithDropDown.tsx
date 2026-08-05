@@ -1,0 +1,204 @@
+import React, { useEffect, useRef, useState } from "react";
+import View from "./view";
+import Text from "./text";
+import Input from "./input";
+import Button from "./button";
+
+interface Options {
+  id: string | number;
+  label: string;
+  value: string;
+}
+
+type MultiSelectWithDropDownProps = {
+  name: string;
+  label?: string;
+  options: string[] | Options[];
+  defaultValue?: string;
+  defaultItems?: string;
+  placeholder?: string;
+  onChange?: (value: string) => void;
+  buttonText?: string;
+  onModel?: () => void;
+  error?: string;
+};
+
+const MultiSelectWithDropDown: React.FC<MultiSelectWithDropDownProps> = ({
+  name,
+  label,
+  options,
+  onModel,
+  onChange,
+  placeholder = "Select",
+  buttonText,
+  defaultItems = "",
+  defaultValue = "",
+  error,
+}) => {
+  const wrapperRef = useRef<HTMLDivElement>(null);
+
+  const [inputValue, setInputValue] = useState("");
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  const [selectedItemsValue, setSelectedItemsValue] = useState<string[]>([]);
+  const [filteredOptions, setFilteredOptions] = useState<string[] | Options[]>(
+    []
+  );
+
+  // Initialize when defaultItems/defaultValue changes
+  useEffect(() => {
+    const labels =
+      defaultItems
+        ?.split(",")
+        .map((i) => i.trim())
+        .filter(Boolean) || [];
+    const values =
+      defaultValue
+        ?.split(",")
+        .map((v) => v.trim())
+        .filter(Boolean) || [];
+
+    // Prevent overwriting existing user input
+    if (
+      labels.length > 0 &&
+      values.length > 0 &&
+      selectedItems.length === 0 &&
+      selectedItemsValue.length === 0
+    ) {
+      setSelectedItems(labels);
+      setSelectedItemsValue(values);
+    }
+  }, [defaultItems, defaultValue]);
+
+  // Keep parent in sync
+  useEffect(() => {
+    onChange?.(selectedItemsValue.join(","));
+  }, [selectedItemsValue]);
+
+  // Filter options
+  useEffect(() => {
+    const filtered: any = options
+      .filter((opt) => {
+        const label = typeof opt === "string" ? opt : opt.label;
+        return (
+          label.toLowerCase().includes(inputValue.toLowerCase()) &&
+          !selectedItems.includes(label)
+        );
+      })
+      .map((opt) => (typeof opt === "string" ? opt : { ...opt }));
+    setFilteredOptions(filtered);
+  }, [inputValue, options, selectedItems]);
+
+  // Close dropdown if clicked outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        wrapperRef.current &&
+        !wrapperRef.current.contains(event.target as Node)
+      ) {
+        setShowDropdown(false);
+      }
+    };
+    window.addEventListener("mousedown", handleClickOutside);
+    return () => window.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const addItem = (opt: string | Options) => {
+    const label = typeof opt === "string" ? opt : opt.label;
+    const value = typeof opt === "string" ? opt : opt.value;
+
+    if (!selectedItems.includes(label)) {
+      setSelectedItems((prev) => [...prev, label]);
+      setSelectedItemsValue((prev) => [...prev, value]);
+    }
+
+    setInputValue("");
+    setShowDropdown(false);
+  };
+
+  const removeItem = (index: number) => {
+    setSelectedItems((prev) => prev.filter((_, i) => i !== index));
+    setSelectedItemsValue((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      const trimmed = inputValue.trim();
+      if (!trimmed) return;
+
+      addItem(trimmed);
+    }
+  };
+
+  return (
+    <View className="w-full relative" ref={wrapperRef}>
+      {label && <label className="block mb-2 font-medium">{label}</label>}
+
+      <View className="flex items-center justify-between gap-2">
+        {/* Container with padding bottom so dropdown won't overlap */}
+        <View className="border border-border rounded p-2  flex flex-wrap gap-2 min-h-[48px] relative w-full">
+          {/* Selected items/tags */}
+          {selectedItems.map((item, index) => (
+            <Text
+              as="span"
+              key={`${item}-${index}`}
+              className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm flex items-center gap-1"
+            >
+              {item}
+              <Button
+                style={{ padding: "0px 5px" }}
+                type="button"
+                onClick={() => removeItem(index)}
+                className="text-red-500 hover:bg-red-500"
+              >
+                &times;
+              </Button>
+            </Text>
+          ))}
+
+          {/* Input and dropdown container */}
+          <View className="flex-grow relative w-full">
+            <Input
+              type="text"
+              value={inputValue}
+              placeholder={placeholder}
+              onKeyDown={handleKeyDown}
+              onFocus={() => setShowDropdown(true)}
+              onChange={(e) => setInputValue(e.target.value)}
+              className="w-full focus:outline-none p-1"
+            />
+
+            {showDropdown && filteredOptions.length > 0 && (
+              <ul
+                className="absolute z-10 top-full left-0 w-full bg-white border mt-1 max-h-48 overflow-auto shadow rounded"
+                style={{ maxHeight: "12rem", overflowY: "auto" }}
+              >
+                {filteredOptions.map((opt) => (
+                  <li
+                    key={typeof opt === "string" ? opt : opt.id}
+                    className="px-4 py-2 hover:bg-blue-100 cursor-pointer text-blue-800"
+                    onClick={() => addItem(opt)}
+                  >
+                    {typeof opt === "string" ? opt : opt.label}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </View>
+        </View>
+
+        {buttonText && onModel && (
+          <Button onPress={onModel}>
+            <Text>{buttonText}</Text>
+          </Button>
+        )}
+      </View>
+
+      <input type="hidden" name={name} value={selectedItemsValue.join(",")} />
+      {error && <p className="text-danger text-sm mt-1">{error}</p>}
+    </View>
+  );
+};
+
+export default MultiSelectWithDropDown;

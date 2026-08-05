@@ -1,0 +1,77 @@
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { Theme } from '@/interfaces/systemSettings';
+
+type ThemeContextType = {
+  theme: Theme;
+  setTheme: (theme: Theme) => void;
+  systemTheme: 'light' | 'dark';
+};
+
+const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
+
+export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  // Get initial theme from localStorage or default to system
+  const [theme, setTheme] = useState<Theme>(() => {
+    const savedTheme = localStorage.getItem('theme');
+    return savedTheme ? (savedTheme as Theme) : Theme.SYSTEM;
+  });
+
+  // Track the system theme preference
+  const [systemTheme, setSystemTheme] = useState<'light' | 'dark'>(() => {
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  });
+
+  // Function to update theme
+  const handleSetTheme = (newTheme: Theme) => {
+    setTheme(newTheme);
+    localStorage.setItem('theme', newTheme);
+  };
+
+  // Listen for system theme changes
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+    const handleChange = (e: MediaQueryListEvent) => {
+      setSystemTheme(e.matches ? 'dark' : 'light');
+    };
+
+    // Add event listener
+    mediaQuery.addEventListener('change', handleChange);
+
+    // Initial check
+    setSystemTheme(mediaQuery.matches ? 'dark' : 'light');
+
+    // Cleanup
+    return () => mediaQuery.removeEventListener('change', handleChange);
+  }, []);
+
+  // Apply theme to document
+  useEffect(() => {
+    const html = document.documentElement;
+
+    // Remove both classes first
+    html.classList.remove('light', 'dark');
+
+    // Apply the appropriate class based on theme setting
+    if (theme === Theme.SYSTEM) {
+      html.classList.add(systemTheme);
+    } else {
+      html.classList.add(theme);
+    }
+  }, [theme, systemTheme]);
+
+  return (
+    <ThemeContext.Provider value={{ theme, setTheme: handleSetTheme, systemTheme }}>
+      {children}
+    </ThemeContext.Provider>
+  );
+};
+
+// Custom hook to use the theme context
+export const useTheme = () => {
+  const context = useContext(ThemeContext);
+  if (context === undefined) {
+    throw new Error('useTheme must be used within a ThemeProvider');
+  }
+  return context;
+};

@@ -1,0 +1,126 @@
+import React, { useEffect, useState } from "react";
+import { ChevronDown, ChevronUp } from "lucide-react";
+import View from "./view";
+import Text from "./text";
+
+interface CollapsibleContainerProps {
+  title: string;
+  children: React.ReactNode;
+  defaultOpen?: boolean;
+  headerClassName?: string;
+  contentClassName?: string;
+  containerClassName?: string;
+  icon?: React.ReactNode;
+  subtitle?: string;
+  autoOpen?: boolean;
+  variant?: "default" | "card" | "minimal" | "bordered" | "custom";
+}
+
+const CollapsibleContainer: React.FC<CollapsibleContainerProps> = ({
+  title,
+  children,
+  defaultOpen = false,
+  headerClassName = "",
+  contentClassName = "",
+  containerClassName = "",
+  icon,
+  subtitle,
+  autoOpen = defaultOpen,
+  variant = "default",
+}) => {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
+
+  const toggleCollapse = () => {
+    setIsOpen(!isOpen);
+  };
+
+  useEffect(() => {
+    setIsOpen(autoOpen);
+  }, [autoOpen]);
+
+  const getVariantStyles = () => {
+    switch (variant) {
+      case "card":
+        return {
+          container: "bg-card rounded-lg shadow-md border border-gray-200",
+          header: "bg-gray-50 px-6 py-4 border-b border-gray-200",
+          content: "p-6",
+        };
+      case "minimal":
+        return {
+          container: "",
+          header: "py-4 border-b border-white",
+          content: "py-4",
+        };
+      case "bordered":
+        return {
+          container: "border border-border rounded-md",
+          header: "px-4 py-3 bg-background border-b border-border",
+          content: "p-4",
+        };
+      default:
+        return {
+          container: "bg-card rounded-lg shadow-lg border border-border",
+          header: "px-6 py-4 bg-card  border-b border-border",
+          content: "p-6",
+        };
+      case "custom":
+        return {
+          container: "bg-card rounded-lg border border-border",
+          header:
+            "p-4 bg-card  border-b border-border bg-primary rounded-t-lg text-white",
+          content: "p-4",
+        };
+    }
+  };
+
+  const styles = getVariantStyles();
+
+  return (
+    <View
+      className={`${styles.container} ${containerClassName} transition-all duration-200`}
+    >
+      {/* Header */}
+      <View
+        className={`${styles.header} ${headerClassName} cursor-pointer hover:bg-opacity-80 transition-colors duration-200`}
+        onClick={toggleCollapse}
+      >
+        <View className="flex items-center justify-between">
+          <View className="flex items-center gap-3">
+            {icon && <View className="text-blue-600">{icon}</View>}
+            <View>
+              <Text as="h3" weight="font-bold" className="text-lg">
+                {title}
+              </Text>
+              {subtitle && (
+                <Text className="text-sm text-muted-foreground mt-1">
+                  {subtitle}
+                </Text>
+              )}
+            </View>
+          </View>
+          <View className="text-primary hover:text-primary-600 transition-colors duration-200">
+            {isOpen ? (
+              <ChevronUp className="w-5 h-5 text-white" />
+            ) : (
+              <ChevronDown className="w-5 h-5 text-white" />
+            )}
+          </View>
+        </View>
+      </View>
+
+      {/* Content */}
+      <View
+        className={` transition-all duration-300 ease-in-out ${
+          isOpen ? "h-full opacity-100" : "max-h-0 opacity-0 hidden"
+        }`}
+      >
+        <View className={`${styles.content} ${contentClassName}`}>
+          {children}
+        </View>
+      </View>
+    </View>
+  );
+};
+
+export default CollapsibleContainer;

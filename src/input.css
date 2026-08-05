@@ -1,0 +1,428 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  font-size: 80%; 
+}
+
+body, #root {
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow: auto;
+  font-family: "Work Sans", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+}
+
+  /* * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary) #1a1a1a;
+  }
+
+  *::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: #1a1a1a;
+    border-radius: 2px;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 5px;
+    border: 2px solid #1a1a1a;
+  }
+
+  *::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-600);
+    box-shadow: 0 0 10px rgba(6, 182, 212, 0.3);
+  } */
+
+/* Default (Light Mode) */
+* {
+  scrollbar-width: thin;
+  /* scrollbar-color: var(--primary) #f0f0f0; */
+    scrollbar-color: rgba(148, 163, 184, 0.4) transparent;
+
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  /* background: var(--primary-10) #f0f0f0; */
+  /* border-radius: 1px; */
+    background: transparent;
+    border-radius: 4px;
+  
+}
+
+*::-webkit-scrollbar-thumb {
+  /* background: var(--primary);
+  border-radius: 5px;
+  border: 2px solid #f0f0f0; */
+   background: rgba(148, 163, 184, 0.4);
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  /* background: var(--primary-600);
+  box-shadow: 0 0 10px rgba(6, 182, 212, 0.3); */
+  background: rgba(148, 163, 184, 0.6);
+  box-shadow: 0 2px 8px rgba(148, 163, 184, 0.2);
+}
+
+*::-webkit-scrollbar-thumb:active {
+  background: rgba(148, 163, 184, 0.8);
+}
+
+*::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Dark Mode */
+html.dark * {
+  /* scrollbar-color: var(--primary) #1a1a1a; */
+  scrollbar-color: rgba(71, 85, 105, 0.4) transparent;
+}
+
+/* html.dark *::-webkit-scrollbar-track {
+  background: #1a1a1a;
+}
+
+html.dark *::-webkit-scrollbar-thumb {
+  border: 2px solid #1a1a1a;
+} */
+
+html.dark *::-webkit-scrollbar-thumb {
+  background: rgba(71, 85, 105, 0.4);
+}
+
+html.dark *::-webkit-scrollbar-thumb:hover {
+  background: rgba(71, 85, 105, 0.6);
+  box-shadow: 0 2px 8px rgba(71, 85, 105, 0.2);
+}
+
+html.dark *::-webkit-scrollbar-thumb:active {
+  background: rgba(71, 85, 105, 0.8);
+}
+
+/* Thin scrollbar variant for dropdowns and small containers */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.3);
+  border-radius: 3px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.5);
+}
+
+html.dark .scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgba(71, 85, 105, 0.3);
+}
+
+html.dark .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: rgba(71, 85, 105, 0.5);
+}
+
+/* Hide scrollbar variant */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+
+/* src/styles/globals.css */
+:root {
+    /* Base colors */
+  /* --background: #ffffff;
+  --foreground: #2d3748; */
+  --background: #f8fafc;
+  --foreground: #1e293b;
+
+  /* UI Component backgrounds */
+  /* --card: #ffffff;
+  --card-foreground: #2d3748;
+  --popover: #ffffff;
+  --popover-foreground: #2d3748; */
+   --card: #ffffff;
+  --card-foreground: #1e293b;
+  --popover: #ffffff;
+  --popover-foreground: #1e293b;
+
+  /* --primary-base: #4285F4;
+  --secondary-base: #36B37E;
+  --accent-base: #FBBC05; */
+  --primary-base: #3b82f6;
+  --secondary-base: #10b981;
+  --accent-base: #f59e0b;
+
+  /* Primary colors - Calming blue */
+  --primary: var(--primary-base);
+  --primary-foreground: #ffffff;
+
+  /* Primary color variants */
+  --primary-10: var(--primary-10-base, #F8FAFD);
+  --primary-20: var(--primary-20-base, #F2F5FA);
+  --primary-30: var(--primary-30-base, #EAF0F7);
+  --primary-40: var(--primary-40-base, #D9E4F0);
+  --primary-50: var(--primary-50-base, #F5F9FF);
+  --primary-100: var(--primary-100-base, #E8F1FE);
+  --primary-200: var(--primary-200-base, #C9DFFC);
+  --primary-300: var(--primary-300-base, #92BFFA);
+  --primary-400: var(--primary-400-base, #5A9DF7);
+  --primary-500: var(--primary-500-base, #1A73E8);
+  --primary-600: var(--primary-600-base, #1259B8);
+  --primary-700: var(--primary-700-base, #0D4287);
+  --primary-800: var(--primary-800-base, #072C5E);
+  --primary-900: var(--primary-900-base, #04172F);
+
+
+  /* Secondary colors - Healing teal */
+  --secondary: var(--secondary-base);
+  --secondary-foreground: #ffffff;
+
+  /* Secondary color variants */
+  
+--secondary-10:   var(--secondary-10-base,   #EBF9F3);
+--secondary-20:   var(--secondary-20-base,   #D7F4E7);
+--secondary-30:   var(--secondary-30-base,   #BFEEDC);
+--secondary-40:   var(--secondary-40-base,   #A6E8D0);
+--secondary-50:   var(--secondary-50-base,   #8EE2C4);
+--secondary-100:  var(--secondary-100-base,  #75DCB8);
+--secondary-200:  var(--secondary-200-base,  #5CD6AC);
+--secondary-300:  var(--secondary-300-base,  #43D0A0);
+--secondary-400:  var(--secondary-400-base,  #2ACB94);
+--secondary-500:  var(--secondary-500-base,  #36B37E);
+--secondary-600:  var(--secondary-600-base,  #2C9467);
+--secondary-700:  var(--secondary-700-base,  #227551);
+--secondary-800:  var(--secondary-800-base,  #18573A);
+--secondary-900:  var(--secondary-900-base,  #0E3824);
+
+
+
+  /* Accent - Soft purple for highlighting important elements */
+  --accent: var(--accent-base);
+  --accent-foreground: #ffffff;
+
+  /* Accent color variants */
+--accent-10:   var(--accent-10-base,   #FFF9E8);
+--accent-20:   var(--accent-20-base,   #FFF2D1);
+--accent-30:   var(--accent-30-base,   #FFE8AF);
+--accent-40:   var(--accent-40-base,   #FFDD8C);
+--accent-50:   var(--accent-50-base,   #FFD26A);
+--accent-100:  var(--accent-100-base,  #FFC747);
+--accent-200:  var(--accent-200-base,  #FFBC25);
+--accent-300:  var(--accent-300-base,  #FBBC05);
+--accent-400:  var(--accent-400-base,  #DB9F04);
+--accent-500:  var(--accent-500-base,  #BB8403);
+--accent-600:  var(--accent-600-base,  #9C6A02);
+--accent-700:  var(--accent-700-base,  #7C5202);
+--accent-800:  var(--accent-800-base,  #5C3B01);
+--accent-900:  var(--accent-900-base,  #3D2501);
+
+
+
+  /* Status colors */
+  /* --success: #0f9d58; */
+  --success: #10b981;
+  --success-foreground: #ffffff;
+  /* --warning: #f6ad55; */
+    --warning: #f59e0b;
+  /* --warning-foreground: #000000;
+  --destructive: #e53e3e; */
+  --warning-foreground: #ffffff;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+
+  /* Neutral/UI colors */
+  /* --muted: #f7fafc;
+  --muted-foreground: #718096;
+  --border: #e2e8f0;
+  --input: #edf2f7;
+  --ring: #4299e1; */
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  --border: #e2e8f0;
+  --input: #f8fafc;
+  --ring: #3b82f6;
+
+  /* Radius for consistent component styling */
+  --radius: 0.5rem;
+  }
+
+  html.dark {
+    /* Base colors - deeper blue-gray for reduced eye strain */
+  /* --background: #292B2F;
+  --foreground: #f7fafc; */
+   --background: #0f172a;
+  --foreground: #f1f5f9;
+
+  /* UI Component backgrounds - slightly elevated */
+  /* --card: #363740;
+  --card-foreground: #f7fafc;
+  --popover: #2d3748;
+  --popover-foreground: #f7fafc; */
+   --card: #1e293b;
+  --card-foreground: #f1f5f9;
+  --popover: #1e293b;
+  --popover-foreground: #f1f5f9;
+
+  /* Primary colors - Brighter blue for visibility */
+  --primary: var(--primary-base);
+  /* --primary-foreground: #1a202c; */
+    --primary-foreground: #0f172a;
+
+
+  /* Primary color variants for dark mode */
+  --primary-10: var(--primary-10-base, #F8FAFD);
+  --primary-20: var(--primary-20-base, #F2F5FA);
+  --primary-30: var(--primary-30-base, #EAF0F7);
+  --primary-40: var(--primary-40-base, #D9E4F0);
+  --primary-50: var(--primary-50-base, #F5F9FF);
+  --primary-100: var(--primary-100-base, #E8F1FE);
+  --primary-200: var(--primary-200-base, #C9DFFC);
+  --primary-300: var(--primary-300-base, #92BFFA);
+  --primary-400: var(--primary-400-base, #5A9DF7);
+  --primary-500: var(--primary-500-base, #1A73E8);
+  --primary-600: var(--primary-600-base, #1259B8);
+  --primary-700: var(--primary-700-base, #0D4287);
+  --primary-800: var(--primary-800-base, #072C5E);
+  --primary-900: var(--primary-900-base, #04172F);
+
+  /* Secondary colors - Brighter teal */
+  --secondary: var(--secondary-base);
+  /* --secondary-foreground: #1a202c; */
+    --secondary-foreground: #0f172a;
+
+
+  /* Secondary color variants for dark mode */
+--secondary-10:   var(--primary-10-base,   #EBF9F3);
+--secondary-20:   var(--primary-20-base,   #D7F4E7);
+--secondary-30:   var(--primary-30-base,   #BFEEDC);
+--secondary-40:   var(--primary-40-base,   #A6E8D0);
+--secondary-50:   var(--primary-50-base,   #8EE2C4);
+--secondary-100:  var(--primary-100-base,  #75DCB8);
+--secondary-200:  var(--primary-200-base,  #5CD6AC);
+--secondary-300:  var(--primary-300-base,  #43D0A0);
+--secondary-400:  var(--primary-400-base,  #2ACB94);
+--secondary-500:  var(--primary-500-base,  #36B37E);
+--secondary-600:  var(--primary-600-base,  #2C9467);
+--secondary-700:  var(--primary-700-base,  #227551);
+--secondary-800:  var(--primary-800-base,  #18573A);
+--secondary-900:  var(--primary-900-base,  #0E3824);
+
+
+  /* Accent - Lighter purple for contrast */
+  --accent: var(--accent-base);
+  /* --accent-foreground: #1a202c; */
+    --accent-foreground: #0f172a;
+
+
+  /* Accent color variants for dark mode */
+--tertiary-10:   var(--tertiary-10-base,   #FFF9E8);
+--tertiary-20:   var(--tertiary-20-base,   #FFF2D1);
+--tertiary-30:   var(--tertiary-30-base,   #FFE8AF);
+--tertiary-40:   var(--tertiary-40-base,   #FFDD8C);
+--tertiary-50:   var(--tertiary-50-base,   #FFD26A);
+--tertiary-100:  var(--tertiary-100-base,  #FFC747);
+--tertiary-200:  var(--tertiary-200-base,  #FFBC25);
+--tertiary-300:  var(--tertiary-300-base,  #FBBC05);
+--tertiary-400:  var(--tertiary-400-base,  #DB9F04);
+--tertiary-500:  var(--tertiary-500-base,  #BB8403);
+--tertiary-600:  var(--tertiary-600-base,  #9C6A02);
+--tertiary-700:  var(--tertiary-700-base,  #7C5202);
+--tertiary-800:  var(--tertiary-800-base,  #5C3B01);
+--tertiary-900:  var(--tertiary-900-base,  #3D2501);
+
+
+  /* Status colors - brightened for dark mode visibility */
+  /* --success: #68d391;
+  --success-foreground: #1a202c;
+  --warning: #fbd38d;
+  --warning-foreground: #1a202c;
+  --destructive: #fc8181;
+  --destructive-foreground: #1a202c; */
+  --success: #34d399;
+  --success-foreground: #0f172a;
+  --warning: #fbbf24;
+  --warning-foreground: #0f172a;
+  --destructive: #f87171;
+  --destructive-foreground: #0f172a;
+
+  /* Neutral/UI colors */
+  /* --muted: #2d3748;
+  --muted-foreground: #a0aec0;
+  --border: #4a5568;
+  --input: #2d3748;
+  --ring: #4299e1; */
+   --muted: #334155;
+  --muted-foreground: #94a3b8;
+  --border: #475569;
+  --input: #334155;
+  --ring: #60a5fa;
+  }
+
+  /* Custom animations and utilities */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Smooth transitions for all interactive elements */
+* {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+/* Custom scrollbar styling for webkit browsers */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.5);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.8);
+}
+
+/* Dark mode scrollbar */
+html.dark ::-webkit-scrollbar-thumb {
+  background: rgba(71, 85, 105, 0.5);
+}
+
+html.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(71, 85, 105, 0.8);
+}

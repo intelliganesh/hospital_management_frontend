@@ -1,0 +1,667 @@
+import React, { useRef, useState } from "react";
+import View from "@/components/view";
+import Text from "@/components/text";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { RootState } from "@/actions/store";
+import { useSelector } from "react-redux";
+import { Test } from "@/interfaces/test";
+import Button from "@/components/button";
+import { Check, Download, X } from "lucide-react";
+import { useParams } from "react-router-dom";
+import { useInvoice } from "@/actions/calls/invoice";
+import { toast } from "@/utils/custom-hooks/use-toast";
+
+interface SectionOneProps {
+  type?: boolean;
+  balanceAmount?: React.ReactNode;
+}
+
+const SectionOne: React.FC<SectionOneProps> = ({ balanceAmount }) => {
+  const { id } = useParams();
+  const printRef = useRef<HTMLDivElement>(null);
+  const settingsData = useSelector(
+    (state: RootState) => state.systemSettings.settings
+  );
+  const invoiceData = useSelector(
+    (state: RootState) => state.invoice.invoiceDetailData
+  );
+  const paymentDetailData = useSelector(
+    (state: RootState) => state.invoice.paymentDetailData
+  );
+
+  const {
+    downloadInvoiceHandler,
+    amountIncludeInInvoice,
+    getPaymentDetailHandler,
+    getInvoiceDetailHandler,
+  } = useInvoice();
+
+  const handleExcludeFromInvoice = async (itemId: string, status: boolean) => {
+    await amountIncludeInInvoice(
+      { id: itemId, include_in_invoice: status },
+      async (success: boolean) => {
+        if (success) {
+          toast({
+            title: "Updated",
+            description: "Excluded from invoice successfully",
+            variant: "success",
+          });
+          if (id) {
+            getPaymentDetailHandler(id, () => {});
+            getInvoiceDetailHandler(id, () => {});
+            //
+          } // refresh invoice data
+        } else {
+          toast({
+            title: "Error",
+            description: "Failed to exclude from invoice",
+            variant: "destructive",
+          });
+        }
+      }
+    );
+  };
+
+  // const handlePrint = () => {
+  //   if (printRef.current) {
+  //     // Get the content to print
+  //     const printContent = printRef.current;
+
+  //     // Create a new window for printing
+  //     const printWindow = window.open("", "_blank", "width=800,height=600");
+
+  //     if (printWindow) {
+  //       // Write the HTML structure with styles
+  //       printWindow.document.write(`
+  //       <!DOCTYPE html>
+  //       <html>
+  //         <head>
+  //           <title>Invoice - ${
+  //             import.meta.env.VITE_HOSPITAL_NAME || "Hospital"
+  //           }</title>
+  //           <style>
+  //             * {
+  //               margin: 0;
+  //               padding: 0;
+  //               box-sizing: border-box;
+  //             }
+
+  //             body {
+  //               font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  //               line-height: 1.5;
+  //               color: #333;
+  //               background: white;
+  //               padding: 20px;
+  //             }
+
+  //             .print-container {
+  //               max-width: 800px;
+  //               margin: 0 auto;
+  //             }
+
+  //             h1 {
+  //               font-size: 24px;
+  //               font-weight: bold;
+  //               margin-bottom: 8px;
+  //             }
+
+  //             h2 {
+  //               font-size: 20px;
+  //               font-weight: 600;
+  //               margin-bottom: 16px;
+  //               color: #000;
+  //             }
+
+  //             p, span {
+  //               font-size: 14px;
+  //             }
+
+  //             .text-sm {
+  //               font-size: 12px;
+  //             }
+
+  //             .font-medium {
+  //               font-weight: 500;
+  //             }
+
+  //             .font-semibold {
+  //               font-weight: 600;
+  //             }
+
+  //             .font-bold {
+  //               font-weight: bold;
+  //             }
+
+  //             .text-muted-foreground {
+  //               color: #6b7280;
+  //             }
+
+  //             .text-gray-700 {
+  //               color: #374151;
+  //             }
+
+  //             .text-gray-500 {
+  //               color: #6b7280;
+  //             }
+
+  //             .text-center {
+  //               text-align: center;
+  //             }
+
+  //             .text-right {
+  //               text-align: right;
+  //             }
+
+  //             .mb-1 { margin-bottom: 4px; }
+  //             .mb-2 { margin-bottom: 8px; }
+  //             .mb-4 { margin-bottom: 16px; }
+  //             .mb-8 { margin-bottom: 32px; }
+  //             .mt-4 { margin-top: 16px; }
+  //             .mt-12 { margin-top: 48px; }
+  //             .pt-4 { padding-top: 16px; }
+  //             .pb-4 { padding-bottom: 16px; }
+
+  //             .border-b-2 {
+  //               border-bottom: 2px solid #000;
+  //             }
+
+  //             .border-t {
+  //               border-top: 1px solid #d1d5db;
+  //             }
+
+  //             .border-b {
+  //               border-bottom: 1px solid #d1d5db;
+  //             }
+
+  //             .flex {
+  //               display: flex;
+  //             }
+
+  //             .justify-between {
+  //               justify-content: space-between;
+  //             }
+
+  //             .items-start {
+  //               align-items: flex-start;
+  //             }
+
+  //             .items-center {
+  //               align-items: center;
+  //             }
+
+  //             .grid {
+  //               display: grid;
+  //             }
+
+  //             .grid-cols-3 {
+  //               grid-template-columns: repeat(3, 1fr);
+  //             }
+
+  //             .col-span-3 {
+  //               grid-column: span 3;
+  //             }
+
+  //             .gap-4 {
+  //               gap: 16px;
+  //             }
+
+  //             img {
+  //               height: 48px;
+  //               width: 48px;
+  //               border-radius: 6px;
+  //               margin-right: 8px;
+  //             }
+
+  //             table {
+  //               width: 100%;
+  //               border-collapse: collapse;
+  //               border: 1px solid #000;
+  //             }
+
+  //             th, td {
+  //               border: 1px solid #000;
+  //               padding: 8px;
+  //               text-align: left;
+  //             }
+
+  //             th {
+  //               font-weight: 600;
+  //               background-color: #f9fafb;
+  //             }
+
+  //             .signature-line {
+  //               height: 64px;
+  //               border-bottom: 1px solid #d1d5db;
+  //               margin-top: 16px;
+  //             }
+
+  //             @media print {
+  //               body {
+  //                 padding: 0;
+  //               }
+  //               .print-container {
+  //                 max-width: none;
+  //               }
+  //             }
+  //           </style>
+  //         </head>
+  //         <body>
+  //           <div class="print-container">
+  //             ${printContent.outerHTML}
+  //           </div>
+  //         </body>
+  //       </html>
+  //     `);
+
+  //       // Close the document and focus the window
+  //       printWindow.document.close();
+  //       printWindow.focus();
+
+  //       // Wait for content to load, then print
+  //       setTimeout(() => {
+  //         printWindow.print();
+  //         printWindow.close();
+  //       }, 250);
+  //     }
+  //   }
+  // };
+
+  const handleDownloadInvoice = () => {
+    if (id) {
+      downloadInvoiceHandler(id, async (success: boolean) => {
+        if (success) {
+          toast({
+            title: "Success!",
+            description: "Successfully downloaded Bill",
+            variant: "success",
+          });
+        } else {
+          toast({
+            title: "Error",
+            description: "Failed to download Bill",
+            variant: "destructive",
+          });
+        }
+      });
+    }
+  };
+
+  return (
+    <React.Fragment>
+      {invoiceData?.payment_status === "Completed" && (
+        <View className="flex justify-end mb-6 print:hidden gap-3">
+          {/* <Button onClick={handlePrint} className="flex items-center gap-2">
+            <Printer size={16} />
+            Print Invoice
+          </Button> */}
+          <Button
+            onClick={handleDownloadInvoice}
+            className="flex items-center gap-2"
+          >
+            <Download size={16} />
+            Download Bill
+          </Button>
+        </View>
+      )}
+      <div ref={printRef}>
+        {/* Hospital Header */}
+        <View className="flex justify-center items-center mb-8 pb-4 border-b-2 border-primary">
+          {/* <View className="flex items-center">
+            <img
+              src={import.meta.env.VITE_APP_URL + settingsData?.hospital_logo}
+              alt="Hospital Logo"
+              className="h-12 w-12 rounded-md mr-2"
+            />
+          </View>*/}
+          {settingsData?.billing_letter_header && (
+            <div
+              dangerouslySetInnerHTML={{
+                __html: settingsData.billing_letter_header,
+              }}
+            />
+          )}
+
+          {/* <View className="text-right">
+            <Text
+              as="h1"
+              className="text-2xl font-bold dark:text-white text-black mb-2"
+            >
+              {settingsData?.hospital_name}
+            </Text>
+          </View> */}
+          {/* <View className="px-4">
+            <Text
+              as="h1"
+              className="text-2xl font-bold dark:text-white text-black text-center mb-2"
+            >
+              {import.meta.env.VITE_HOSPITAL_NAME || "MedCare Hospital"}
+            </Text>
+            <Text as="p" className="text-muted-foreground text-center">
+              {import.meta.env.VITE_HOSPITAL_ADDRESS}
+              {import.meta.env.VITE_HOSPITAL_WEBSITE}
+            </Text>
+          </View> */}
+        </View>
+
+        {/* Patient Information */}
+        <View className="mb-8">
+          <Text
+            as="h2"
+            className="text-xl font-semibold dark:text-white text-black mb-4"
+          >
+            Patient Information
+          </Text>
+          <View className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+            <View>
+              <Text
+                as="span"
+                className="font-medium text-gray-700 dark:text-white"
+              >
+                Name:{" "}
+              </Text>
+              <Text as="span" className="text-muted-foreground">
+                {invoiceData?.patient_name}
+              </Text>
+            </View>
+            <View>
+              <Text
+                as="span"
+                className="font-medium text-gray-700 dark:text-white"
+              >
+                Appointment Number:{" "}
+              </Text>
+              <Text as="span" className="text-muted-foreground">
+                {invoiceData?.appointment_number}
+              </Text>
+            </View>
+            <View>
+              <Text
+                as="span"
+                className="font-medium text-gray-700 dark:text-white"
+              >
+                Patient ID:{" "}
+              </Text>
+              <Text as="span" className="text-muted-foreground">
+                {invoiceData?.patient_number}
+              </Text>
+            </View>
+            <View>
+              <Text
+                as="span"
+                className="font-medium text-gray-700 dark:text-white"
+              >
+                Contact:{" "}
+              </Text>
+              <Text as="span" className="text-muted-foreground">
+                {invoiceData?.patient_phone}
+              </Text>
+            </View>
+            <View>
+              <Text
+                as="span"
+                className="font-medium text-gray-700 dark:text-white"
+              >
+                Age:{" "}
+              </Text>
+              <Text as="span" className="text-muted-foreground">
+                {invoiceData?.age}
+              </Text>
+            </View>
+            <View>
+              <Text
+                as="span"
+                className="font-medium text-gray-700 dark:text-white"
+              >
+                Gender:{" "}
+              </Text>
+              <Text as="span" className="text-muted-foreground">
+                {invoiceData?.gender}
+              </Text>
+            </View>
+          </View>
+        </View>
+
+        {/* Doctor Information */}
+        <View className="mb-8">
+          <Text
+            as="h2"
+            className="text-xl font-semibold dark:text-white text-black mb-4"
+          >
+            Doctor Information
+          </Text>
+          <View className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+            <View>
+              <Text
+                as="span"
+                className="font-medium text-gray-700 dark:text-white"
+              >
+                Name:{" "}
+              </Text>
+              <Text as="span" className="text-muted-foreground">
+                {invoiceData?.doctor_name}
+              </Text>
+            </View>
+            <View>
+              <Text
+                as="span"
+                className="font-medium text-gray-700 dark:text-white"
+              >
+                Qualification:{" "}
+              </Text>
+              <Text as="span" className="text-muted-foreground">
+                {invoiceData?.qualification}
+              </Text>
+            </View>
+            <View>
+              <Text
+                as="span"
+                className="font-medium text-gray-700 dark:text-white"
+              >
+                Signature:
+              </Text>
+              <View className="mt-4 h-16 border-b border-gray-300"></View>
+            </View>
+          </View>
+        </View>
+
+        <View>
+          <Text
+            as="h2"
+            className="text-xl font-semibold dark:text-white text-black mb-4"
+          >
+            Bill Details
+          </Text>
+          <Table className="border border-black dark:border-white">
+            <TableHeader>
+              <TableRow>
+                <TableHead className="border border-black dark:border-white dark:text-white text-black font-semibold"></TableHead>
+                <TableHead className="border border-black dark:border-white dark:text-white text-black font-semibold">
+                  Desctiption
+                </TableHead>
+                <TableHead className="border border-black dark:border-white dark:text-white text-black font-semibold">
+                  Amount (Rs)
+                </TableHead>
+                <TableHead className="border border-black dark:border-white dark:text-white text-black font-semibold">
+                  Discount
+                </TableHead>
+                <TableHead className="border border-black dark:border-white dark:text-white text-black font-semibold">
+                  Final Amount (Rs)
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {/* {type && (
+                <TableRow>
+                  <TableCell className="border border-black dark:border-white text-muted-foreground">
+                    Enrole Fees
+                  </TableCell>
+                  <TableCell className="border border-black dark:border-white text-muted-foreground">
+                    {invoiceData?.enroll_fees}
+                  </TableCell>
+                </TableRow>
+              )} */}
+
+              {paymentDetailData?.map((data: any) => {
+                return (
+                  <TableRow key={data?.id}>
+                    <TableCell className="border border-black dark:border-white text-muted-foreground">
+                      <View
+                        className="flex items-center gap-2"
+                        onClick={() => {
+                          handleExcludeFromInvoice(
+                            data?.id,
+                            !data?.include_in_invoice
+                          );
+                        }}
+                      >
+                        {data?.include_in_invoice ? (
+                          <Button variant="danger">
+                            <X className="h-4 w-4" />
+                          </Button>
+                        ) : (
+                          <Button variant="primary">
+                            <Check className="h-4 w-4" />
+                          </Button>
+                        )}
+                      </View>
+                    </TableCell>
+
+                    <TableCell className="border border-black dark:border-white text-muted-foreground">
+                      {data?.include_in_invoice ? (
+                        <>{data?.amount_for}</>
+                      ) : (
+                        <del className="text-muted-foreground">
+                          {data?.amount_for}
+                        </del>
+                      )}
+                    </TableCell>
+                    <TableCell className="border border-black dark:border-white text-muted-foreground">
+                      {data?.include_in_invoice ? (
+                        <>{data?.amount}</>
+                      ) : (
+                        <del className="text-muted-foreground">
+                          {data?.amount}
+                        </del>
+                      )}
+                    </TableCell>
+                    <TableCell className="border border-black dark:border-white text-muted-foreground">
+                      {data?.include_in_invoice ? (
+                        <>{data?.discount_percentage || 0} %</>
+                      ) : (
+                        <del className="text-muted-foreground">
+                          {data?.discount_percentage || 0} %
+                        </del>
+                      )}
+                    </TableCell>
+                    <TableCell className="border border-black dark:border-white text-muted-foreground">
+                      {data?.include_in_invoice ? (
+                        <>{data?.discount_percentage || 0} %</>
+                      ) : (
+                        <del className="text-muted-foreground">
+                          {data?.discount_percentage || 0} %
+                        </del>
+                      )}
+                    </TableCell>
+
+                    <TableCell
+                      colSpan={4}
+                      className="border border-black dark:border-white text-sm italic text-muted-foreground"
+                    >
+                      {!data?.include_in_invoice
+                        ? "Charge excluded as the patient preferred to undergo the test externally."
+                        : ""}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+              {invoiceData?.test?.map((data: Test) => (
+                <TableRow key={data.id}>
+                  <TableCell className="border border-black dark:border-white text-muted-foreground">
+                    {data.test_name}
+                  </TableCell>
+                  <TableCell className="border border-black dark:border-white text-muted-foreground">
+                    {data.test_price + data.tax_price}
+                  </TableCell>
+                </TableRow>
+              ))}
+              <TableRow className="font-semibold bg-muted">
+                <TableCell
+                  className="border border-black dark:border-white"
+                  colSpan={5}
+                >
+                  Total
+                </TableCell>
+                <TableCell className="border border-black dark:border-white">
+                  ₹{invoiceData?.total_amount}
+                </TableCell>
+              </TableRow>
+              {/* <TableRow>
+                <TableCell
+                  colSpan={5}
+                  className="border border-black dark:border-white"
+                >
+                  {balanceAmount}
+                </TableCell>
+              </TableRow> */}
+            </TableBody>
+          </Table>
+        </View>
+        {invoiceData?.payment_type && invoiceData?.transaction_id && (
+          <View style={{ marginTop: "30px" }}>
+            <Text
+              as="h2"
+              className="text-xl font-semibold dark:text-white text-black my-4"
+            >
+              Payment Information
+            </Text>
+
+            <View className="flex justify-between items-center">
+              <View>
+                <View className="my-2">
+                  <Text
+                    as="span"
+                    className="font-medium text-gray-700 dark:text-white"
+                  >
+                    Payment Type:{" "}
+                  </Text>
+                  <Text as="span" className="text-muted-foreground">
+                    {invoiceData?.payment_type}
+                  </Text>
+                </View>
+                <View className="my-2">
+                  <Text
+                    as="span"
+                    className="font-medium text-gray-700 dark:text-white"
+                  >
+                    Transaction ID:{" "}
+                  </Text>
+                  <Text as="span" className="text-muted-foreground">
+                    {invoiceData?.transaction_id}
+                  </Text>
+                </View>
+              </View>
+              <View>
+                <hr></hr>
+                <Text
+                  as="span"
+                  className="font-medium text-gray-700 dark:text-white"
+                >
+                  Authorized Signature
+                </Text>
+              </View>
+            </View>
+          </View>
+        )}
+      </div>
+    </React.Fragment>
+  );
+};
+
+export default SectionOne;

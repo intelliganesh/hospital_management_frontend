@@ -1,0 +1,411 @@
+import React, { useEffect, useRef, useState, useCallback } from "react";
+import View from "./view";
+import Text from "./text";
+import Input from "./input";
+import Button from "./button";
+
+interface Options {
+  id: string | number;
+  label: string;
+  value: string;
+}
+
+type SelectedOption = {
+  id: string | number;
+  label: string;
+  value: string;
+};
+
+type MultiSelectWithDropDownProps = {
+  name: string;
+  label?: string;
+  options: string[] | Options[];
+  // Controlled mode props
+  value?: string | SelectedOption[]; // Current value (controlled)
+  onChange?: (value: string | SelectedOption[]) => void;
+  // Uncontrolled mode props  
+  defaultValue?: string | SelectedOption[]; // Initial value (uncontrolled)
+  defaultItems?: string; // Legacy support for comma-separated labels
+  placeholder?: string;
+  buttonText?: string;
+  onModel?: () => void;
+  error?: string;
+  useObjectFormat?: boolean; // Toggle between string and object format
+  maxHeight?: string; // Configurable dropdown height
+  disabled?: boolean; // Disable the component
+  allowCustomValues?: boolean; // Allow adding custom values not in options
+};
+
+const MultiSelectWithDropDown: React.FC<MultiSelectWithDropDownProps> = ({
+  name,
+  label,
+  options,
+  onModel,
+  onChange,
+  placeholder = "Select",
+  buttonText,
+  value, // Controlled value
+  defaultValue = "", // Uncontrolled default
+  defaultItems = "", // Legacy support
+  error,
+  useObjectFormat = false,
+  maxHeight = "12rem",
+  disabled = false,
+  allowCustomValues = true,
+}) => {
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const [inputValue, setInputValue] = useState("");
+  const [showDropdown, setShowDropdown] = useState(false);
+  
+  // Determine if this is a controlled component
+  const isControlled = value !== undefined;
+  
+  // Internal state for uncontrolled mode
+  const [internalSelectedOptions, setInternalSelectedOptions] = useState<SelectedOption[]>([]);
+  
+  // Current selected options (controlled or uncontrolled)
+  const selectedOptions = isControlled ? parseValue(value) : internalSelectedOptions;
+  
+  const [filteredOptions, setFilteredOptions] = useState<Options[]>([]);
+
+  // Helper function to parse value into SelectedOption[] format
+  function parseValue(val: string | SelectedOption[] | undefined): SelectedOption[] {
+    if (!val) return [];
+    
+    if (useObjectFormat && Array.isArray(val)) {
+      return val;
+    } else if (!useObjectFormat && typeof val === "string") {
+      const values = val.split(",").map(v => v.trim()).filter(Boolean);
+      return values.map((value, index) => ({
+        id: `parsed-${index}-${value}`,
+        label: value,
+        value,
+      }));
+    }
+    
+    return [];
+  }
+
+  // Convert string options to Options format for internal consistency
+  const normalizedOptions = React.useMemo(() => {
+    return options.map((opt, index) => {
+      if (typeof opt === "string") {
+        return { id: index, label: opt, value: opt };
+      }
+      return opt;
+    });
+  }, [options]);
+
+  // Initialize default values for uncontrolled mode only
+  useEffect(() => {
+    if (isControlled || internalSelectedOptions.length > 0) return;
+
+    let initialOptions: SelectedOption[] = [];
+
+    if (useObjectFormat && Array.isArray(defaultValue)) {
+      initialOptions = defaultValue;
+    } else if (!useObjectFormat && typeof defaultValue === "string" && defaultValue) {
+      const values = defaultValue.split(",").map((v) => v.trim()).filter(Boolean);
+      const labels = defaultItems ? 
+        defaultItems.split(",").map((l) => l.trim()).filter(Boolean) : 
+        values;
+
+      initialOptions = values.map((value, index) => ({
+        id: `default-${index}`,
+        label: labels[index] || value,
+        value,
+      }));
+    }
+
+    if (initialOptions.length > 0) {
+      setInternalSelectedOptions(initialOptions);
+    }
+  }, [defaultValue, defaultItems, useObjectFormat, isControlled]);
+
+  // Handle selection changes
+  const handleSelectionChange = useCallback((newOptions: SelectedOption[]) => {
+    // Update internal state for uncontrolled mode
+    if (!isControlled) {
+      setInternalSelectedOptions(newOptions);
+    }
+    
+    // Always notify parent of changes
+    if (onChange) {
+      const newValue = useObjectFormat 
+        ? newOptions 
+        : newOptions.map(opt => opt.value).join(",");
+      onChange(newValue);
+    }
+  }, [onChange, useObjectFormat, isControlled]);
+
+  // Filter options based on input and current selection
+  useEffect(() => {
+    const selectedValues = selectedOptions.map(opt => opt.value);
+    
+    const filtered = normalizedOptions
+      .filter((opt) => {
+        const matchesInput = opt.label.toLowerCase().includes(inputValue.toLowerCase());
+        const notSelected = !selectedValues.includes(opt.value);
+        return matchesInput && notSelected;
+      });
+
+    setFilteredOptions(filtered);
+  }, [inputValue, normalizedOptions, selectedOptions]);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        wrapperRef.current &&
+        !wrapperRef.current.contains(event.target as Node)
+      ) {
+        setShowDropdown(false);
+      }
+    };
+
+    if (showDropdown) {
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => document.removeEventListener("mousedown", handleClickOutside);
+    }
+  }, [showDropdown]);
+
+  const addOption = (option: Options) => {
+    const newOption: SelectedOption = {
+      id: option.id,
+      label: option.label,
+      value: option.value,
+    };
+
+    if (!selectedOptions.some(opt => opt.value === option.value)) {
+      const newSelection = [...selectedOptions, newOption];
+      handleSelectionChange(newSelection);
+    }
+
+    setInputValue("");
+    setShowDropdown(false);
+    inputRef.current?.focus();
+  };
+
+  const addCustomValue = (value: string) => {
+    if (!allowCustomValues || !value.trim()) return;
+
+    const customOption: SelectedOption = {
+      id: `custom-${Date.now()}`,
+      label: value.trim(),
+      value: value.trim(),
+    };
+
+    if (!selectedOptions.some(opt => opt.value === customOption.value)) {
+      const newSelection = [...selectedOptions, customOption];
+      handleSelectionChange(newSelection);
+    }
+
+    setInputValue("");
+    setShowDropdown(false);
+    inputRef.current?.focus();
+  };
+
+  const removeOption = (index: number) => {
+    const newSelection = selectedOptions.filter((_, i) => i !== index);
+    handleSelectionChange(newSelection);
+    inputRef.current?.focus();
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (disabled) return;
+
+    switch (e.key) {
+      case "Enter":
+        e.preventDefault();
+        const trimmed = inputValue.trim();
+        if (!trimmed) return;
+
+        // Try to find matching option first
+        const matchingOption = filteredOptions.find(opt => 
+          opt.label.toLowerCase() === trimmed.toLowerCase()
+        );
+
+        if (matchingOption) {
+          addOption(matchingOption);
+        } else if (allowCustomValues) {
+          addCustomValue(trimmed);
+        }
+        break;
+
+      case "Escape":
+        setShowDropdown(false);
+        setInputValue("");
+        break;
+
+      case "Backspace":
+        if (!inputValue && selectedOptions.length > 0) {
+          removeOption(selectedOptions.length - 1);
+        }
+        break;
+
+      case "ArrowDown":
+        if (!showDropdown && filteredOptions.length > 0) {
+          setShowDropdown(true);
+        }
+        break;
+    }
+  };
+
+  const handleInputFocus = () => {
+    if (!disabled) {
+      setShowDropdown(true);
+    }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!disabled) {
+      setInputValue(e.target.value);
+      setShowDropdown(true);
+    }
+  };
+
+  // Generate hidden input value for form submission
+  const hiddenInputValue = useObjectFormat 
+    ? JSON.stringify(selectedOptions)
+    : selectedOptions.map(opt => opt.value).join(",");
+
+  return (
+    <View className="w-full relative" ref={wrapperRef}>
+      {label && (
+        <label className="block mb-2 font-medium text-gray-700">
+          {label}
+        </label>
+      )}
+
+      <View className="flex items-center justify-between gap-2">
+        <View 
+          className={`
+            border rounded-lg p-2 flex flex-wrap gap-2 min-h-[48px] relative w-full
+            ${disabled ? 'bg-gray-50 cursor-not-allowed' : 'bg-white'}
+            ${error ? 'border-red-500' : 'border-gray-300'}
+            ${showDropdown && !disabled ? 'border-blue-500 ring-1 ring-blue-500' : ''}
+          `}
+        >
+          {/* Selected option tags */}
+          {selectedOptions.map((option, index) => (
+            <View
+              key={`${option.id}-${index}`}
+              className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm flex items-center gap-2 max-w-full"
+            >
+              <Text 
+                as="span" 
+                className="truncate"
+                title={option.label}
+              >
+                {option.label}
+              </Text>
+              {!disabled && (
+                <Button
+                  type="button"
+                  onClick={() => removeOption(index)}
+                  className="text-blue-600 hover:text-red-600 hover:bg-red-100 rounded-full w-4 h-4 flex items-center justify-center p-0 ml-1 transition-colors"
+                  style={{ minWidth: '16px', minHeight: '16px' }}
+                  aria-label={`Remove ${option.label}`}
+                >
+                  ×
+                </Button>
+              )}
+            </View>
+          ))}
+
+          {/* Input field */}
+          <View className="flex-grow relative min-w-[120px]">
+            <Input
+              ref={inputRef}
+              type="text"
+              value={inputValue}
+              placeholder={selectedOptions.length === 0 ? placeholder : ""}
+              onKeyDown={handleKeyDown}
+              onFocus={handleInputFocus}
+              onChange={handleInputChange}
+              disabled={disabled}
+              className={`
+                w-full focus:outline-none p-1 bg-transparent
+                ${disabled ? 'cursor-not-allowed' : ''}
+              `}
+              aria-label="Search options"
+            />
+
+            {/* Dropdown */}
+            {showDropdown && !disabled && (
+              <View
+                className="absolute z-50 top-full left-0 w-full bg-white border border-gray-300 mt-1 shadow-lg rounded-lg overflow-hidden"
+                style={{ maxHeight: maxHeight }}
+              >
+                {filteredOptions.length > 0 ? (
+                  <ul className="max-h-full overflow-y-auto">
+                    {filteredOptions.map((option) => (
+                      <li
+                        key={option.id}
+                        className="px-4 py-3 hover:bg-blue-50 cursor-pointer text-gray-900 border-b border-gray-100 last:border-b-0 transition-colors"
+                        onClick={() => addOption(option)}
+                        role="option"
+                        aria-selected="false"
+                      >
+                        <Text className="block truncate">{option.label}</Text>
+                        {option.label !== option.value && (
+                          <Text className="text-sm text-gray-500 truncate">
+                            {option.value}
+                          </Text>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <View className="px-4 py-3 text-gray-500 text-sm">
+                    {inputValue ? (
+                      allowCustomValues ? (
+                        <Text>
+                          Press Enter to add "{inputValue}"
+                        </Text>
+                      ) : (
+                        <Text>No matching options found</Text>
+                      )
+                    ) : (
+                      <Text>Start typing to search...</Text>
+                    )}
+                  </View>
+                )}
+              </View>
+            )}
+          </View>
+        </View>
+
+        {/* Optional button */}
+        {buttonText && onModel && (
+          <Button 
+            onPress={onModel}
+            disabled={disabled}
+            className={disabled ? 'opacity-50 cursor-not-allowed' : ''}
+          >
+            <Text>{buttonText}</Text>
+          </Button>
+        )}
+      </View>
+
+      {/* Hidden input for form submission */}
+      <input 
+        type="hidden" 
+        name={name} 
+        value={hiddenInputValue}
+        data-testid={`${name}-hidden-input`}
+      />
+      
+      {/* Error message */}
+      {error && (
+        <Text className="text-red-600 text-sm mt-1 block">
+          {error}
+        </Text>
+      )}
+    </View>
+  );
+};
+
+export default MultiSelectWithDropDown;

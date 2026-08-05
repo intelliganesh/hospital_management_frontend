@@ -1,0 +1,110 @@
+import { useState } from "react";
+import { MoreVertical, Pencil, Trash2 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import Button  from "@/components/button";
+import { useNavigate } from "react-router-dom";
+import { usePatient } from "@/actions/calls/patient";
+import { toast } from "@/components/ui/use-toast";
+
+interface ActionMenuProps {
+  patientId: string;
+  onActionComplete: () => void;
+}
+
+const ActionMenu = ({ patientId, onActionComplete }: ActionMenuProps) => {
+  const navigate = useNavigate();
+  const { deletePatientHandler } = usePatient();
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleEdit = () => {
+    navigate(`/patients/edit/${patientId}`);
+  };
+
+  const handleDeleteConfirm = () => {
+    setIsDeleting(true);
+    deletePatientHandler( patientId, (success:boolean) => {
+      setIsDeleting(false);
+      if (success) {
+        toast({
+          title: "Patient deleted successfully",
+          variant: "success",
+        });
+        setDeleteDialogOpen(false);
+        // Refresh the patient list
+        onActionComplete();
+      } else {
+        toast({
+          title: "Failed to delete patient",
+          description: "Please try again later",
+          variant: "destructive",
+        });
+      }
+    });
+  };
+
+  return (
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger className="focus:outline-none">
+          <MoreVertical className="h-5 w-5 text-text-light hover:text-text-DEFAULT transition-colors" />
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem onClick={handleEdit} className="cursor-pointer">
+            <Pencil className="mr-2 h-4 w-4" />
+            Edit
+          </DropdownMenuItem>
+          <DropdownMenuItem 
+            onClick={() => setDeleteDialogOpen(true)} 
+            className="cursor-pointer text-danger hover:text-danger focus:text-danger"
+          >
+            <Trash2 className="mr-2 h-4 w-4" />
+            Delete
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Confirm Deletion</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this patient? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={() => setDeleteDialogOpen(false)}
+              disabled={isDeleting}
+            >
+              Cancel
+            </Button>
+            <Button 
+              variant="danger" 
+              onClick={handleDeleteConfirm}
+              disabled={isDeleting}
+            >
+              {isDeleting ? "Deleting..." : "Delete"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+};
+
+export default ActionMenu;

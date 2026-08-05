@@ -1,0 +1,668 @@
+import React, { useEffect, useState, useCallback } from "react";
+import { useSearchParams } from "react-router-dom";
+import { usePostSurgery } from "@/actions/calls/postSurgeryFollowUp";
+
+// import { RootState } from "@/store";
+import { useSelector } from "react-redux";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Input from "@/components/input";
+import Button from "@/components/button";
+import Text from "@/components/text";
+import View from "@/components/view";
+import SingleSelector from "@/components/SingleSelector";
+import EditableTable from "@/components/EditableTable";
+import { RootState } from "@/actions/store";
+import { PostSurgeryFollowUpForm } from "@/interfaces/consultation/postSurgeryFollowUp";
+import { usePatient } from "@/actions/calls/patient";
+import { toast } from "@/utils/custom-hooks/use-toast";
+import dayjs from "dayjs";
+import { Download } from "lucide-react";
+
+interface PostSurgeryFollowUpProps {
+  patient_id?: string;
+  consultation_id?: string;
+  appointment_number?: string;
+  formMode?: boolean;
+  viewMode?: boolean;
+  onRecordsChange?: (data: any[]) => void;
+  showDownloadButton?: boolean;
+  maxRows?: number;
+  features?: {
+    allowDelete?: boolean;
+    showAPNColumn?: boolean;
+  };
+}
+const PostSurgeryFollowUp: React.FC<PostSurgeryFollowUpProps> = ({
+  patient_id = "",
+  consultation_id = "",
+  appointment_number = "",
+  formMode = false,
+  viewMode = false,
+  onRecordsChange,
+  showDownloadButton = true,
+  maxRows,
+  features,
+}) => {
+  const patientId = patient_id;
+  // const consultationId = consultation_id ? consultation_id : id;
+  // const [consultationId, setConsultationId] = useState<string | null>(
+  //   consultation_id
+  // );
+  const [consultationId] = useState<string | null>(consultation_id);
+  const [searchParams] = useSearchParams();
+
+  const [errors, setErrors] = useState({
+    post_surgery_name_error: "",
+    consultation_id_error: "",
+    date_error: "",
+  });
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const [, setIsLoading] = useState(true);
+  const [toogleForm, setToogleForm] = useState(false);
+  const [, setShowFollowUps] = useState(false);
+  const [postSurgeryId, setPostSurgeryId] = useState("");
+
+  const [postSurgeryFollowUpData, setPostSurgeryFollowUpData] =
+    useState<PostSurgeryFollowUpForm>({
+      consultation_id: "",
+      patient_id: "",
+      post_surgery_name: "",
+      date: dayjs().format("YYYY-MM-DD"),
+    });
+
+  const [data, setData] = useState<any[]>([]);
+
+  const {
+    postSurgeryListHandler,
+    addpostSurgeryHandler,
+    postSurgeryEditHandler,
+    postSurgeryDeleteHandler,
+    postSurgeryFollowUpCreationHandler,
+    postSurgeryFollowUpDetailDropdownHandler,
+    postSurgeryFollowUpDownload,
+    downloadPostSurgeryFollowUpPdfHandler,
+  } = usePostSurgery();
+
+  const { getPatientConsultationHandler } = usePatient();
+
+  const postSurgeryListData = useSelector(
+    (state: RootState) => state.postSurgery.postSurgeryListData,
+  );
+
+  const postSurgeryFollowUpDetailDropdownData = useSelector(
+    (state: RootState) =>
+      state.postSurgery.postSurgeryFollowUpDetailDropdownData,
+  );
+
+  const postSurgeryDropdownData = postSurgeryFollowUpDetailDropdownData
+    ? postSurgeryFollowUpDetailDropdownData.map((item: any) => ({
+        id: item.id,
+        label:
+          item.post_surgery_name +
+          " - " +
+          dayjs(item.date).format("MMM D, YYYY"),
+        value: item.id,
+      }))
+    : [];
+
+  // const patientConsultationData = useSelector(
+  //   (state: RootState) => state.patient.patientConsultationData
+  // ).map((item: any) => {
+  //   return {
+  //     id: item?.id,
+  //     label: item?.appointment_number,
+  //     value: item?.id,
+  //   };
+  // });
+
+  const handleFollowUpFormOpen = () => {
+    setToogleForm(!toogleForm);
+  };
+
+  const handlePostSurgeryFollowUpSubmit = () => {
+    if (patientId && postSurgeryFollowUpData?.date) {
+      // if (patientId && consultationId && postSurgeryFollowUpData?.date) {
+      setIsSubmitting(true);
+      postSurgeryFollowUpCreationHandler(
+        {
+          ...postSurgeryFollowUpData,
+          patient_id: patientId,
+          // consultation_id: consultationId,
+        },
+        (status: boolean) => {
+          if (status) {
+            setIsSubmitting(false);
+            toast({
+              title: "Success!",
+              description: "Successfully Created Post Surgery Follow-up",
+              variant: "success",
+            });
+            setToogleForm(false);
+            setShowFollowUps(true);
+            postSurgeryFollowUpDetailDropdownHandler(patientId, () => {});
+          } else {
+            setIsSubmitting(false);
+            // toast({
+            //   title: "Error",
+            //   description: "Failed to Create post surgery follow up",
+            //   variant: "destructive",
+            // });
+            setToogleForm(false);
+            setShowFollowUps(false);
+          }
+        },
+      );
+    } else {
+      setErrors({
+        ...errors,
+        post_surgery_name_error: postSurgeryFollowUpData?.post_surgery_name
+          ? ""
+          : "Surgery Name is required",
+        // consultation_id_error: consultationId ? "" : "Appointment(Consultation) is required",
+        date_error: postSurgeryFollowUpData?.date ? "" : "Date is required",
+      });
+    }
+  };
+
+  useEffect(() => {
+    postSurgeryListHandler(
+      searchParams?.get("currentPage") ?? 1,
+      () => {},
+      // searchParams.get("search") ?? null,
+      // searchParams.get("sort_by") ?? null,
+      // searchParams.get("sort_order") ?? null,
+      postSurgeryId,
+      consultationId,
+      // id,
+      [],
+      (status) => {
+        setIsLoading(
+          status === "pending"
+            ? true
+            : status === "failed"
+              ? true
+              : status === "success" && false,
+        );
+      },
+    );
+  }, [
+    // searchParams.get("search"),
+    // searchParams.get("sort_by"),
+    // searchParams.get("sort_order"),
+    postSurgeryId,
+    // id,
+    searchParams?.get("currentPage"),
+  ]);
+
+  useEffect(() => {
+    if (patientId) {
+      postSurgeryFollowUpDetailDropdownHandler(patientId, () => {});
+      getPatientConsultationHandler(patientId, () => {});
+    }
+  }, [patientId]);
+
+  useEffect(() => {
+    if (postSurgeryListData?.data) {
+      let updatedData = [...postSurgeryListData.data];
+
+      // Standalone mode: Always ensure an empty row at the bottom for new entries
+      if (!formMode && !viewMode) {
+        const dummyRow = {
+          id: "",
+          appointment_number: appointment_number || "",
+          date: dayjs().format("YYYY-MM-DD"),
+          ks_changed: "",
+          dressing: "",
+          partial_lay_open: "",
+          follow_up_examination: "",
+          // new_abscess_i_or_d: "",
+          new_abscess_threading: "",
+          // new_tract_primary_threading: "",
+          cut_through: "",
+          // cut_through_or_any_other: "",
+        };
+        updatedData.push(dummyRow);
+      }
+
+      setData(updatedData);
+    } else {
+      // If no data, but in standalone mode, still show one empty row
+      if (!formMode && !viewMode && postSurgeryId) {
+        setData([
+          {
+            id: "",
+            appointment_number: appointment_number || "",
+            date: dayjs().format("YYYY-MM-DD"),
+          },
+        ]);
+      } else {
+        console.log("No data");
+        setData([]);
+      }
+    }
+  }, [
+    postSurgeryListData,
+    formMode,
+    viewMode,
+    postSurgeryId,
+    appointment_number,
+  ]);
+
+  // const tableHeaders = [
+  //   { label: "ID", key: "id" },
+  //   { label: "Appointment Number", key: "appointment_number"},
+  //   { label: "Date", key: "date" },
+  //   { label: "KS Changed", key: "ks_changed" },
+  //   { label: "Dressing", key: "dressing" },
+  //   { label: "Partial Lay Open", key: "partial_lay_open" },
+  //   { label: "Follow-up Examination", key: "follow_up_examination" },
+  //   { label: "New Abscess I&D", key: "new_abscess_i_or_d" },
+  //   {
+  //     label: "New Tract Primary Threading",
+  //     key: "new_tract_primary_threading",
+  //   },
+  //   { label: "Cut Through or Any Other", key: "cut_through_or_any_other" },
+  // ];
+
+  const tableHeaders = [
+    { label: "ID", key: "id" },
+    { label: "Appointment Number", key: "appointment_number" },
+    { label: "Date", key: "date" },
+    { label: "KS Changed", key: "ks_changed" },
+    { label: "Dressing", key: "dressing" },
+    { label: "Partial Lay Open", key: "partial_lay_open" },
+    { label: "Follow-up Examination", key: "follow_up_examination" },
+    { label: "New Abscess I&D", key: "new_abscess_threading" },
+    // {
+    //   label: "New Tract Primary Threading",
+    //   key: "new_abscess_threading",
+    // },
+    { label: "Cut Through or Any Other", key: "cut_through" },
+  ];
+  const handleCellEdit = useCallback(
+    (rowIndex: number, colIndex: number, value: any) => {
+      const key = tableHeaders[colIndex].key;
+      setData((prev) => {
+        const newData = [...prev];
+        newData[rowIndex] = {
+          ...newData[rowIndex],
+          [key]: value,
+          post_surgery_details_id: postSurgeryId,
+        };
+
+        if (formMode && onRecordsChange) {
+          onRecordsChange(newData);
+        }
+
+        return newData;
+      });
+    },
+    [tableHeaders, formMode, onRecordsChange, postSurgeryId],
+  );
+
+  const handleRowAdd = useCallback(
+    (newRow: any[]) => {
+      const newObj: Record<string, any> = {};
+      newObj["id"] = "";
+
+      const uiHeaders = tableHeaders.filter((h) => h.key !== "id");
+
+      uiHeaders.forEach((header, index) => {
+        let value = newRow[index] || "";
+
+        if (!value) {
+          if (header.key === "appointment_number") {
+            value = appointment_number || "";
+          } else if (header.key === "date") {
+            value = dayjs().format("YYYY-MM-DD");
+          }
+        }
+
+        newObj[header.key] = value;
+      });
+
+      if (patient_id) newObj["patient_id"] = patient_id;
+      if (consultation_id) newObj["consultation_id"] = consultation_id;
+      if (postSurgeryId) newObj["post_surgery_details_id"] = postSurgeryId;
+
+      setData((prev) => {
+        const newData = [...prev, newObj];
+        if (formMode && onRecordsChange) {
+          onRecordsChange(newData);
+        }
+        return newData;
+      });
+    },
+    [
+      tableHeaders,
+      appointment_number,
+      patient_id,
+      consultation_id,
+      formMode,
+      onRecordsChange,
+      postSurgeryId,
+    ],
+  );
+
+  const handleRowDelete = useCallback(
+    (rowIndex: number) => {
+      if (formMode) {
+        setData((prev) => {
+          const newData = prev.filter((_, index) => index !== rowIndex);
+          if (onRecordsChange) {
+            onRecordsChange(newData);
+          }
+          return newData;
+        });
+        return;
+      }
+
+      postSurgeryDeleteHandler(data[rowIndex]?.id, (status: boolean) => {
+        if (status) {
+          postSurgeryListHandler(
+            searchParams?.get("currentPage") ?? 1,
+            (status: boolean) => {
+              if (!status) return;
+              setData((prev) => prev.filter((_, index) => index !== rowIndex));
+            },
+            postSurgeryId,
+            consultationId,
+            [],
+            (status) => {
+              setIsLoading(
+                status === "pending"
+                  ? true
+                  : status === "failed"
+                    ? true
+                    : status === "success" && false,
+              );
+            },
+          );
+        }
+      });
+    },
+    [
+      formMode,
+      data,
+      postSurgeryDeleteHandler,
+      postSurgeryListHandler,
+      searchParams,
+      postSurgeryId,
+      onRecordsChange,
+    ],
+  );
+
+  const handlePostSurgeryFollowUpNameChange = (postSurgeryId: string) => {
+    setPostSurgeryId(postSurgeryId);
+    // setSearchParams(
+    //   (prev) => ({
+    //     ...prev,
+    //     post_surgery_id: postSurgeryId,
+    //     consultation_id: id,
+    //   })
+    // );
+    postSurgeryListHandler(
+      searchParams?.get("currentPage") ?? 1,
+      () => {},
+      // searchParams.get("search") ?? null,
+      // searchParams.get("sort_by") ?? null,
+      // searchParams.get("sort_order") ?? null,
+      // searchParams.get("post_surgery_id") ?? null,
+      // searchParams.get("consultation_id") ?? null,
+      postSurgeryId,
+      consultationId,
+      // id,
+      [],
+      (status) => {
+        setIsLoading(
+          status === "pending"
+            ? true
+            : status === "failed"
+              ? true
+              : status === "success" && false,
+        );
+      },
+    );
+  };
+  return (
+    <>
+      <View className="mt-6 ">
+        <Text as="h3" className="text-lg font-semibold">
+          Surgery
+        </Text>
+      </View>
+
+      <View className="flex justify-between items-center">
+        <View className=" flex items-center gap-2">
+          <SingleSelector
+            // name="post_surgery_name"
+            placeholder="Select Surgery"
+            value={postSurgeryId || ""}
+            onChange={handlePostSurgeryFollowUpNameChange}
+            options={postSurgeryDropdownData}
+          />
+
+          {!viewMode && (
+            <>
+              <Text weight="font-bold" className="text-xl text-text-light">
+                /
+              </Text>
+
+              <Button
+                onClick={handleFollowUpFormOpen}
+                variant="primary"
+                className="h-full"
+              >
+                Create Post Surgery Follow-up
+              </Button>
+            </>
+          )}
+        </View>
+        {postSurgeryId && showDownloadButton && (
+          <View className="flex items-center gap-2">
+            <Button
+              onClick={() =>
+                postSurgeryFollowUpDownload(postSurgeryId, () => {})
+              }
+              variant="outline"
+              className="h-full flex items-center gap-2"
+            >
+              <Download size={16} />
+              Download Follow-up's
+            </Button>
+            <Button
+              onClick={() =>
+                downloadPostSurgeryFollowUpPdfHandler(postSurgeryId, () => {})
+              }
+              variant="outline"
+              className="h-full flex items-center gap-2"
+            >
+              <Download size={16} />
+              Download Follow-up's as PDF
+            </Button>
+          </View>
+        )}
+      </View>
+
+      {toogleForm ? (
+        <Card className="mt-6">
+          <CardContent>
+            <View className="pt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Input
+                label="Name"
+                value={postSurgeryFollowUpData?.post_surgery_name || ""}
+                onChange={(e) =>
+                  setPostSurgeryFollowUpData({
+                    ...postSurgeryFollowUpData,
+                    post_surgery_name: e.target.value,
+                  })
+                }
+                error={errors?.post_surgery_name_error || ""}
+                required
+              />
+              {/* {patient_id && !consultation_id && (
+                <SingleSelector
+                  //  name="consultation_id"
+                  label="Appointment Number"
+                  placeholder="Select Consultation"
+                  value={consultationId || ""}
+                  onChange={(e) => {
+                    setConsultationId(e);
+                  }}
+                  options={patientConsultationData}
+                  error={errors?.consultation_id_error || ""}
+                  required
+                />
+              )} */}
+              <Input
+                type="date"
+                label="Date"
+                // value={
+                //   postSurgeryFollowUpData?.date || dayjs().format("YYYY-MM-DD")
+                // }
+                value={
+                  postSurgeryFollowUpData?.date
+                    ? dayjs(postSurgeryFollowUpData?.date)?.format("YYYY-MM-DD")
+                    : dayjs().format("YYYY-MM-DD")
+                }
+                onChange={(e) =>
+                  setPostSurgeryFollowUpData({
+                    ...postSurgeryFollowUpData,
+                    date: dayjs(e.target.value).format("YYYY-MM-DD"),
+                  })
+                }
+                error={errors?.date_error || ""}
+                required
+              />
+            </View>
+            <View className="mt-6 flex justify-end">
+              <Button onClick={handlePostSurgeryFollowUpSubmit}>
+                {isSubmitting ? "Creating..." : "Create"}
+              </Button>
+            </View>
+          </CardContent>
+        </Card>
+      ) : null}
+
+      {/* {
+                 showFollowUps && ( */}
+      <Card className="mt-8">
+        <CardHeader>
+          <CardTitle className={`${!postSurgeryId ? "mb-6" : ""}`}>
+            Post Surgery Follow-up's
+          </CardTitle>
+          {!postSurgeryId && (
+            <View className="text-center mt-6">
+              <Text className="text-lg font-semibold text-text-light">
+                Select surgery to see follow ups
+              </Text>
+            </View>
+          )}
+        </CardHeader>
+        <CardContent>
+          {postSurgeryId && (
+            <EditableTable
+              emptyMessage="No records found"
+              tableHeaders={tableHeaders.map((h) => h.label ?? "")}
+              tableData={data.map((row) =>
+                tableHeaders.map((h) => row[h.key as keyof typeof row]),
+              )}
+              onCellEdit={handleCellEdit}
+              onRowAdd={handleRowAdd}
+              maxRows={maxRows}
+              onRowDelete={handleRowDelete}
+              editable={!viewMode}
+              addRowEnabled={formMode && !viewMode}
+              deleteRowEnabled={!viewMode}
+              editMode="always"
+              showRowSave={!formMode}
+              showRowDelete={(row) => !!row[0]} // row[0] is the ID column
+              isReadOnly={viewMode}
+              features={features}
+              onSubmitCompleteRow={(data: any) => {
+                // Only call API in standalone mode
+                if (formMode) return;
+
+                const result = tableHeaders.reduce(
+                  (acc, h, index) => {
+                    acc[h.key] = data[index];
+                    return acc;
+                  },
+                  {} as Record<string, any>,
+                );
+                const rowId = result.id;
+                delete result.id;
+                if (patientId) {
+                  if (rowId) {
+                    postSurgeryEditHandler(
+                      rowId,
+                      // { ...result, consultation_id: id, post_surgery_details_id: postSurgeryId },
+                      { ...result, post_surgery_details_id: postSurgeryId },
+                      (status: boolean) => {
+                        if (status) {
+                          postSurgeryListHandler(
+                            searchParams?.get("currentPage") ?? 1,
+                            () => {},
+                            // searchParams.get("search") ?? null,
+                            // searchParams.get("sort_by") ?? null,
+                            // searchParams.get("sort_order") ?? null,
+                            postSurgeryId,
+                            consultationId,
+                            // id,
+                            [],
+                            (status) => {
+                              setIsLoading(
+                                status === "pending"
+                                  ? true
+                                  : status === "failed"
+                                    ? true
+                                    : status === "success" && false,
+                              );
+                            },
+                          );
+                        }
+                      },
+                    );
+                  } else {
+                    addpostSurgeryHandler(
+                      // { ...result, consultation_id: id, post_surgery_details_id: postSurgeryId },
+                      { ...result, post_surgery_details_id: postSurgeryId },
+                      (status: boolean) => {
+                        if (status) {
+                          postSurgeryListHandler(
+                            searchParams?.get("currentPage") ?? 1,
+                            () => {},
+                            // searchParams.get("search") ?? null,
+                            // searchParams.get("sort_by") ?? null,
+                            // searchParams.get("sort_order") ?? null,
+                            postSurgeryId,
+                            consultationId,
+                            // id,
+                            [],
+                            (status) => {
+                              setIsLoading(
+                                status === "pending"
+                                  ? true
+                                  : status === "failed"
+                                    ? true
+                                    : status === "success" && false,
+                              );
+                            },
+                          );
+                        }
+                      },
+                    );
+                  }
+                }
+              }}
+            />
+          )}
+        </CardContent>
+      </Card>
+    </>
+  );
+};
+
+export default PostSurgeryFollowUp;

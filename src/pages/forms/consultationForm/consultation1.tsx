@@ -1,0 +1,911 @@
+import Button from "@/components/button";
+import Text from "@/components/text";
+import View from "@/components/view";
+import { useNavigate, useParams } from "react-router-dom";
+import { Consultation } from "@/interfaces/consultation";
+import validationForm from "./validationForm";
+import { FormTypeProps } from "@/interfaces/dashboard";
+import { useConsultation } from "@/actions/calls/consultation";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  clearConsultationAmount,
+  clearConsultationDetailSlice,
+} from "@/actions/slices/consultation";
+import { toast } from "@/utils/custom-hooks/use-toast";
+import Modal from "@/components/Modal";
+import MedicinesForm from "../medicinesForm/medicines";
+// import { Card, CardContent } from "@/components/ui/card";
+// import ProctologyExaminationSection from "./ProptologySections/ProctologyExaminationSection";
+// import PostExaminationSection from "./ProptologySections/postExaminationSection";
+// import NonProctologyExaminationSection from "./Non-proptologySections/Non-proctologyExaminationSection";
+// import SectionFour from "./SectionFour";
+import useForm from "@/utils/custom-hooks/use-form";
+import Input from "@/components/input";
+import { imageUpload } from "@/actions/calls/uesImage";
+import { RootState } from "@/actions/store";
+import React, { useEffect, useRef, useState } from "react";
+// import ProctologyNewSection from "./ProptologySections/proctologyNewSection";
+
+// sections import
+import NewSectionOne from "./Sections/SectionOne";
+import NewSectionTwo from "./Sections/SectionTwo";
+import NewSectionThree from "./Sections/SectionThree";
+import NewSectionFour from "./Sections/SectionFour";
+import NewSectionFive from "./Sections/SectionFive";
+import NewSectionSix from "./Sections/SectionSix";
+import NewSectionSeven from "./Sections/SectionSeven";
+import NewSectionEight from "./Sections/SectionEight";
+// import WebcamCapture, { Capture } from "@/components/Capture";
+// import Switch from "@/components/ui/switch";
+import dayjs from "dayjs";
+import ConsultationModels from "./consultationModels";
+import Checkbox from "@/components/CheckBox";
+import { LoadingStatus } from "@/interfaces";
+import BouncingLoader from "@/components/BouncingLoader";
+import {
+  clearDiscountPercentSlice,
+  clearTotalServiceCostSlice,
+} from "@/actions/slices/serviceCost";
+
+const ConsultationForm: React.FC<FormTypeProps> = ({ formType = "add" }) => {
+  const { id } = useParams();
+
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const [isLoading, setIsLoading] = useState(true);
+  const position = "o'clock";
+  const angle = "degree";
+  const {
+    consultationEditHandler,
+    // addConsultationHandler,
+    consultationDetailHandler,
+    cleanUp,
+  } = useConsultation();
+
+  useEffect(() => {
+    if (formType === "edit" && id) {
+      consultationDetailHandler(
+        id,
+        () => {},
+        [],
+        (status: LoadingStatus) => {
+          setIsLoading(
+            status === "pending"
+              ? true
+              : status === "failed"
+              ? true
+              : status === "success" && false
+          );
+        }
+      );
+    }
+    return () => {
+      cleanUp();
+      dispatch(clearConsultationAmount());
+      dispatch(clearDiscountPercentSlice());
+      dispatch(clearTotalServiceCostSlice());
+      dispatch(clearConsultationDetailSlice());
+    };
+  }, [id, formType]);
+
+  const consultationData = useSelector(
+    (state: any) => state?.consultation?.consultationDetailData
+  );
+
+  // const [image, setImage] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [, setDocUpload] = useState<File[] | null>(null);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [medicinePopup, setMedicinePopup] = useState<boolean>(false);
+  const [activeSection, setActiveSection] = useState<string | null>(
+    "patientDetails"
+  );
+
+  // Section references
+  const patientDetailsRef = useRef(null);
+  const medicalHistoryRef = useRef(null);
+  const examinationRef = useRef(null);
+  const fistulaRef = useRef(null);
+  const managementsRef = useRef(null);
+  const treatmentPlanRef = useRef(null);
+  const documentsRef = useRef(null);
+  const consultationBillingRef = useRef(null);
+
+  // const dynamicFieldSections = useSelector(
+  //   (state: any) => state?.dynamicFieldSections?.billingDetails
+  // );
+
+  //  console.log("dynamicFieldSections", consultationData?.consultations?.appointment_id);
+
+  // Add useForm hook to capture medicines and other data set via onSetHandler
+  const { values: formValues, onSetHandler } = useForm<Consultation | null>(
+    consultationData?.consultations
+  );
+
+  const medicineDropdownData = useSelector(
+    (state: RootState) => state?.medicines?.medicineDropdownData
+  );
+
+  // const proctologyData = useSelector(
+  //   (state: any) =>
+  //     state?.consultation?.consultationDetailData?.proctologyOrNonProctology
+  // );
+
+  const [, setFormData] = useState({
+    examination_type: consultationData?.consultations?.type || "Proctology",
+  });
+
+  useEffect(() => {
+    setFormData((prev) => {
+      return {
+        ...prev,
+        examination_type: consultationData?.consultations?.type || "Proctology",
+      };
+    });
+  }, [consultationData?.consultations?.type]);
+
+  // Function to handle smooth scrolling to sections
+  const scrollToSection = (ref: any) => {
+    ref.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+    setActiveSection(ref.current.id);
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    let consultationFormObj: Partial<Consultation> = {};
+    try {
+      let medicines: string = "";
+      // First, get data from FormData (form inputs)
+      for (let [key, value] of formData.entries()) {
+        // if(key === "co_morbidities_data"){
+        //   value = JSON.parse(value as string);
+        // }
+        if (key === "temperature") {
+          const dateValue = value as string;
+          if (dateValue) {
+            value =
+              dateValue.split(" ")[0] + " " + formData?.get("temperature_unit");
+          }
+        }
+        if (key === "bp") {
+          const dateValue = value as string;
+          if (dateValue) {
+            value = dateValue;
+          }
+        }
+        if (key === "pulse") {
+          const dateValue = value as string;
+          if (dateValue) {
+            value = dateValue;
+          }
+        }
+        if (key === "doc_upload" && value instanceof File) {
+          // const file = value as File;
+          // if (file.size === 0 || file.name === "") {
+          //   continue;
+          // }
+          // validDocFiles.push(file);
+          continue;
+        }
+        if (key === "medicines") {
+          if (medicines) medicines += ",";
+          const price = medicineDropdownData.find(
+            (item: any) => item.medicine_name === value
+          )?.unit_price;
+          medicines += (value + "#" + price) as string;
+        }
+        if (key === "dosage") {
+          medicines += ("#" + value) as string;
+        }
+        if (key === "timing") {
+          medicines += ("#" + value) as string;
+        }
+        if (key === "take_with") {
+          medicines += ("#" + value) as string;
+        }
+        if (key === "medicine_days") {
+          medicines += ("#" + value) as string;
+        }
+        if (formData.get("advice_admition") === "on") {
+          (consultationFormObj as any)["advice_admition"] = true;
+        } else {
+          (consultationFormObj as any)["advice_admition"] = false;
+        }
+        if (
+          key === "dre_induration_at" ||
+          key === "proctoscopy_secondary_position" ||
+          key === "proctoscopy_anal_polyp_at"
+        ) {
+          value = value ? value + " " + position : "";
+        }
+        if (key === "posterior_fistulous_angle") {
+          value = value ? value + " " + angle : "";
+        }
+
+        // if (key.includes("description_") || key.includes("is_chronic_")) {
+        //   continue;
+        // }
+
+        // if (key !== "doc_upload") {
+        consultationFormObj[key as keyof Consultation] = value as any;
+      }
+
+      // Then, merge with useForm values (medicines, doc_upload, etc.)
+      // return;
+      if (formValues) {
+        // console.log("formValues___2", formValues);
+        consultationFormObj = {
+          ...formValues,
+          ...consultationFormObj,
+          amount: Number(consultationFormObj?.amount),
+
+          // complaint: "hi",
+          // test_in_same_hospital: !!consultationFormObj?.test_in_same_hospital,
+          // doctor_id: consultationData?.consultations?.doctor_id,
+          // patient_id: consultationData?.consultations?.patient_id,
+          // // appointment_id: consultationData?.consultations?.appointment_id,
+          // appointment_id: "chetan"
+        };
+
+        consultationFormObj = {
+          ...consultationFormObj,
+          // ...formValues,
+          medicines: medicines,
+          // complaint: consultationData?.consultations?.complaint || "",
+          amount: Number(consultationFormObj?.amount),
+          test_in_same_hospital: !!consultationFormObj?.test_in_same_hospital,
+          doctor_id: consultationData?.consultations?.doctor_id,
+          patient_id: consultationData?.consultations?.patient_id,
+          appointment_id: consultationData?.consultations?.appointment_id,
+          // appointment_id: "chetan"
+        };
+      }
+
+      // consultationFormObj["medicines"] = medicines;
+      // Handle doc_upload with separated URLs and Files
+      const formValuesAny = formValues as any;
+      if (formValuesAny?.existing_file_urls || formValuesAny?.new_files) {
+        const existingUrls = formValuesAny?.existing_file_urls
+          ? formValuesAny?.existing_file_urls
+              ?.split(",")
+              ?.filter((url: string) => url?.trim())
+          : [];
+        const newFiles = formValuesAny?.new_files || [];
+
+        // Include both existing URLs and new Files in doc_upload
+        // const combinedFiles = [...existingUrls, ...newFiles];
+        const combinedFiles = [...existingUrls, ...newFiles].filter(
+          (item) =>
+            typeof item === "string" || (item instanceof File && item.name)
+        );
+        (consultationFormObj as any)["doc_upload"] = combinedFiles;
+
+        // Set docUpload state for file upload
+        // const actualFiles = newFiles.filter((file: any) => file instanceof File);
+        // setDocUpload(actualFiles);
+        setDocUpload(combinedFiles);
+      } else if (formValues?.doc_upload) {
+        // Fallback to original method
+        consultationFormObj["doc_upload"] = formValues.doc_upload;
+        setDocUpload(
+          Array.isArray(formValues.doc_upload)
+            ? formValues.doc_upload.filter((item: any) => item instanceof File)
+            : []
+        );
+      }
+      // return;
+
+      // delete consultationFormObj["co_morbidities"];
+      delete consultationFormObj["temperature_unit"];
+      delete consultationFormObj["doc_upload"];
+      delete consultationFormObj["dosage"];
+      delete consultationFormObj["timing"];
+      delete consultationFormObj["take_with"];
+      delete consultationFormObj["existing_file_urls"];
+      delete consultationFormObj["new_files"];
+
+      // console.log("consultationFormObj", consultationFormObj);
+      // return;
+
+      await validationForm.validate(consultationFormObj, { abortEarly: false });
+      setErrors({});
+      setIsSubmitting(true);
+
+      // if (id) {
+      //   consultationEditHandler(
+      //     id,
+      //     consultationFormObj,
+      //     (success: boolean, response: any) => {
+      //       setIsSubmitting(false);
+      //       if (success && response?.data?.id) {
+      //         if (docUpload && typeof docUpload !== "string") {
+
+      // if (formType === "add") {
+      //   addConsultationHandler(consultationFormObj, (success: boolean, response: any) => {
+      //     if (success && response?.data?.id) {
+      //       if(docUpload && typeof docUpload !== "string") {
+      //           // console.log("docUpload", docUpload);
+
+      //           console.log(response?.data?.id, "Response Id");
+      //           console.log(docUpload, "Files");
+
+      //       }
+      //       // navigate(-1);
+      //       toast({
+      //         title: "Success!",
+      //         description: "Consultation Added successfully.",
+      //         variant: "success",
+      //       });
+      //     } else {
+      //       setIsSubmitting(false);
+      //       toast({
+      //         title: "Error!",
+      //         description: "Failed to add Consultation",
+      //         variant: "destructive",
+      //       });
+      //     }
+      //   });
+      // } else
+      if (id && typeof id === "string") {
+        consultationEditHandler(
+          id,
+          consultationFormObj,
+          (success: boolean, response: any) => {
+            if (success && response?.data?.id) {
+              if (formValues?.doc_upload) {
+                // docUpload.forEach((file: File | string |null) => {
+                //   console.log("file", file);
+
+                //     const imageUploaddata = {
+                //               id: response?.data?.id,
+                //               modal_type: "proctology",
+                //               file_name: "doc_upload",
+                //               folder_name: "consultation_image",
+                //               image: file,
+                //             };
+                //             imageUpload(imageUploaddata, (uploadSuccess, _) => {
+                //               if (!uploadSuccess) {
+                //                 toast({
+                //                   title: "Error!",
+                //                   description: "Failed to upload documents",
+                //                   variant: "destructive",
+                //                 });
+                //               }
+                //             });
+                // });
+
+                const imageUploaddata = {
+                  id: response?.data?.id,
+                  modal_type:
+                    consultationData?.consultations?.type === "Proctology"
+                      ? "proctology"
+                      : consultationData?.consultations?.type ===
+                        "Non Proctology"
+                      ? "non_proctology"
+                      : "allopathy",
+                  file_name: "doc_upload",
+                  folder_name:
+                    consultationData?.consultations?.type === "Proctology"
+                      ? "proctology_image"
+                      : consultationData?.consultations?.type ===
+                        "Non Proctology"
+                      ? "non_proctology_image"
+                      : "allopathy_image",
+                  image: formValues?.doc_upload?.map((data) => {
+                    if (data instanceof File) {
+                      return data;
+                    }
+                  }),
+                  oldImage: formValues?.doc_upload
+                    ? formValues?.doc_upload?.filter((data) => {
+                        return typeof data === "string";
+                      })
+                    : [],
+                };
+                imageUpload(imageUploaddata, (uploadSuccess, _) => {
+                  if (!uploadSuccess) {
+                    toast({
+                      title: "Error!",
+                      description: "Failed to upload documents",
+                      variant: "destructive",
+                    });
+                  }
+                });
+              }
+              navigate(-1);
+              toast({
+                title: "Success!",
+                description: "Consultation Updated successfully.",
+                variant: "success",
+              });
+            } else {
+              setIsSubmitting(false);
+              toast({
+                title: "Error!",
+                description: "Failed to update Consultation",
+                variant: "destructive",
+              });
+            }
+          }
+        );
+      }
+    } catch (error: any) {
+      console.error("Validation Error:", error, errors);
+      setIsSubmitting(false);
+      if (error.inner) {
+        const validationErrors: Record<string, string> = {};
+        error.inner.forEach((e: any) => {
+          validationErrors[e.path] = e.message;
+        });
+        setErrors(validationErrors);
+      }
+    }
+  };
+
+  // const button = {
+  //   Proctology: (
+  //     <Button
+  //       type="button"
+  //       variant={
+  //         formData.examination_type === "Proctology" ? "primary" : "outline"
+  //       }
+  //       style={{
+  //         width: "100%",
+  //       }}
+  //       onClick={() => {
+  //         setFormData({
+  //           ...formData,
+  //           examination_type: "Proctology",
+  //         });
+  //         // onSetHandler("type", "Proctology");
+  //       }}
+  //     >
+  //       Proctology
+  //     </Button>
+  //   ),
+  //   "Non Proctology": (
+  //     <Button
+  //       style={{
+  //         width: "100%",
+  //       }}
+  //       variant={
+  //         formData.examination_type === "Non Proctology" ? "primary" : "outline"
+  //       }
+  //       onClick={() => {
+  //         setFormData({
+  //           ...formData,
+  //           examination_type: "Non Proctology",
+  //         });
+  //         // onSetHandler("type", "Non Proctology");
+  //       }}
+  //     >
+  //       Non Proctology
+  //     </Button>
+  //   ),
+  // };
+
+  return (
+    <View className="min-h-screen dark:bg-background flex flex-col  items-center p-4">
+      <View className="fixed top-4 left-0  w-full z-50">
+        <BouncingLoader isLoading={isLoading} />
+      </View>
+      <ConsultationModels>
+        <View className="bg-white border border-border dark:bg-card rounded-lg shadow-card dark:border-none w-full max-w-8xl p-6 md:p-8 mb-8">
+          <View className=" flex items-center justify-between">
+            <Text
+              as="h2"
+              weight="font-bold"
+              className="text-2xl font-bold text-center text-primary mb-2"
+            >
+              Consultation Form
+            </Text>
+
+            <Button onPress={() => navigate(-1)} variant="outline">
+              Back to Home
+            </Button>
+          </View>
+          <Text as="p" className="text-text-light text-left mb-6">
+            {/* {formType === "add" && "Fill in the details to create a new account"} */}
+            Fill in the details to create a Consultation
+          </Text>
+          {medicinePopup ? (
+            <Modal
+              size="full"
+              showCloseButton
+              title="Add Medicines"
+              isOpen={medicinePopup}
+              onClose={() => setMedicinePopup(false)}
+            >
+              <MedicinesForm />
+            </Modal>
+          ) : (
+            <React.Fragment>
+              <form onSubmit={handleSubmit}>
+                <View className="mb-8 border border-border rounded-lg p-2 sticky top-0 bg-background z-50 shadow-lg">
+                  <Button
+                    variant={`${
+                      activeSection === "patientDetails" ? "primary" : "ghost"
+                    }`}
+                    size="small"
+                    onClick={() => scrollToSection(patientDetailsRef)}
+                  >
+                    Patient & Appointment Details
+                  </Button>
+                  <Button
+                    variant={`${
+                      activeSection === "medicalHistory" ? "primary" : "ghost"
+                    }`}
+                    size="small"
+                    onClick={() => scrollToSection(medicalHistoryRef)}
+                  >
+                    Medical History
+                  </Button>
+                  <Button
+                    variant={`${
+                      activeSection === "examination" ? "primary" : "ghost"
+                    }`}
+                    size="small"
+                    onClick={() => scrollToSection(examinationRef)}
+                  >
+                    Examination & Diagnosis
+                  </Button>
+                  <Button
+                    variant={`${
+                      activeSection === "fistula" ? "primary" : "ghost"
+                    }`}
+                    size="small"
+                    onClick={() => scrollToSection(fistulaRef)}
+                  >
+                    Fistula
+                  </Button>
+                  <Button
+                    variant={`${
+                      activeSection === "managements" ? "primary" : "ghost"
+                    }`}
+                    size="small"
+                    onClick={() => scrollToSection(managementsRef)}
+                  >
+                    Managements
+                  </Button>
+                  <Button
+                    variant={`${
+                      activeSection === "treatmentPlan" ? "primary" : "ghost"
+                    }`}
+                    size="small"
+                    onClick={() => scrollToSection(treatmentPlanRef)}
+                  >
+                    Treatment Plan
+                  </Button>
+                  {/* <Link to="#addmission">
+                    <Button variant="outline" size="small">Admission & Follow-up</Button>
+                  </Link> */}
+                  <Button
+                    variant={`${
+                      activeSection === "documents" ? "primary" : "ghost"
+                    }`}
+                    size="small"
+                    onClick={() => scrollToSection(documentsRef)}
+                  >
+                    Documents
+                  </Button>
+                  <Button
+                    variant={`${
+                      activeSection === "consultationBilling"
+                        ? "primary"
+                        : "ghost"
+                    }`}
+                    size="small"
+                    onClick={() => scrollToSection(consultationBillingRef)}
+                  >
+                    Consultation & Billing
+                  </Button>
+                </View>
+                <View
+                  className="space-y-4"
+                  id="patientDetails"
+                  ref={patientDetailsRef}
+                >
+                  <Text
+                    as="h3"
+                    className="text-lg border-b pb-2 mb-4 text-text-DEFAULT"
+                    weight="font-bold"
+                  >
+                    {/* Consultation Details */}
+                    Patient & Appointment Details
+                  </Text>
+                  {/* <SectionOne
+                errorsDoctorId={errors.doctor_id}
+                errorsPatientId={errors.patient_id}
+                errorsComplaint={errors.complaint ?? ""}
+                errorsAppointmentId={errors.appointment_id}
+              /> */}
+                  <NewSectionOne />
+                </View>
+                <View
+                  className="space-y-4 mt-8"
+                  id="medicalHistory"
+                  ref={medicalHistoryRef}
+                >
+                  <Text
+                    as="h3"
+                    className="text-lg border-b pb-2 mb-4 text-text-DEFAULT"
+                    weight="font-bold"
+                  >
+                    Medical History
+                  </Text>
+                  <NewSectionTwo mainOnSetHandler={onSetHandler} autoOpen />
+                </View>
+
+                <View
+                  className="space-y-4 mt-8"
+                  id="examination"
+                  ref={examinationRef}
+                >
+                  <Text
+                    as="h3"
+                    className="text-lg border-b pb-2 mb-4 text-text-DEFAULT"
+                    weight="font-bold"
+                  >
+                    {/* Primary Medical Vitals Examination */}
+                    Examination & Diagnosis
+                  </Text>
+                  {/* <SectionTwo
+                errorsTemperature={errors.temperature}
+                errorsBp={errors.bp}
+                errorsPulse={errors.pulse}
+                errorsCvs={errors.cvs}
+                errorsRs={errors.rs}
+                errorsTest={errors.test_id}
+                mainOnSetHandler={onSetHandler}
+              /> */}
+                  <NewSectionThree
+                    errorsTemperature={errors.temperature}
+                    errorsBp={errors.bp}
+                    errorsPulse={errors.pulse}
+                    errorsCvs={errors.cvs}
+                    errorsRs={errors.rs}
+                    errorsTest={errors.test_id}
+                    mainOnSetHandler={onSetHandler}
+                    autoOpen
+                  />
+                </View>
+                <View className="space-y-4 mt-8" id="fistula" ref={fistulaRef}>
+                  <NewSectionSeven
+                    errorFistulaRecurrenceCount={
+                      errors.fistula_recurrence_surgery_count
+                    }
+                  />
+                </View>
+
+                <View
+                  className="space-y-4 mt-8"
+                  id="managements"
+                  ref={managementsRef}
+                >
+                  <NewSectionEight />
+                </View>
+
+                <View
+                  className="space-y-4 mt-8"
+                  id="treatmentPlan"
+                  ref={treatmentPlanRef}
+                >
+                  <Text
+                    as="h3"
+                    className="text-lg border-b pb-2 mb-4 text-text-DEFAULT"
+                    weight="font-bold"
+                  >
+                    Treatment Plan
+                  </Text>
+                  <NewSectionFour
+                    // postExaminationData={proctologyData}
+                    mainOnSetHandler={onSetHandler}
+                    autoOpen
+                  />
+                </View>
+
+                {/* <View className="space-y-4 mt-8">
+              <Text
+                as="h3"
+                className="text-lg border-b pb-2 mb-4 text-text-DEFAULT"
+                weight="font-bold"
+              >
+                Examination Type
+              </Text>
+              <Card className="shadow-none border-none" style={{boxShadow: "none"}}>
+                <CardContent
+                  className="flex gap-4 !items-center"
+                  style={{ paddingBottom: "0", paddingLeft: "0" }}
+                >
+                  {consultationData?.consultations?.type === "None" ? (
+                    <>
+                      {button["Proctology"]}
+                      {button["Non Proctology"]}
+                    </>
+                  ) : (
+                    button[
+                      consultationData?.consultations
+                        ?.type as keyof typeof button
+                    ]
+                  )}
+                </CardContent>
+              </Card>
+              <Input name="type" hidden value={formData.examination_type} />
+            </View> */}
+
+                <View className="space-y-4 mt-8">
+                  <Text
+                    as="h3"
+                    className="text-lg border-b pb-2 mb-4 text-text-DEFAULT"
+                    weight="font-bold"
+                  >
+                    Admission & Follow-up
+                  </Text>
+                  <View className="">
+                    <View>
+                      <View className="flex items-center space-x-2 ">
+                        {/* <Switch
+                          variant="primary"
+                          id="advice_admition"
+                          name="advice_admition"
+                          defaultChecked={false}
+                          // defaultChecked={values?.advice_admition || false}
+                          onChange={(checked: boolean) =>
+                            onSetHandler("advice_admition", checked)
+                          }
+                        /> */}
+                        <Checkbox
+                          checked={formValues?.advice_admition ? true : false}
+                          onChange={(e) => {
+                            onSetHandler("advice_admition", e.target.checked);
+                          }}
+                          name="advice_admition"
+                          id="advice_admition"
+                          className="rounded-md"
+                        />
+                        <Text as="label">Advice for Admission</Text>
+                      </View>
+                      {!!formValues?.advice_admition && (
+                        <View className="mt-4 col-span-2">
+                          <Input
+                            type="date"
+                            id="advice_admition_date"
+                            name="advice_admition_date"
+                            label="Advice Admission Date"
+                            // onChange={handleChange}
+                            onChange={(e) => {
+                              onSetHandler(
+                                "advice_admition_date",
+                                e.target.value
+                              );
+                            }}
+                            error={errors?.advice_admition_date ?? ""}
+                            value={dayjs(
+                              formValues?.advice_admition_date
+                            ).format("YYYY-MM-DD")}
+                            placeholder="Select Admission Date"
+                            required={formValues?.advice_admition}
+                          />
+                        </View>
+                      )}
+                      <View className="mt-4 col-span-2">
+                        <Input
+                          type="date"
+                          id="next_visit_date"
+                          name="next_visit_date"
+                          label="Next Visit Date"
+                          // onChange={handleChange}
+                          onChange={(e) => {
+                            onSetHandler("next_visit_date", e.target.value);
+                          }}
+                          // error={errorNextVisitDate}
+                          value={dayjs(
+                            formValues?.next_visit_date
+                            // consultationData?.consultations?.next_visit_date
+                          ).format("YYYY-MM-DD")}
+                          placeholder="Select Next Visit Date"
+                        />
+                      </View>
+                      {/* {errorsAdviceAdmission && (
+              <Text as="p" className="text-sm text-red-500">
+                {errorsAdviceAdmission}
+              </Text>
+            )} */}
+                    </View>
+                  </View>
+                </View>
+
+                <View
+                  className="space-y-4 mt-8"
+                  id="documents"
+                  ref={documentsRef}
+                >
+                  <Text
+                    as="h3"
+                    className="text-lg border-b pb-2 mb-4 text-text-DEFAULT"
+                    weight="font-bold"
+                  >
+                    Documents
+                  </Text>
+                  <NewSectionFive mainOnSetHandler={onSetHandler} />
+                </View>
+
+                <View
+                  className="space-y-4 mt-8"
+                  id="consultationBilling"
+                  ref={consultationBillingRef}
+                >
+                  <Text
+                    as="h3"
+                    className="text-lg border-b pb-2 mb-4 text-text-DEFAULT"
+                    weight="font-bold"
+                  >
+                    Consultation & Billing
+                  </Text>
+                  <NewSectionSix
+                    errorConsultationAmount={errors?.consultation_amount}
+                  />
+                </View>
+
+                {/* <View>
+              {formData.examination_type === "Proctology" && (
+                <>
+                
+                  <ProctologyNewSection />
+                  <PostExaminationSection
+                    appointmetnFees={consultationData?.consultations?.fees}
+                    postExaminationData={proctologyData}
+                    errorsFees={errors.fees}
+                    errorsAdviceAdmission={errors.advice_admition}
+                    errorsMedicines={errors.medicines}
+                    errorsDosage={errors.dosage}
+                    errorsTiming={errors.timing}
+                  />
+                </>
+              )}
+              {formData.examination_type === "Non Proctology" && (
+                <NonProctologyExaminationSection
+                  errorsPreliminaryDiagnostic={errors.preliminary_diagnostic}
+                  errorsFindings={errors.findings}
+                  errorsExaminationOverview={errors.examination_overview}
+                  errorsDocUpload={errors.doc_upload}
+                  errorsDiagnosisSummary={errors.diagnosis_summary}
+                  errorsAdviceField={errors.advice_field}
+                  errorsMedicines={errors.medicines}
+                  errorsDosage={errors.dosage}
+                  errorsTiming={errors.timing}
+                  nonProctologyData={proctologyData}
+                />
+              )}
+              <SectionFour
+                paymentStatus={consultationData?.consultations?.payment_status}
+                status={consultationData?.consultations?.status}
+                errorsStatus={errors.status}
+                errorsPaymentStatus={errors.payment_status}
+                errorNextVisitDate={errors.next_visit_date}
+              />
+            </View> */}
+
+                <View className="col-span-2 mt-6">
+                  <Button
+                    htmlType="submit"
+                    loading={isSubmitting}
+                    className="w-full bg-primary text-white rounded-md py-3 font-medium hover:bg-primary-600 transition focus:outline-none focus:ring-2 focus:ring-primary-300 focus:ring-offset-2"
+                  >
+                    {isSubmitting ? "Submitting..." : "Submit"}
+                  </Button>
+                </View>
+              </form>
+            </React.Fragment>
+          )}
+        </View>
+      </ConsultationModels>
+    </View>
+  );
+};
+
+export default ConsultationForm;

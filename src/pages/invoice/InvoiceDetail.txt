@@ -1,0 +1,373 @@
+import View from "@/components/view";
+import Text from "@/components/text";
+import SectionOne from "./SectionOne";
+import LaunchApi from "@/actions/api";
+import Input from "@/components/input";
+import Button from "@/components/button";
+import { RootState } from "@/actions/store";
+import { useNavigate, useParams } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useInvoice } from "@/actions/calls/invoice";
+import { useDispatch, useSelector } from "react-redux";
+import { INVOICE_ADD_OR_UPDATE_URL } from "@/utils/urls/backend";
+import { clearYogaAsanaDetailSlice } from "@/actions/slices/yogaAsana";
+import { toast } from "@/utils/custom-hooks/use-toast";
+import PaymentSection from "./PaymentSection";
+import BouncingLoader from "@/components/BouncingLoader";
+import SingleSelector from "@/components/SingleSelector";
+import { GenericStatus } from "@/interfaces";
+import { statusOptions } from "../forms/consultationForm/consultationFormOptions";
+import ServiceModel from "./serviceModel";
+import { useAmountType } from "@/actions/calls/amountType";
+import Textarea from "@/components/Textarea";
+// import useForm from "@/utils/custom-hooks/use-form";
+// import { Invoice } from "@/interfaces/invoice";
+// import { paymentStatusOptions } from "../forms/patientForm/patientFormOptions";
+
+const api = new LaunchApi();
+
+const InvoiceDetail: React.FC = () => {
+  const { id } = useParams();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [amount, setAmount] = useState<number>(0);
+  const [collectedAmount, setCollectedAmount] = useState<number>(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const [additionalAmountReason, setAdditionalAmountReason] = useState<
+    string | null
+  >(null);
+  const [taxAmount] = useState<number>(0);
+  const [type, setType] = useState<boolean>(false);
+  // const [testTotalAmountData, setTestTotalAmountData] = useState<number>(0);
+  const { getPaymentDetailHandler, getInvoiceDetailHandler, cleanUp } =
+    useInvoice();
+  const [paymentType, setPaymentType] = useState<string>("");
+  const [transactionId, setTransactionId] = useState<string>("");
+  const [paymentStatus, setPaymentStatus] = useState<string>("");
+  const [status, setStatus] = useState<string>("");
+  const { amountTypeDropdownHandler } = useAmountType();
+  const invoiceData = useSelector(
+    (state: RootState) => state.invoice.invoiceDetailData
+  );
+  const amountTypeData = useSelector(
+    (state: RootState) => state.amountType.amountTypeDropdownData
+  );
+  // console.log(amountTypeData, "amountTypeData");
+  // useEffect(() => {}, []);
+
+  useEffect(() => {
+    if (id) {
+      amountTypeDropdownHandler(() => {});
+      getPaymentDetailHandler(id, () => {});
+      getInvoiceDetailHandler(
+        id,
+        () => {},
+        [],
+        (status) => {
+          setIsLoading(
+            status === "pending"
+              ? true
+              : status === "failed"
+              ? true
+              : status === "success" && false
+          );
+        }
+      );
+    }
+    return () => {
+      cleanUp();
+      dispatch(clearYogaAsanaDetailSlice());
+    };
+  }, [id]);
+  // console.log(invoiceData?.collected_amount, "collected");
+  // console.log(invoiceData?.total_amount, "total");
+  useEffect(() => {
+    setPaymentStatus(invoiceData?.payment_status);
+    // if (invoiceData?.collected_amount) {
+    //   setAmount(invoiceData?.collected_amount);
+    // } else {
+    //   setAmount(invoiceData?.total_amount);
+    // }
+    setCollectedAmount(invoiceData?.collected_amount);
+    // setAmount((prev) => invoiceData?.total_amount - prev);
+    // setAmount(invoiceData?.balanced_amount);
+    // setAmount(invoiceData?.total_amount - invoiceData?.collected_amount - invoiceData?.balanced_amount);
+    setPaymentType(invoiceData?.payment_type);
+    setType(invoiceData?.type !== "Follow-up" ? true : false);
+    // setTransactionId(invoiceData?.transaction_id);
+    setStatus(invoiceData?.status);
+
+    setAdditionalAmountReason(invoiceData?.additional_amount_reason);
+
+    setAmount(Number(invoiceData.total_amount));
+    // if (
+    //   invoiceData?.total_amount != null &&
+    //   invoiceData?.collected_amount != null
+    // ) {
+    //   const balance =
+    //     Number(invoiceData.total_amount) - Number(invoiceData.collected_amount);
+    //   setAmount(balance);
+    // }
+  }, [
+    invoiceData?.type,
+    invoiceData?.status,
+    invoiceData?.total_amount,
+    invoiceData?.balanced_amount,
+    invoiceData?.payment_type,
+    // invoiceData?.transaction_id,
+    invoiceData?.payment_status,
+    invoiceData?.collected_amount,
+    invoiceData?.additional_amount_reason,
+  ]);
+
+  const submitData = () => {
+    // let calculatedAmountData;
+    // if (type) {
+    //   calculatedAmountData =
+    //     invoiceData?.enroll_fees +
+    //     invoiceData?.paymentArray?.amount +
+    //     testTotalAmountData;
+    // } else {
+    //   calculatedAmountData =
+    //     invoiceData?.paymentArray?.amount + testTotalAmountData;
+    // }
+
+    api.post(
+      `${INVOICE_ADD_OR_UPDATE_URL}/${invoiceData?.id}`,
+      (_, success) => {
+        if (success) {
+          navigate(-1);
+          toast({
+            title: "Success!",
+            description: "Successfully Amount added",
+            variant: "success",
+          });
+          if (id) {
+            getInvoiceDetailHandler(id, () => {});
+            getPaymentDetailHandler(id, () => {});
+          }
+        }
+      },
+      {
+        // invoice_id: invoiceData?.id,
+        status: status,
+        tax_amount: taxAmount,
+        payment_type: paymentType,
+        paymentStatus: paymentStatus,
+        transaction_id: transactionId,
+        columnName: "consultation_id",
+        consultationId: invoiceData?.id,
+        collected_amount:
+          Number(invoiceData?.collected_amount || 0) + Number(amount),
+        balanced_amount:
+          Number(invoiceData?.total_amount || 0) -
+          (Number(invoiceData?.collected_amount || 0) + Number(amount)),
+        // collected_amount: Number(amount) + Number(collectedAmount),
+        // balanced_amount:
+        //   Number(invoiceData?.total_amount) -
+        //   // Number(invoiceData?.balanced_amount)
+        //   Number(amount) -
+        //   // Number(invoiceData?.balanced_amount) -
+        //   Number(collectedAmount),
+        // balanced_amount: amount - collectedAmount,
+      }
+    );
+  };
+
+  const handleSubmit = () => {
+    // Validation check
+    if (!paymentType && !transactionId && !amount) {
+      return alert("Please select payment type and transaction id");
+    }
+
+    // Check if amount is less than total amount
+    if (amount < invoiceData?.total_amount - invoiceData?.collected_amount) {
+      const confirmed = confirm(
+        "Amount is less than total. Do you want to continue?"
+      );
+      if (!confirmed) {
+        return; // Exit early if user cancels
+      }
+    }
+
+    // Check if amount is more than total amount
+    if (amount > invoiceData?.total_amount) {
+      return alert("Amount is more than total amount");
+    }
+
+    // Only call submitData if all validations pass
+    submitData();
+  };
+
+  return (
+    <View className="min-h-screen p-8">
+      <BouncingLoader isLoading={isLoading} />
+      <ServiceModel>
+        <View className="max-w-4xl mx-auto">
+          {/* <SectionOne type={type} testTotalAmountData={testTotalAmountData} /> */}
+          <SectionOne
+            type={type}
+            balanceAmount={
+              <>
+                {!!invoiceData?.balanced_amount && (
+                  <Text className="text-muted-foreground text-sm">
+                    Balance Amount : ₹{invoiceData?.balanced_amount}
+                  </Text>
+                )}
+              </>
+            }
+          />
+          <hr style={{ margin: "20px 0px" }} />
+          <View className="mt-8">
+            <Text as="h2">Add Amount</Text>
+            <PaymentSection />
+          </View>
+          <hr style={{ margin: "20px 0px" }} />
+          <View>
+            <Text as="h2">Collect Amount</Text>
+            <form>
+              <View className="mt-4">
+                <Input
+                  type="number"
+                  label="Collect Amount"
+                  name="collected_amount"
+                  value={amount}
+                  placeholder="Enter Collected Amount"
+                  onChange={(e) => {
+                    setAmount(Number(e.target.value));
+                  }}
+                  readOnly
+                />
+              </View>
+              {/* <View className="mt-4">
+            <Input
+              label="Tax Amount"
+              type="number"
+              name="tax_amount"
+              value={amount}
+              placeholder="Enter Tax Amount"
+              onChange={(e) => {
+                setTaxAmount(Number(e.target.value));
+              }}
+            />
+          </View> */}
+              <View className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                {/* Mode of Payment Dropdown */}
+                <View>
+                  <Text className="text-sm font-medium text-gray-700 dark:text-white mb-1">
+                    Mode of Payment
+                  </Text>
+                  <SingleSelector
+                    name="payment_type"
+                    options={amountTypeData?.map((item: any) => ({
+                      value: item.amount_for,
+                      label: item.amount_for,
+                    }))}
+                    placeholder="Select Payment Method"
+                    value={paymentType}
+                    onChange={(value) => {
+                      setPaymentType(value);
+                    }}
+                    disabled={invoiceData?.payment_status === "Completed"}
+                  />
+                </View>
+
+                {/* Transaction ID Input */}
+                <View>
+                  <Text className="text-sm font-medium text-gray-700 dark:text-white mb-1">
+                    Transaction ID
+                  </Text>
+                  <Input
+                    name="transaction_id"
+                    placeholder="Enter Transaction ID"
+                    value={transactionId}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      setTransactionId(e.target.value);
+                    }}
+                    disabled={invoiceData?.payment_status === "Completed"}
+                  />
+                </View>
+              </View>
+              <View className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                <View>
+                  {invoiceData?.payment_status === "Completed" ? (
+                    <Input
+                      readOnly
+                      label="Payment Status"
+                      value={paymentStatus}
+                    />
+                  ) : (
+                    <SingleSelector
+                      // id="status"
+                      label="Payment Status"
+                      // name="status"
+                      // error={errorsStatus}
+                      value={paymentStatus}
+                      onChange={(value) => {
+                        setPaymentStatus(value);
+                        // onSetHandler("payment_status", e.target.value)
+                      }}
+                      placeholder="Select Appointment Payment Status"
+                      options={[
+                        { label: "Pending", value: "Pending" },
+                        { label: "Completed", value: "Completed" },
+                      ]}
+                    />
+                  )}
+                </View>
+                <View>
+                  <SingleSelector
+                    id="status"
+                    label="Consultation Status"
+                    name="status"
+                    // error={errorsStatus}
+                    value={status || GenericStatus.PENDING}
+                    placeholder="Select Status"
+                    onChange={(value) => {
+                      setStatus(value);
+                    }}
+                    options={statusOptions}
+                    disabled={invoiceData?.payment_status === "Completed"}
+                  />
+                </View>
+                <View className="col-span-2">
+                  {invoiceData?.payment_status === "Completed" && (
+                    <Textarea
+                      required
+                      value={additionalAmountReason ?? ""}
+                      id="additional_amount"
+                      onChange={(e) => {
+                        setAdditionalAmountReason(e.target.value);
+                      }}
+                      name="additional_amount"
+                      placeholder="Additional Services (after payment completed)"
+                    ></Textarea>
+                  )}
+                </View>
+              </View>
+              <View className=" flex justify-end mt-4">
+                <Button type="button" onClick={handleSubmit}>
+                  Submit
+                </Button>
+              </View>
+            </form>
+            <Text as="h2" className="mb-2">
+              Total Amount Collected: Rs {collectedAmount}
+            </Text>
+            {/* <Text as="h2" className="mb-2">
+              Balance Amount: Rs {invoiceData?.balanced_amount}
+            </Text> */}
+          </View>
+        </View>
+      </ServiceModel>
+      {/* Footer */}
+      <View className="mt-12 pt-4 border-t border-gray-300">
+        <Text as="p" className="text-center text-gray-500 text-sm">
+          {import.meta.env.VITE_HOSPITAL_NAME || "MedCare Hospital"}
+        </Text>
+      </View>
+    </View>
+  );
+};
+
+export default InvoiceDetail;

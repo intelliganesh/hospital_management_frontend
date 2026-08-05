@@ -1,0 +1,465 @@
+import React, { useEffect, useState, useCallback } from "react";
+import { Plus, X } from "lucide-react";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import Button from "@/components/button";
+import View from "./view";
+import Text from "./text";
+import SingleSelector from "./SingleSelector";
+import Input from "./input";
+
+// Generic field configuration interface
+interface FieldConfig {
+  key: string;
+  label: string;
+  type: "text" | "select" | "custom-select" | "number" | "email" | "tel";
+  placeholder?: string;
+  options?: Array<{ label: string; value: string }>;
+  required?: boolean;
+  // value?: string;
+  validation?: (value: string) => string | null;
+  gridColumn?: string; // For responsive grid layout
+}
+
+// Generic item interface
+interface DynamicItem {
+  id: string;
+  [key: string]: any;
+}
+
+// Component props interface
+interface DynamicFormSectionProps<T extends DynamicItem> {
+  title: string;
+  data: any; // The raw data string or object
+  fieldConfigs: FieldConfig[];
+  errors?: Record<string, string>;
+  onDataChange: (field: string, value: any) => void;
+  addButtonText?: string;
+  itemLabelPrefix?: string;
+  separator?: string; // Separator for string data parsing
+  fieldSeparator?: string; // Separator between fields in string data
+  minItems?: number;
+  maxItems?: number;
+  allowReorder?: boolean;
+  className?: string;
+  cardClassName?: string;
+  contentClassName?: string;
+  itemClassName?: string;
+  gridCols?: string;
+  validateOnChange?: boolean;
+  onPressed?: () => void;
+  customItemRenderer?: (
+    item: T,
+    index: number,
+    updateItem: (id: string, field: keyof T, value: any) => void,
+    removeItem: (id: string) => void
+  ) => React.ReactNode;
+}
+
+const DynamicFormSection = <T extends DynamicItem>({
+  title,
+  data,
+  onPressed,
+  fieldConfigs,
+  errors = {},
+  onDataChange,
+  addButtonText = "Add Item",
+  itemLabelPrefix = "Item",
+  separator = ",",
+  fieldSeparator = "#",
+  minItems = 0,
+  maxItems = Infinity,
+  allowReorder = false,
+  className = "",
+  cardClassName = "",
+  contentClassName = "space-y-4",
+  itemClassName = "rounded-lg p-4 space-y-4 bg-card",
+  gridCols = "grid-cols-1 md:grid-cols-2",
+  validateOnChange = true,
+  customItemRenderer,
+}: DynamicFormSectionProps<T>) => {
+  const [items, setItems] = useState<T[]>([]);
+  const [validationErrors, setValidationErrors] = useState<
+    Record<string, Record<string, string>>
+  >({});
+
+  // Parse data string into items array
+  const parseDataString = useCallback(
+    (dataString: string): T[] => {
+      if (!dataString) return [];
+
+      const itemStrings = dataString.split(separator);
+      return itemStrings.map((itemString, index) => {
+        const fieldValues = itemString.split(fieldSeparator);
+        const item: any = { id: (index + 1).toString() };
+
+        fieldConfigs.forEach((config, configIndex) => {
+          item[config.key] = fieldValues[configIndex] || "";
+        });
+
+        return item as T;
+      });
+    },
+    [separator, fieldSeparator, fieldConfigs]
+  );
+
+  // Convert items array to data string
+  const itemsToDataString = useCallback(
+    (itemsArray: T[]): string => {
+      return itemsArray
+        .map((item) =>
+          fieldConfigs
+            .map((config) => item[config.key] || "")
+            .join(fieldSeparator)
+        )
+        .join(separator);
+    },
+    [fieldConfigs, fieldSeparator, separator]
+  );
+
+  // Initialize items from data
+  useEffect(() => {
+    const dataString =
+      typeof data === "string" ? data : data?.[fieldConfigs[0]?.key] || "";
+    const parsedItems = parseDataString(dataString);
+
+    if (parsedItems.length > 0) {
+      setItems(parsedItems);
+    } else if (minItems > 0) {
+      const defaultItem: any = { id: "1" };
+      fieldConfigs.forEach((config) => {
+        defaultItem[config.key] = "";
+      });
+      setItems([defaultItem as T]);
+    }
+  }, [data, parseDataString, fieldConfigs, minItems]);
+
+  // Validation function
+  const validateField = useCallback(
+    (
+      fieldKey: string,
+      value: string,
+      fieldConfig: FieldConfig
+    ): string | null => {
+      if (fieldConfig.required && !value.trim()) {
+        return `${fieldConfig.label} is required`;
+      }
+
+      if (fieldConfig.validation) {
+        return fieldConfig.validation(value);
+      }
+
+      return null;
+    },
+    []
+  );
+
+  // Update validation errors
+  const updateValidationErrors = useCallback(
+    (itemId: string, fieldKey: string, error: string | null) => {
+      setValidationErrors((prev) => ({
+        ...prev,
+        [itemId]: {
+          ...prev[itemId],
+          [fieldKey]: error || "",
+        },
+      }));
+    },
+    []
+  );
+
+  // Add new item
+  const addItem = useCallback(() => {
+    if (items.length >= maxItems) return;
+
+    const newId = (items.length + 1).toString();
+    const newItem: any = { id: newId };
+
+    fieldConfigs.forEach((config) => {
+      newItem[config.key] = "";
+    });
+
+    const newItems = [...items, newItem as T];
+    setItems(newItems);
+    onDataChange(fieldConfigs[0].key, itemsToDataString(newItems));
+    onPressed?.();
+  }, [items, maxItems, fieldConfigs, onDataChange, itemsToDataString]);
+
+  // Remove item
+  const removeItem = useCallback(
+    (id: string) => {
+      if (items.length <= minItems) return;
+
+      const newItems = items.filter((item) => item.id !== id);
+      setItems(newItems);
+      onDataChange(fieldConfigs[0].key, itemsToDataString(newItems));
+
+      // Clean up validation errors for removed item
+      setValidationErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[id];
+        return newErrors;
+      });
+    },
+    [items, minItems, fieldConfigs, onDataChange, itemsToDataString]
+  );
+
+  // Update item field
+  const updateItem = useCallback(
+    (id: string, field: keyof T, value: any) => {
+      setItems((prev) => {
+        const updated = prev.map((item) => {
+          if (item.id === id) {
+            return { ...item, [field]: value };
+          }
+          return item;
+        });
+
+        onDataChange(fieldConfigs[0].key, itemsToDataString(updated));
+        return updated;
+      });
+
+      // Validate field if enabled
+      if (validateOnChange) {
+        const fieldConfig = fieldConfigs.find((config) => config.key === field);
+        if (fieldConfig) {
+          const error = validateField(field as string, value, fieldConfig);
+          updateValidationErrors(id, field as string, error);
+        }
+      }
+    },
+    [
+      fieldConfigs,
+      onDataChange,
+      itemsToDataString,
+      validateOnChange,
+      validateField,
+      updateValidationErrors,
+    ]
+  );
+
+  // Move item (if reordering is enabled)
+  const moveItem = useCallback(
+    (fromIndex: number, toIndex: number) => {
+      if (!allowReorder) return;
+
+      const newItems = [...items];
+      const [movedItem] = newItems.splice(fromIndex, 1);
+      newItems.splice(toIndex, 0, movedItem);
+
+      setItems(newItems);
+      onDataChange(fieldConfigs[0].key, itemsToDataString(newItems));
+    },
+    [items, allowReorder, fieldConfigs, onDataChange, itemsToDataString]
+  );
+
+  // Render field based on type
+  const renderField = useCallback(
+    (item: T, config: FieldConfig) => {
+      const fieldError =
+        errors[config.key] || validationErrors[item.id]?.[config.key];
+
+      switch (config.type) {
+        case "select":
+          return (
+            <SingleSelector
+              key={config.key}
+              id={config.key}
+              label={config.label}
+              name={config.key}
+              error={fieldError}
+              value={item[config.key] || ""}
+              placeholder={config.placeholder || `Select ${config.label}`}
+              onChange={(value) =>
+                updateItem(item.id, config.key as keyof T, value)
+              }
+              options={config.options || []}
+            />
+          );
+        case "custom-select":
+          return (
+            <View className="flex justify-between gap-2">
+              <View className="w-full">
+                <SingleSelector
+                  key={config.key}
+                  id={config.key}
+                  label={config.label.split("#")[0]}
+                  name={config.key}
+                  error={fieldError}
+                  value={item[config.key] || ""}
+                  placeholder={config.placeholder || `Select ${config.label}`}
+                  onChange={(value) =>
+                    updateItem(item.id, config.key as keyof T, value)
+                  }
+                  options={config.options || []}
+                />
+              </View>
+
+              <View key={config.key} className="w-full">
+                <label
+                  htmlFor={`${config.key}-${item.id}`}
+                  className="block text-sm font-medium mb-1"
+                >
+                  {config.label.split("#")[1]}
+                  {config.required && (
+                    <span className="text-red-500 ml-1">*</span>
+                  )}
+                </label>
+                <Input
+                  id={`${config.key}-${item.id}`}
+                  type={config.type}
+                  readOnly={true}
+                  value={item[config.key].split("#")[1] || ""}
+                  onChange={(e) =>
+                    updateItem(item.id, config.key as keyof T, e.target.value)
+                  }
+                  placeholder={config.placeholder}
+                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                    fieldError ? "border-red-500" : "border-gray-300"
+                  }`}
+                />
+                {fieldError && (
+                  <Text className="text-red-500 text-sm mt-1">
+                    {fieldError}
+                  </Text>
+                )}
+              </View>
+            </View>
+          );
+
+        case "text":
+        case "number":
+        case "email":
+        case "tel":
+        default:
+          return (
+            <View key={config.key} className="w-full">
+              <label
+                htmlFor={`${config.key}-${item.id}`}
+                className="block text-sm font-medium mb-1"
+              >
+                {config.label}
+                {config.required && (
+                  <span className="text-red-500 ml-1">*</span>
+                )}
+              </label>
+              <Input
+                id={`${config.key}-${item.id}`}
+                type={config.type}
+                value={item[config.key] || ""}
+                onChange={(e) =>
+                  updateItem(item.id, config.key as keyof T, e.target.value)
+                }
+                placeholder={config.placeholder}
+                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  fieldError ? "border-red-500" : "border-gray-300"
+                }`}
+              />
+              {fieldError && (
+                <Text className="text-red-500 text-sm mt-1">{fieldError}</Text>
+              )}
+            </View>
+          );
+      }
+    },
+    [errors, validationErrors, updateItem]
+  );
+
+  // Default item renderer
+  const defaultItemRenderer = useCallback(
+    (item: T, index: number) => (
+      <View key={item.id} className={itemClassName}>
+        <View className="flex justify-between items-center">
+          <Text as="h4" className="font-medium">
+            {itemLabelPrefix} {index + 1}
+          </Text>
+          <View className="flex items-center space-x-2">
+            {allowReorder && (
+              <>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={() => moveItem(index, Math.max(0, index - 1))}
+                  disabled={index === 0}
+                  className="px-2 py-1"
+                >
+                  ↑
+                </Button>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={() =>
+                    moveItem(index, Math.min(items.length - 1, index + 1))
+                  }
+                  disabled={index === items.length - 1}
+                  className="px-2 py-1"
+                >
+                  ↓
+                </Button>
+              </>
+            )}
+            <Button
+              type="button"
+              variant="danger"
+              onClick={() => removeItem(item.id)}
+              disabled={items.length <= minItems}
+              className="px-2 py-1"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </View>
+        </View>
+
+        {/* <View className={`grid ${gridCols} gap-2`}> */}
+        {fieldConfigs.map((config) => (
+          <View key={config.key} className={`${config.gridColumn}`}>
+            {renderField(item, config)}
+          </View>
+        ))}
+        {/* </View> */}
+      </View>
+    ),
+    [
+      itemClassName,
+      itemLabelPrefix,
+      allowReorder,
+      items.length,
+      minItems,
+      gridCols,
+      fieldConfigs,
+      renderField,
+      moveItem,
+      removeItem,
+    ]
+  );
+
+  return (
+    <Card
+      className={`${className} ${cardClassName}`}
+      style={{ backgroundColor: "var(--background)" }}
+    >
+      <CardHeader>
+        <CardTitle>{title}</CardTitle>
+      </CardHeader>
+      <CardContent className={contentClassName}>
+        {items.map((item, index) =>
+          customItemRenderer
+            ? customItemRenderer(item, index, updateItem, removeItem)
+            : defaultItemRenderer(item, index)
+        )}
+
+        <Button
+          type="button"
+          variant="primary"
+          onClick={addItem}
+          disabled={items.length >= maxItems}
+          className="mt-4 flex items-center w-full justify-center"
+        >
+          <Plus className="h-4 w-4 mr-2" />
+          {addButtonText}
+        </Button>
+      </CardContent>
+    </Card>
+  );
+};
+
+export default DynamicFormSection;

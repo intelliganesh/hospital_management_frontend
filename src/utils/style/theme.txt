@@ -1,0 +1,97 @@
+:root,
+html {
+  color-scheme: light;
+  /* Common variables */
+  --border-radius: 0.5rem;
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* Light theme (default) */
+:root,
+html.light {
+  color-scheme: light;
+  --background: #ffffff;
+  --foreground: #202124;
+
+  --card: #ffffff;
+  --card-foreground: #202124;
+
+  --popover: #ffffff;
+  --popover-foreground: #202124;
+
+  /* These will be overridden by ColorContext */
+  --primary: var(--primary, #1A73E8);
+  --primary-foreground: var(--primary-foreground, #ffffff);
+
+  --secondary: var(--secondary, #36B37E);
+  --secondary-foreground: var(--secondary-foreground, #ffffff);
+
+  --accent: var(--accent, #FBBC05);
+  --accent-foreground: var(--accent-foreground, #000000);
+
+  /* Background colors */
+  --primary-bg: var(--primary-bg, #F5F9FF);
+  --secondary-bg: var(--secondary-bg, #F0FAF5);
+  --tertiary-bg: var(--tertiary-bg, #FEF7CD);
+
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+
+  --destructive: #EA4335;
+  --destructive-foreground: #ffffff;
+
+  --border: #e2e8f0;
+  --input: #e2e8f0;
+
+  --ring: var(--primary, #1A73E8);
+
+  --radius: 0.5rem;
+}
+
+/* Dark theme */
+html.dark {
+  color-scheme: dark;
+  --background: #1e1e2e;
+  --foreground: #ffffff;
+
+  --card: #2a2a3c;
+  --card-foreground: #ffffff;
+
+  --popover: #2a2a3c;
+  --popover-foreground: #ffffff;
+
+  /* These will be overridden by ColorContext */
+  --primary: var(--primary, #4285F4);
+  --primary-foreground: var(--primary-foreground, #ffffff);
+
+  --secondary: var(--secondary, #36B37E);
+  --secondary-foreground: var(--secondary-foreground, #ffffff);
+
+  --accent: var(--accent, #FBBC05);
+  --accent-foreground: var(--accent-foreground, #ffffff);
+
+  /* Background colors */
+  --primary-bg: var(--primary-bg, #1e293b);
+  --secondary-bg: var(--secondary-bg, #334155);
+  --tertiary-bg: var(--tertiary-bg, #3f3f59);
+
+  --muted: #334155;
+  --muted-foreground: #94a3b8;
+
+  --destructive: #ff4d4f;
+  --destructive-foreground: #ffffff;
+
+  --border: #334155;
+  --input: #334155;
+
+  --ring: var(--primary, #4285F4);
+}
+
+/* Apply theme variables to body and html */
+html,
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}

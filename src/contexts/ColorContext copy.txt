@@ -1,0 +1,89 @@
+import React, { createContext, useContext, useEffect, useState } from 'react';
+
+interface ColorScheme {
+  primary_color: string;
+  bg_primary_color: string;
+  text_primary_color: string;
+  secondary_color: string;
+  bg_secondary_color: string;
+  text_secondary_color: string;
+  tertiary_color: string;
+  bg_tertiary_color: string;
+  text_tertiary_color: string;
+}
+
+const defaultColors: ColorScheme = {
+  primary_color: "#1A73E8",
+  bg_primary_color: "#F5F9FF",
+  text_primary_color: "#FFFFFF",
+  secondary_color: "#36B37E",
+  bg_secondary_color: "#F0FAF5",
+  text_secondary_color: "#FFFFFF",
+  tertiary_color: "#FBBC05",
+  bg_tertiary_color: "#FEF7CD",
+  text_tertiary_color: "#000000",
+};
+
+type ColorContextType = {
+  colors: ColorScheme;
+  setColors: (colors: Partial<ColorScheme>) => void;
+};
+
+const ColorContext = createContext<ColorContextType | undefined>(undefined);
+
+export const ColorProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  // Get initial colors from localStorage or use defaults
+  const [colors, setColorsState] = useState<ColorScheme>(() => {
+    const savedColors = localStorage.getItem('colorScheme');
+    return savedColors ? JSON.parse(savedColors) : defaultColors;
+  });
+
+  // Function to update colors
+  const setColors = (newColors: Partial<ColorScheme>) => {
+    setColorsState(prevColors => {
+      const updatedColors = { ...prevColors, ...newColors };
+      localStorage.setItem('colorScheme', JSON.stringify(updatedColors));
+      return updatedColors;
+    });
+  };
+
+  // Apply colors to CSS variables
+  useEffect(() => {
+    const root = document.documentElement;
+
+    // Set CSS variables for colors
+    root.style.setProperty('--primary', colors.primary_color);
+    root.style.setProperty('--primary-foreground', colors.text_primary_color);
+
+    root.style.setProperty('--secondary', colors.secondary_color);
+    root.style.setProperty('--secondary-foreground', colors.text_secondary_color);
+
+    root.style.setProperty('--accent', colors.tertiary_color);
+    root.style.setProperty('--accent-foreground', colors.text_tertiary_color);
+
+    // Set background colors
+    root.style.setProperty('--primary-bg', colors.bg_primary_color);
+    root.style.setProperty('--secondary-bg', colors.bg_secondary_color);
+    root.style.setProperty('--tertiary-bg', colors.bg_tertiary_color);
+
+    // Also update Tailwind colors directly
+    document.documentElement.style.setProperty('--color-primary', colors.primary_color);
+    document.documentElement.style.setProperty('--color-secondary', colors.secondary_color);
+    document.documentElement.style.setProperty('--color-accent', colors.tertiary_color);
+  }, [colors]);
+
+  return (
+    <ColorContext.Provider value={{ colors, setColors }}>
+      {children}
+    </ColorContext.Provider>
+  );
+};
+
+// Custom hook to use the color context
+export const useColors = () => {
+  const context = useContext(ColorContext);
+  if (context === undefined) {
+    throw new Error('useColors must be used within a ColorProvider');
+  }
+  return context;
+};

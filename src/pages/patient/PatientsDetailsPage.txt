@@ -1,0 +1,267 @@
+import View from "@/components/view";
+import Text from "@/components/text";
+import Button from "@/components/button";
+import { useSelector } from "react-redux";
+import { RootState } from "@/actions/store";
+import { useParams } from "react-router-dom";
+import AppointmentIndex from "../appointments";
+import InfoCard from "@/components/ui/infoCard";
+import React, { useState, useEffect } from "react";
+import { usePatient } from "@/actions/calls/patient";
+import { toast } from "@/utils/custom-hooks/use-toast";
+import {
+  DOWNLOAD_PATIENT_FILES_URL,
+  DOWNLOAD_ANESTHESIA_FILES_URL,
+} from "@/utils/urls/backend";
+import {
+  Card,
+  CardTitle,
+  CardHeader,
+  CardContent,
+  CardDescription,
+} from "@/components/ui/card";
+import {
+  Mars,
+  Mail,
+  Venus,
+  Phone,
+  MapPin,
+  Download,
+  Activity,
+  Calendar,
+  CreditCard,
+  AlertCircle,
+  VenusAndMars,
+} from "lucide-react";
+import { Link } from "react-router-dom";
+import {
+  CONSULTATION_DETAILS_URL,
+  CONSULTATION_TABLE_URL,
+} from "@/utils/urls/frontend";
+import { useNavigate } from "react-router-dom";
+
+const PatientDetailsPage = () => {
+  const { id } = useParams();
+  const { patientDetailHandler, downloadPatientHandler } = usePatient();
+
+  const patient = useSelector(
+    (state: RootState) => state?.patient?.patientDetailData
+  );
+
+  const navigate = useNavigate();
+
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (id) {
+      patientDetailHandler(id, () => {
+        setLoading(false);
+      });
+    }
+  }, [id]);
+
+  if (loading || !patient) {
+    return (
+      <View className="text-center text-muted py-10">
+        Loading patient data...
+      </View>
+    );
+  }
+
+  const handleDownload = (path: string) => {
+    if (id) {
+      downloadPatientHandler(id, path, async (success: boolean) => {
+        if (success) {
+          toast({
+            title: "Success!",
+            description: "Successfully downloaded patient details",
+            variant: "success",
+          });
+        } else {
+          toast({
+            title: "Error",
+            description: "Failed to download patient details",
+            variant: "destructive",
+          });
+        }
+      });
+    }
+  };
+
+  return (
+    <React.Fragment>
+      <View className="space-y-6">
+        <View className="flex justify-between items-center">
+          <View>
+            <Text as="h1" weight="font-semibold" className="text-2xl font-bold text-text-DEFAULT">
+              Patient Details
+            </Text>
+            <Text as="p" className="text-text-light">
+              View and manage patient information
+            </Text>
+          </View>
+          <View className="flex space-x-2">
+            {/* <button className="bg-primary text-white px-4 py-2 rounded-md hover:bg-primary-600 transition-colors">
+              Edit Patient
+            </button> */}
+            <Button
+              variant="outline"
+              onClick={() => navigate(-1)}
+              className="flex justify-center items-center gap-2"
+            >
+              Back to Home
+            </Button>
+            <Button
+              style={{ alignItems: "center" }}
+              onClick={() => handleDownload(DOWNLOAD_PATIENT_FILES_URL)}
+              className="bg-primary text-white px-4 py-2 rounded-md hover:bg-primary-600 transition-colors flex item-center gap-2"
+            >
+              <Download /> <Text>Patient Files</Text>
+            </Button>
+            <Button
+              style={{ alignItems: "center" }}
+              onClick={() => handleDownload(DOWNLOAD_ANESTHESIA_FILES_URL)}
+              className="bg-primary text-white px-4 py-2 rounded-md hover:bg-primary-600 transition-colors flex item-center gap-2"
+            >
+              <Download /> <Text>Anaesthesia Files</Text>
+            </Button>
+            {/* <button className="border border-neutral-300 text-text-DEFAULT px-4 py-2 rounded-md hover:bg-neutral-100 transition-colors">
+              Schedule Appointment
+            </button> */}
+          </View>
+        </View>
+
+        {/* Patient Summary Card */}
+        <Card>
+          <CardHeader className="pb-4">
+            <View className="flex items-start justify-between">
+              <View className="flex items-center">
+                <View className="w-16 h-16 rounded-full bg-secondary-50 flex items-center justify-center text-secondary text-xl font-bold mr-4">
+                  {patient?.first_name?.charAt(0)}
+                  {patient?.last_name?.charAt(0)}
+                  {/* {patient.firstName?.[0]}{patient.lastName?.[0]} */}
+                </View>
+                <View>
+                  <CardTitle className="text-2xl">
+                    {patient?.first_name} {patient?.last_name}
+                  </CardTitle>
+                  <CardDescription className="flex items-center mt-1">
+                    <Text as="span" className="mr-4">
+                      ID: {patient?.patient_number || "N/A"}
+                    </Text>
+                    <Text as="span" className="flex items-center">
+                      <Calendar className="h-4 w-4 mr-1" /> {patient?.dob} (
+                      {patient?.age} years)
+                    </Text>
+                  </CardDescription>
+                </View>
+              </View>
+              <View className="bg-primary-50 px-3 py-1 rounded-full text-text-light">
+                {patient?.gender ? (
+                  patient?.gender === "male" ? (
+                    <Text as="span" className="flex items-center gap-1">
+                      <Mars className="size-4" /> {patient?.gender}
+                    </Text>
+                  ) : (
+                    patient?.gender === "female" && (
+                      <Text as="span" className="flex items-center gap-1">
+                        <Venus className="size-4" /> {patient?.gender}
+                      </Text>
+                    )
+                  )
+                ) : (
+                  <Text as="span" className="flex items-center gap-1">
+                    <VenusAndMars className="size-4" /> {patient?.gender}
+                  </Text>
+                )}
+              </View>
+            </View>
+          </CardHeader>
+          <CardContent>
+            <View className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+              <View className="flex items-center">
+                <Phone className="h-5 w-5 text-text-light mr-2" />
+                <Text as="span">{patient?.phone_no}</Text>
+              </View>
+              <View className="flex items-center">
+                <Mail className="h-5 w-5 text-text-light mr-2" />
+                <Text as="span">{patient?.email}</Text>
+              </View>
+              <View className="flex items-center">
+                <MapPin className="h-5 w-5 text-text-light mr-2" />
+                <Text as="span">{`${patient?.address}, ${patient?.city}, ${
+                  patient?.state
+                } ${patient?.zip_code || ""}`}</Text>
+              </View>
+            </View>
+
+            <View className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <InfoCard
+                label="Blood Type"
+                value={patient?.blood_group || "N/A"}
+                icon={<Activity className="h-5 w-5 text-danger" />}
+                iconStyle="bg-red-100"
+                className="dark:bg-background"
+              />
+              <InfoCard
+                label="Insurance"
+                value={patient?.insurance || "N/A"}
+                subValue={patient?.insuranceNumber || ""}
+                icon={<CreditCard className="h-5 w-5 text-primary" />}
+                iconStyle="bg-primary-100"
+                className="dark:bg-background"
+              />
+              <InfoCard
+                label="Emergency Contact"
+                value={patient?.emergencyContact || "N/A"}
+                subValue={patient?.emergencyPhone || ""}
+                icon={<AlertCircle className="h-5 w-5 text-warning" />}
+                iconStyle="bg-yellow-100"
+                className="dark:bg-background"
+              />
+              {/* <InfoCard
+                label="Medical Records"
+                value="View History"
+                isLink
+                icon={<FileText className="h-5 w-5 text-info" />}
+              /> */}
+            </View>
+          </CardContent>
+        </Card>
+      </View>
+      {patient?.appointments?.map((data: any, index: number) => {
+        return (
+          <View key={data.id} className="space-y-6 py-8 border-b">
+            <Card>
+              <Text as="h2" className="mt-4 mx-4 text-lg font-bold">
+                Appointment ({index + 1})
+                {patient?.consultation && (
+                  <>
+                    {" -> "}
+                    <Text as="span">
+                      <Link
+                        target="_blank"
+                        className="text-primary hover:underline"
+                        to={
+                          CONSULTATION_TABLE_URL +
+                          CONSULTATION_DETAILS_URL +
+                          "/" +
+                          patient?.consultation[index]?.id
+                        }
+                      >
+                        Consultation ({index + 1})
+                      </Link>
+                    </Text>
+                  </>
+                )}
+              </Text>
+              <AppointmentIndex readOnly appointmentDetails={data} showPatientDetails={false} usingAppointmentCardStyle={false} />
+            </Card>
+          </View>
+        );
+      })}
+    </React.Fragment>
+  );
+};
+
+export default PatientDetailsPage;
