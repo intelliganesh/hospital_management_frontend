@@ -5,7 +5,7 @@ import Button from "@/components/button";
 import { Edit, Trash2, Clock } from "lucide-react";
 import dayjs from "dayjs";
 import { TIME_FORMAT } from "@/utils/urls/frontend";
-import useColors from "@/utils/custom-hooks/use-colors";
+// import useColors from "@/utils/custom-hooks/use-colors";
 
 export interface NoteData {
   id: string;
@@ -44,7 +44,6 @@ const NoteCard: React.FC<NoteCardProps> = ({
   //   showContext = true,
 }) => {
   const getPriorityStyles = (priority: string) => {
-
     switch (priority) {
       //   case "Critical":
       //     return {
@@ -69,7 +68,8 @@ const NoteCard: React.FC<NoteCardProps> = ({
           bg: "bg-white dark:bg-slate-800",
           //   badge:
           //     "bg-slate-100 text-slate-800 dark:bg-slate-700 dark:text-slate-300",
-          vitalsBox: "bg-slate-100 dark:bg-slate-700/50 border border-2 border-slate-500 dark:border-slate-600",
+          vitalsBox:
+            "bg-slate-100 dark:bg-slate-700/50 border border-2 border-slate-500 dark:border-slate-600",
           //   priorityText: "text-slate-600 dark:text-slate-400",
         };
     }
@@ -87,7 +87,11 @@ const NoteCard: React.FC<NoteCardProps> = ({
         <View className="flex items-center gap-3 flex-wrap">
           <View className="flex items-center gap-1 text-slate-600 dark:text-slate-400">
             <Clock className="h-4 w-4" />
-            <Text className="text-sm font-medium">{note.datetime ? dayjs(note.datetime).format(`DD-MM-YYYY ${TIME_FORMAT}`) : "N/A"}</Text>
+            <Text className="text-sm font-medium">
+              {note.datetime
+                ? dayjs(note.datetime).format(`DD-MM-YYYY ${TIME_FORMAT}`)
+                : "N/A"}
+            </Text>
           </View>
           {/* <View className={`px-2 py-1 rounded text-xs font-semibold ${styles.badge}`}>
             {note.category}

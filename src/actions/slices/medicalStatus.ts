@@ -13,6 +13,7 @@ const initialState = {
   proctoscopyStatus: false,
   managementStatus: false,
   medicineStatus: false,
+  patientModelStatus: false,
 };
 
 const modelStatusSlice = createSlice({
@@ -56,6 +57,9 @@ const modelStatusSlice = createSlice({
     setMedicineModel: (state, action) => {
       state.medicineStatus = action.payload;
     },
+    setPatientModel: (state, action) => {
+      state.patientModelStatus = action.payload;
+    },
   },
 });
 
@@ -72,5 +76,6 @@ export const {
   setChiefComplaintModel,
   setSurgicalHistoryModel,
   setMedicineModel,
+  setPatientModel,
 } = modelStatusSlice.actions;
 export default modelStatusSlice.reducer;

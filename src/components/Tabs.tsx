@@ -1,6 +1,5 @@
-import React from "react";
+import React, { useEffect } from "react";
 import View from "./view";
-import Button from "./button";
 import { useSearchParams } from "react-router-dom";
 
 interface Tab {
@@ -15,48 +14,61 @@ interface TabViewProps {
   className?: string;
 }
 
-const TabView: React.FC<TabViewProps> = ({ tabs, className }) => {
+const TabView: React.FC<TabViewProps> = ({ tabs, defaultValue, className }) => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab = searchParams.get("tab") || defaultValue || tabs[0]?.value;
+
+  // Set default tab on mount if no tab is selected
+  useEffect(() => {
+    if (!searchParams.get("tab") && tabs.length > 0) {
+      const defaultTab = defaultValue || tabs[0].value;
+      setSearchParams({ tab: defaultTab },{replace:true});
+    }
+  }, []);
   return (
-    <View className={`w-full ${className}`}>
-      <View className="flex gap-3">
-        {tabs.map((tab) => (
-          <Button
-            key={tab.value}
-            disabled={searchParams.get("tab") === tab.value}
-            onClick={() => {
-              if (searchParams.get("tab") === tab.value) return;
-              const searchData = {
-                ...searchParams,
-                tab: tab.value,
-                currentPage: tab.value === "system-settings" ? undefined : "1",
-              };
-              setSearchParams(JSON.parse(JSON.stringify(searchData)));
-            }}
-            variant={`${
-              searchParams.get("tab") === tab.value ? "ghost" : "ghost"
-            }`}
-            className={`px-4 py-2 text-sm font-medium transition-colors
-              ${
-                searchParams.get("tab") === tab.value
-                  ? "border-b-2 border-primary text-primary"
-                  : "text-neutral-600 hover:text-primary"
-              }`}
-          >
-            {tab.label}
-          </Button>
-        ))}
+    <View className={`w-full ${className || ""}`}>
+      {/* Tab Navigation */}
+      <View className="border-b border-slate-200 dark:border-slate-700">
+        <View className="flex gap-1 overflow-x-auto scrollbar-hide">
+          {tabs.map((tab) => {
+            const isActive = activeTab === tab.value;
+            return (
+              <button
+                key={tab.value}
+                onClick={() => {
+                  if (activeTab === tab.value) return;
+                  setSearchParams({ tab: tab.value });
+                }}
+                className={`
+                  relative px-6 py-3 text-sm font-medium transition-all duration-200
+                  focus:outline-none rounded-t-lg whitespace-nowrap
+                  ${
+                    isActive
+                      ? "text-primary bg-primary/5 dark:bg-primary/10"
+                      : "text-slate-600 dark:text-slate-400 hover:text-primary hover:bg-slate-50 dark:hover:bg-slate-800"
+                  }
+                `}
+              >
+                {tab.label}
+                {isActive && (
+                  <View className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary" />
+                )}
+              </button>
+            );
+          })}
+        </View>
       </View>
-      <View className="mt-4">
-        {tabs
-          .filter((filterdata) => {
-            if (searchParams.get("tab") === filterdata.value) {
-              return filterdata;
-            }
-          })
-          .map((tab) => (
-            <View key={tab.value}>{tab.content}</View>
-          ))}
+
+      {/* Tab Content */}
+      <View className="mt-6">
+        {tabs.map((tab) => {
+          if (activeTab !== tab.value) return null;
+          return (
+            <View key={tab.value} className="animate-in fade-in duration-200">
+              {tab.content}
+            </View>
+          );
+        })}
       </View>
     </View>
   );

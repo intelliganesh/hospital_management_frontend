@@ -12,7 +12,6 @@ import {
   Mail,
   Phone,
   Download,
-  History,
 } from "lucide-react";
 import {
   Table,
@@ -36,7 +35,6 @@ import {
   COMORBIDITIES_DETAILS_URL,
   COMORBIDITIES_TABLE_URL,
   CONSULTATION_TABLE_URL,
-  PREVIOUS_CONSULTATIONS_URL,
 } from "@/utils/urls/frontend";
 import View from "@/components/view";
 import Text from "@/components/text";
@@ -545,11 +543,11 @@ const ConsultationDetails = () => {
   };
 
   return (
-    <View className="space-y-6 container mx-auto px-4 py-6 md:px-6 md:py-8">
+    <View className="space-y-6 container mx-auto py-8">
       <View className="fixed top-4 left-0  w-full z-50">
         <BouncingLoader isLoading={isLoading} />
       </View>
-      <View className="flex flex-wrap justify-end gap-2">
+      <View className="flex justify-end gap-2">
         {/* {
           !toogleForm && (
             <> */}
@@ -561,30 +559,27 @@ const ConsultationDetails = () => {
           Create post surgery follow up
         </Button> */}
 
-        {consultationData?.consultations?.status === "Pending" ? (
-          ""
-        ) : (
-          <Button
-            onClick={handleDownloadConsultation}
-            className="flex items-center gap-2"
-          >
-            <Download size={16} />
-            Download Consultation
-          </Button>
-        )}
+        <Button
+          onClick={handleDownloadConsultation}
+          className="flex items-center gap-2"
+        >
+          <Download size={16} />
+          Download Consultation
+        </Button>
         {/* </>
           ) 
         } */}
       </View>
       {/* {
         !toogleForm && ( */}
-      <View className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+      <View className="flex justify-between items-center">
         <View>
-          <View className="flex flex-wrap items-center gap-2 mb-2">
+          <View className="flex items-center mb-2">
             <Text as="h1" weight="font-semibold" className="text-2xl font-bold">
               Consultation Details
             </Text>
             <Badge
+              className={`ml-4`}
               style={getStatusColorScheme(
                 consultationData?.consultations?.status,
               )}
@@ -598,7 +593,7 @@ const ConsultationDetails = () => {
           </Text>
         </View>
 
-        <View className="flex flex-wrap gap-2 lg:justify-end">
+        <View className="flex space-x-2">
           {consultationData?.consultations?.consutlation_type &&
             consultationData?.consultations?.status !== "Completed" &&
             consultationData?.consultations?.consutlation_type === "ONLINE" && (
@@ -609,21 +604,10 @@ const ConsultationDetails = () => {
                 <Button>Join Meeting</Button>
               </Link>
             )}
-
-          {consultationData?.consultations?.patient_id && (
-            <Link
-              to={`${CONSULTATION_TABLE_URL}${PREVIOUS_CONSULTATIONS_URL}/${consultationData.consultations.patient_id}/${id}`}
-            >
-              <Button variant="outline" className="flex items-center gap-2">
-                <History size={16} />
-                Previous Consultations
-              </Button>
-            </Link>
-          )}
           <Link
             to={`${APPOINTMENT_TABLE_URL}${APPOINTMENT_DETAILS_URL}/${consultationData?.consultations?.appointment_id}`}
           >
-            <Button variant="outline">View Appointments</Button>
+            <Button variant="outline">View Appointment</Button>
           </Link>
           <Button
             variant="outline"

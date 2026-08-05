@@ -311,14 +311,6 @@ const PatientsPage: React.FC<{}> = () => {
                   PATIENT_TABLE_URL + PATIENTS_FORM_URL + "/" + patient.id
                 )
               }
-              // onEdit={
-              //   hasPermission(PERMISSIONS.EDIT_USER)
-              //     ? () =>
-              //         navigate(
-              //           PATIENT_TABLE_URL + PATIENTS_FORM_URL + "/" + patient.id
-              //         )
-              //     : undefined
-              // }
               onDelete={() => {
                 setDeleteId(patient.id);
               }}

@@ -26,15 +26,16 @@ const PreliminaryNotesForm: React.FC<FormTypeProps> = ({
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { id } = useParams(); // This is IPD ID
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   // Get preliminary notes data from Redux
   const preliminaryNotesData = useSelector(
-    (state: RootState) => state.preliminaryNotes.preliminaryNotesDetailData
+    (state: RootState) => state.preliminaryNotes.preliminaryNotesDetailData,
   ) as Partial<PreliminaryNotes> | null;
-  const { fetchAndDownloadPdf, isLoading: isPdfDownloading } = useDownloadIpdPdf();
+  const { fetchAndDownloadPdf, isLoading: isPdfDownloading } =
+    useDownloadIpdPdf();
 
   const {
     addPreliminaryNotes,
@@ -45,7 +46,7 @@ const PreliminaryNotesForm: React.FC<FormTypeProps> = ({
   useEffect(() => {
     if (formType === "edit" && id) {
       setIsLoading(true);
-      preliminaryNotesDetail(id, (success: boolean) => {
+      preliminaryNotesDetail(id, () => {
         setIsLoading(false);
       });
     }
@@ -77,15 +78,16 @@ const PreliminaryNotesForm: React.FC<FormTypeProps> = ({
           setIsSubmitting(false);
 
           if (success) {
-            navigate(-1);
+            // navigate(-1);
+            preliminaryNotesDetail(id, () => {
+              setIsLoading(false);
+            });
             toast({
               title: "Success!",
               description: "Preliminary Notes added successfully.",
               variant: "success",
             });
           } else {
-            console.log("else in:", preliminaryNotesFormObj);
-
             toast({
               title: "Error!",
               description: "Failed to add Preliminary Notes",
@@ -113,7 +115,7 @@ const PreliminaryNotesForm: React.FC<FormTypeProps> = ({
           (success: boolean) => {
             setIsSubmitting(false);
             if (success) {
-              navigate(-1);
+              // navigate(-1);
               toast({
                 title: "Success!",
                 description: "Preliminary Notes updated successfully.",
@@ -126,7 +128,7 @@ const PreliminaryNotesForm: React.FC<FormTypeProps> = ({
                 variant: "destructive",
               });
             }
-          }
+          },
         );
       }
     } catch (error: any) {
@@ -164,13 +166,17 @@ const PreliminaryNotesForm: React.FC<FormTypeProps> = ({
                       id,
                       IPD_GENERATE_PDF_URL,
                       "preliminary_notes",
-                      () => { }
+                      () => {},
                     );
                   }
                 }}
                 disabled={isPdfDownloading}
               >
-                {isPdfDownloading ? <BouncingLoader isLoading={isPdfDownloading} /> : <FileDown size={14} />}
+                {isPdfDownloading ? (
+                  <BouncingLoader isLoading={isPdfDownloading} />
+                ) : (
+                  <FileDown size={14} />
+                )}
                 Generate PDF
               </Button>
             )}

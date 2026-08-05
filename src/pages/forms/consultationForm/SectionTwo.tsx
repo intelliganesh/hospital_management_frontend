@@ -45,24 +45,21 @@ const SectionTwo: React.FC<SectionTwoProps> = ({
   // );
 
   const consultationDetail = useSelector(
-    (state: RootState) =>
-      state.consultation.consultationDetailData?.vitals
+    (state: RootState) => state.consultation.consultationDetailData?.vitals,
   );
   const testData = useSelector(
     // (state: any) => state.consultation.consultationDetailData?.proctologyOrNonProctology?.test_id
-    (state: any) => state.consultation?.consultationDetailData?.consultations?.test_id
+    (state: any) =>
+      state.consultation?.consultationDetailData?.consultations?.test_id,
   );
 
   const { testDropdownHandler } = useTest();
   const testDropdowndata = useSelector(
-    (state: RootState) => state.test.testDropdownData
+    (state: RootState) => state.test.testDropdownData,
   );
-  
-
 
   useEffect(() => {
     testDropdownHandler(() => {});
-
   }, []);
 
   const testObj = testDropdowndata?.map((test: any) => ({
@@ -71,34 +68,34 @@ const SectionTwo: React.FC<SectionTwoProps> = ({
     value: test?.id,
   }));
 
-    // const testIds = testData?.split(",")?.map((item: any) => item.trim());
-    // const testLabelMap = testObj?.filter((item: any) =>
-    //   testIds?.includes(item?.value?.toString())
-    // )?.map((item: any) => {
-    //   return {
-    //     id: item?.value,
-    //     label: item?.label,
-    //     value: item?.value,
-    //   };
-    // });
-    // const testLabelMap = testObj?.filter((item: any) =>
-    //   testIds?.includes(item?.value?.toString())
-    // )?.map((item: any) => item?.label)?.join(",");
-    // console.log("testLabelMap", testLabelMap);
+  // const testIds = testData?.split(",")?.map((item: any) => item.trim());
+  // const testLabelMap = testObj?.filter((item: any) =>
+  //   testIds?.includes(item?.value?.toString())
+  // )?.map((item: any) => {
+  //   return {
+  //     id: item?.value,
+  //     label: item?.label,
+  //     value: item?.value,
+  //   };
+  // });
+  // const testLabelMap = testObj?.filter((item: any) =>
+  //   testIds?.includes(item?.value?.toString())
+  // )?.map((item: any) => item?.label)?.join(",");
+  // console.log("testLabelMap", testLabelMap);
 
-    
-
-  const { values, handleChange, handleTipTapChange,onSetHandler } =
+  const { values, handleChange, handleTipTapChange, onSetHandler } =
     useForm<Consultation | null>(consultationDetail);
 
-    useEffect(() => {
-      onSetHandler("test_id", testData);
-      if (testData) {
-        setSelectedTests(testData?.split(",")?.map((item: any) => Number(item.trim())));
-      }
-    },[testData])
+  useEffect(() => {
+    onSetHandler("test_id", testData);
+    if (testData) {
+      setSelectedTests(
+        testData?.split(",")?.map((item: any) => Number(item.trim())),
+      );
+    }
+  }, [testData]);
 
-const [selectedTests, setSelectedTests] = React.useState<string[]>([]);
+  const [selectedTests, setSelectedTests] = React.useState<string[]>([]);
 
   return (
     <React.Fragment>
@@ -226,24 +223,21 @@ const [selectedTests, setSelectedTests] = React.useState<string[]>([]);
           <MultiSelector
             name="test_id"
             label="Test"
-            value={selectedTests.length > 0 ? selectedTests :  []}
+            value={selectedTests.length > 0 ? selectedTests : []}
             // value={selectedTests || []}
             onChange={(value) => {
               setSelectedTests(value);
               mainOnSetHandler("test_id", value?.join(","));
-            }} 
-            multiSelect={true}
-            showSelectAll={true}
+            }}
             // displayCount={3}
             options={testObj}
             // allowCustomValues={true}
             // defaultValue={
             //   values?.test_id?.toString()?.split(",")?.map((item: any) => Number(item.trim())) || []}
-            
+
             error={errorsTest}
             // defaultValue={testData?.split(",")?.map((item: any) => Number(item.trim())) || []}
           />
-
         </View>
         {/* <View>
           <Select

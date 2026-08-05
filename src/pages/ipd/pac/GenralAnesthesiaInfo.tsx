@@ -107,17 +107,17 @@ const GenralAnesthesiaInfo: React.FC<Props> = ({ anaesthesiaDetail }) => {
           <View className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-6">
             <ReadOnlyField label="Surgeon" value={surgery?.surgeon} />
             <ReadOnlyField
-              label="Surgeon Assistants"
-              value={anaesthesiaDetail?.surgery_assistant}
+              label="Assistant Surgeons"
+              value={surgery?.surgeon_assistants}
             />
             <ReadOnlyField
-              label="Anaesthesiologist"
+              label="Anaesthetist"
               value={surgery?.anaesthetist}
             />
-            <ReadOnlyField
+            {/* <ReadOnlyField
               label="Anaesthesiologist Assistants"
               value={anaesthesiaDetail?.anaesthetist_assistant}
-            />
+            /> */}
           </View>
         </View>
       </View>

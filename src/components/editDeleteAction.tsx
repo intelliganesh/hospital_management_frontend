@@ -12,6 +12,7 @@ import View from "./view";
 interface ActionMenuProps {
   onEdit?: () => void;
   onDelete?: () => void;
+  onDischarge?: () => void;
   onView?: () => void;
   onDownload?: () => void;
   onDownloadPrescription?: () => void;
@@ -26,17 +27,19 @@ interface ActionMenuProps {
 const ActionMenu: React.FC<ActionMenuProps> = ({
   onEdit,
   onDelete,
+  onDischarge,
   onView,
   onDownload,
   editTitle,
   deleteTitle,
+  dischargeTitle,
   downloadTitle,
   downloadPrescriptionTitle,
   onDownloadPrescription,
   onDownloadConsultation,
   downloadConsultationTitle,
   downloadVoucherTitle,
-  onDownloadVoucher
+  onDownloadVoucher,
 }: any) => {
   const handleEdit = () => {
     if (onEdit) onEdit();
@@ -44,6 +47,9 @@ const ActionMenu: React.FC<ActionMenuProps> = ({
 
   const handleDelete = () => {
     if (onDelete) onDelete();
+  };
+  const handleDischarge = () => {
+    if (onDischarge) onDischarge();
   };
   const handleDownload = () => {
     if (onDownload) onDownload();
@@ -61,7 +67,6 @@ const ActionMenu: React.FC<ActionMenuProps> = ({
   const handleView = () => {
     if (onView) onView();
   };
-  
 
   return (
     <>
@@ -94,6 +99,15 @@ const ActionMenu: React.FC<ActionMenuProps> = ({
             title={deleteTitle || ""}
           >
             <Trash size={18} className=" text-danger" />
+          </Button>
+        )}
+        {onDischarge && (
+          <Button
+            onPress={handleDischarge}
+            className="flex items-center w-auto px-2 py-2 text-sm text-red-600 hover:bg-red-100"
+            title={dischargeTitle || "Discharge"}
+          >
+            Discharge
           </Button>
         )}
         {onDownloadPrescription && (
@@ -143,8 +157,8 @@ const ActionMenu: React.FC<ActionMenuProps> = ({
             title={downloadVoucherTitle || ""}
           >
             {/* <View className="flex flex-col gap-1 items-center"> */}
-              <Download size={18} className=" text-primary" />
-              {/* <span className="ml-1 text-xs">INV</span>
+            <Download size={18} className=" text-primary" />
+            {/* <span className="ml-1 text-xs">INV</span>
             </View> */}
           </Button>
         )}

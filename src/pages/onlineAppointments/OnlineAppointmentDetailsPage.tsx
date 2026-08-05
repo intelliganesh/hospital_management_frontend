@@ -132,10 +132,6 @@ const OnlineAppointmentDetailsPage: React.FC = () => {
   const loading = useSelector(
     (state: RootState) => state.onlineAppointments.loading,
   );
-  const whatsappNotificationEnabled = useSelector(
-    (state: RootState) =>
-      Boolean(state.systemSettings?.settings?.whatsapp_notification),
-  );
 
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isSendPaymentOpen, setIsSendPaymentOpen] = useState(false);
@@ -520,7 +516,7 @@ ${appointment.meeting_link}
                 </button>
 
                 {/* d. Resend Meeting Link to Patient */}
-                {hasMeetingLink && whatsappNotificationEnabled && (
+                {hasMeetingLink && (
                   <button
                     type="button"
                     onClick={handleResendToPatient}
@@ -532,7 +528,7 @@ ${appointment.meeting_link}
                 )}
 
                 {/* e. Resend Meeting Link to Doctor */}
-                {hasMeetingLink && whatsappNotificationEnabled && (
+                {hasMeetingLink && (
                   <button
                     type="button"
                     onClick={handleResendToDoctor}

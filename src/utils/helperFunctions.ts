@@ -27,9 +27,11 @@ export const commanButtonStyle = "flex items-center gap-2 px-6 py-3 bg-gradient-
 
 export const dynamicTableCardStyle = "overflow-hidden border-0 shadow-medium bg-white dark:bg-slate-800";
 
-export const formSubmissionFailMessage = () => toast({
+export const formSubmissionFailMessage = (
+    description = "Some information is missing or incorrect. Check the fields and try again."
+) => toast({
         title: "Form submition failed",
         variant: "destructive",
-        description: "Some information is missing or incorrect. Check the fields and try again."
+        description
 })
 

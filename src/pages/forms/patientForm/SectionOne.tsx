@@ -63,11 +63,11 @@ const SectionOne: React.FC<SectionOneProps> = ({
   errorsRefferdBy,
 }) => {
   const patientDetail = useSelector(
-    (state: any) => state.patient.patientDetailData
+    (state: any) => state.patient.patientDetailData,
   );
   const { referedByDocDropdownHandler } = useReferedByDoc();
   const referedByDocList = useSelector(
-    (state: any) => state.referedByDoc.referedByDropdownData
+    (state: any) => state.referedByDoc.referedByDropdownData,
   );
 
   const patientDetailData = {
@@ -106,7 +106,7 @@ const SectionOne: React.FC<SectionOneProps> = ({
   }, [patientDetail?.dob]);
 
   const selectedOption = referedByDocList?.find(
-    (item: any) => String(item.id) === String(values?.referred_by_name)
+    (item: any) => String(item.id) === String(values?.referred_by_name),
   );
 
   return (
@@ -197,8 +197,8 @@ const SectionOne: React.FC<SectionOneProps> = ({
               values?.age
                 ? values?.age + ""
                 : !values?.dob && userAge
-                ? ""
-                : userAge
+                  ? ""
+                  : userAge
             }
             className="w-full"
           />
@@ -427,6 +427,7 @@ const SectionOne: React.FC<SectionOneProps> = ({
             id="id_type"
             label="Patient Identifications"
             name="id_type"
+            className="dark:border-gray-600 dark:!bg-background dark:!text-slate-100"
             // error={errorsIds}
             value={values?.id_type || ""}
             placeholder="Select ID"
@@ -514,10 +515,10 @@ const SectionOne: React.FC<SectionOneProps> = ({
               typeof values?.image === "string"
                 ? values?.image
                 : Array.isArray(values?.image) && values?.image.length > 0
-                ? values?.image
-                    .filter((item) => typeof item === "string")
-                    .join(",")
-                : ""
+                  ? values?.image
+                      .filter((item) => typeof item === "string")
+                      .join(",")
+                  : ""
             }
             onChange={(fileList: any) => {
               const file =
@@ -537,7 +538,9 @@ const SectionOne: React.FC<SectionOneProps> = ({
 
       <View
         className={`grid gap-4 mb-4 ${
-          values?.attendant_id_type ? "grid-cols-1 md:grid-cols-2" : "grid-cols-1"
+          values?.attendant_id_type
+            ? "grid-cols-1 md:grid-cols-2"
+            : "grid-cols-1"
         }`}
       >
         <View className="space-y-4">
@@ -545,6 +548,7 @@ const SectionOne: React.FC<SectionOneProps> = ({
             id="attendant_id_type"
             label="Attendant Identifications"
             name="attendant_id_type"
+            className="dark:border-gray-600 dark:!bg-background dark:!text-slate-100"
             // error={errorsIds}
             value={values?.attendant_id_type || ""}
             placeholder="Select ID"
@@ -664,11 +668,11 @@ const SectionOne: React.FC<SectionOneProps> = ({
                 typeof values?.attendant_image === "string"
                   ? values?.attendant_image
                   : Array.isArray(values?.attendant_image) &&
-                    values?.attendant_image.length > 0
-                  ? values?.attendant_image
-                      .filter((item) => typeof item === "string")
-                      .join(",")
-                  : ""
+                      values?.attendant_image.length > 0
+                    ? values?.attendant_image
+                        .filter((item) => typeof item === "string")
+                        .join(",")
+                    : ""
               }
               onChange={(fileList: any) => {
                 const file =

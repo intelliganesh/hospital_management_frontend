@@ -1,4 +1,11 @@
 export interface PreliminaryNotes {
+  id?: string;
+  ipd?: {
+    ipd_number?: string;
+    patient_name?: string;
+    patient_phone?: string;
+  };
+
   patient_name: string;
   patient_age: number | string;
   gender: string;
@@ -45,6 +52,7 @@ export interface PreliminaryNotes {
   pr?: string;
   dre?: string;
   proctoscopy?: string;
+  examination_comments?: string;
 
   blood_urea?: string;
   esr?: string;
@@ -64,4 +72,5 @@ export interface PreliminaryNotes {
   treatment_given?: string;
   treatment_advised?: string;
   preoperative_instruction?: string;
+
 }

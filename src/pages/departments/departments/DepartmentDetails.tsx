@@ -5,7 +5,7 @@ import Button from "@/components/button";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/actions/store";
-import { clearRoomByIdSuccess } from "@/actions/slices/room";
+import { clearRoomDetailSlice } from "@/actions/slices/rooms";
 import View from "@/components/view";
 import Text from "@/components/text";
 import { useDepartment } from "@/actions/calls/department";
@@ -50,7 +50,7 @@ const DepartmentDetails = () => {
 
     return () => {
       cleanUp();
-      dispatch(clearRoomByIdSuccess());
+      dispatch(clearRoomDetailSlice());
     };
   }, [id]);
 

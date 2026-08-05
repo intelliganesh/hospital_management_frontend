@@ -168,12 +168,26 @@ const IpdBillDetailsPage: React.FC = () => {
   const ipdBillingPaymentDetailData = useSelector(
     (state: any) => state?.ipdBilling?.ipdBillingPaymentDetailData || [],
   );
+  const balanceAmount =
+    Number(ipdBillingDetailsData?.summary?.balance_amount) || 0;
+  const paymentAmount = Number(paymentForm.amount) || 0;
+  const canRecordPayment = paymentAmount > 0;
+  const canConfirmDischarge = balanceAmount <= 0;
 
   React.useEffect(() => {
     if (id) {
       getIpdBillingPaymentDetails(id, () => {});
     }
   }, [id]);
+
+  React.useEffect(() => {
+    if (isReceivePaymentOpen) {
+      setPaymentForm((prev) => ({
+        ...prev,
+        amount: balanceAmount > 0 ? balanceAmount : 0,
+      }));
+    }
+  }, [isReceivePaymentOpen, balanceAmount]);
 
   const handleAddChargeSubmit = () => {
     if (!id) return;
@@ -207,8 +221,10 @@ const IpdBillDetailsPage: React.FC = () => {
 
   const handleReceivePaymentSubmit = () => {
     if (!id) return;
+    if (!canRecordPayment) return;
+
     const payload = {
-      amount: Number(paymentForm.amount) || 0,
+      amount: paymentAmount,
       currency: paymentForm.currency,
       date: paymentForm.date,
       payment_type: paymentForm.payment_type,
@@ -239,6 +255,7 @@ const IpdBillDetailsPage: React.FC = () => {
 
   const handleConfirmDischarge = () => {
     if (!id) return;
+    if (!canConfirmDischarge) return;
 
     setIsDischarging(true);
     IpdFinalBillingDischarge(
@@ -794,6 +811,11 @@ const IpdBillDetailsPage: React.FC = () => {
               }
             />
           </View>
+          {!canRecordPayment && (
+            <Text className="text-sm text-amber-600">
+              Note: Amount must be greater than 0 to record payment.
+            </Text>
+          )}
           <View className="flex flex-row justify-end gap-3 pt-4 border-t border-slate-100">
             <Button
               variant="outline"
@@ -806,6 +828,7 @@ const IpdBillDetailsPage: React.FC = () => {
               variant="primary"
               className="bg-[#2a9d8f]/50 hover:bg-[#2a9d8f] border-none text-white px-6"
               onPress={handleReceivePaymentSubmit}
+              disabled={!canRecordPayment}
             >
               Record Payment
             </Button>
@@ -842,6 +865,12 @@ const IpdBillDetailsPage: React.FC = () => {
               </Text>
             </View>
           </Card>
+          {!canConfirmDischarge && (
+            <Text className="text-sm text-amber-600">
+              Note: Bill has not been settled yet. Clear the balance before
+              confirming discharge.
+            </Text>
+          )}
           <View className="flex flex-row justify-end gap-3 pt-4 border-t border-slate-100">
             <Button
               variant="outline"
@@ -854,7 +883,7 @@ const IpdBillDetailsPage: React.FC = () => {
               variant="primary"
               className="bg-[#2a9d8f] hover:bg-[#21867a] border-none text-white px-6"
               onPress={handleConfirmDischarge}
-              disabled={isDischarging}
+              disabled={isDischarging || !canConfirmDischarge}
             >
               {isDischarging ? "Discharging..." : "Confirm Discharge"}
             </Button>

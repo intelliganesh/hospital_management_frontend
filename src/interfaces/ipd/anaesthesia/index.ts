@@ -20,6 +20,9 @@ export interface AnaesthesiaList extends Anaesthesia {
     ipd_number?: string;
     patient_name?: string;
     patient_age?: string;
+    patient?: {
+      gender?: string;
+    };
   };
   surgery?: {
     surgery_name?: string;

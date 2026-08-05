@@ -217,7 +217,6 @@ export const useOnlineAppointments = () => {
     // meetingLink: string,
     visitType?: string,
     callback?: ApiCallback,
-    extraData?: any,
   ): Promise<void> => {
     try {
       await api.put<any>(
@@ -238,7 +237,6 @@ export const useOnlineAppointments = () => {
           payment_date: paymentDate,
           // meeting_link: meetingLink,
           ...(visitType && { visit_type: visitType }),
-          ...extraData,
         },
       );
     } catch (error) {

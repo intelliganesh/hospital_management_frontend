@@ -1,5 +1,5 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
-import roomReducer from "./slices/room";
+// import roomReducer from "./slices/room";
 import systemSettingsReducer from "./slices/systemSettingsSlice";
 import userReducer from "./slices/userSlice";
 import authentication from "@/actions/slices/auth";
@@ -45,8 +45,23 @@ import fistulaReducer from "./slices/fistula";
 import management from "./slices/management";
 import postSurgery from "./slices/postSurgery";
 import referedByDoc from "./slices/referedByDoc";
+import ipd from "./slices/ipd/ipdEnrollment";
+import wards from "./slices/wards";
+import rooms from "./slices/rooms";
+import beds from "./slices/beds";
+import preliminaryNotes from "./slices/ipd/preliminaryNotes";
+import nurseNotes from "./slices/ipd/nurseNotes";
+import doctorNotes from "./slices/ipd/doctorNotes";
+import anaesthesia from "./slices/ipd/anaesthesia/anaesthesia";
+import surgeryReport from "./slices/ipd/surgeryProcedure/surgeryReport";
+import preOperativeChecklist from "./slices/ipd/surgeryProcedure/preOperativeChecklist";
+import preOpAnaesthesiaEval from "./slices/ipd/anaesthesia/pre-opAnaesthesiaEvaluation";
+import departmentOfAnaesthesia from "./slices/ipd/anaesthesia/departmentOfAnaesthesia";
+import anaesthesiaRecoveryObservation from "./slices/ipd/anaesthesia/anaesthesiaRecoveryObservation";
 import bankDetailsReducer from "./slices/bankDetails";
 import onlineAppointments from "./slices/onlineAppointments";
+import dischargeSummary from "./slices/dischargeSummary";
+import ipdBilling from "./slices/ipd/billing";
 
 const rootReducer = combineReducers({
   authentication,
@@ -77,7 +92,9 @@ const rootReducer = combineReducers({
   expenses,
   expenseReport,
   management,
-  room: roomReducer,
+  preliminaryNotes,
+  dischargeSummary,
+  // room: roomReducer,
   systemSettings: systemSettingsReducer,
   users: userReducer,
   roles: roleReducer,
@@ -96,8 +113,21 @@ const rootReducer = combineReducers({
   dre: dreReducer,
   proctoscopy: proctoscopyReducer,
   fistula: fistulaReducer,
+  ipd,
+  wards,
+  beds,
+  rooms,
+  nurseNotes,
+  doctorNotes,
+  anaesthesia,
+  surgeryReport,
+  preOperativeChecklist,
+  preOpAnaesthesiaEval,
+  departmentOfAnaesthesia,
+  anaesthesiaRecoveryObservation,
   bankDetails: bankDetailsReducer,
   onlineAppointments,
+  ipdBilling,
 });
 
 export const store = configureStore({

@@ -31,10 +31,22 @@ export const EDIT_OPD_URL: string = "/edit-opd-form";
 export const OPD_TABLE_URL: string = "/opd-list";
 export const OPD_DETAIL_URL: string = "/opd-detail";
 
+// wards
+export const WARD_TABLE_URL: string = "/ward-list";
+export const WARD_FORM_URL: string = "/ward-form";
+export const WARD_EDIT_URL: string = "/ward-edit";
+export const WARD_DETAILS_URL: string = "/ward-details";
+
 //rooms urls
 export const ROOMS_FORM_URL: string = "/rooms-form";
 export const ROOMS_TABLE_URL: string = "/system-rooms";
 export const ROOMS_DETAIL_URL: string = "/room-detail";
+
+// bed urls
+export const BED_TABLE_URL: string = "/bed-list";
+export const BED_FORM_URL: string = "/bed-form";
+export const BED_EDIT_URL: string = "/bed-edit";
+export const BED_DETAILS_URL: string = "/bed-details";
 
 //referred By Doctor urls
 export const REFERRED_BY_FORM_URL: string = "/referred-by-form";
@@ -59,7 +71,6 @@ export const CONSULTATION_FORM_URL: string = "/consultation-form";
 export const CONSULTATION_EDIT_URL: string = "/consultation-edit";
 export const CONSULTATION_TABLE_URL: string = "/consultation-list";
 export const CONSULTATION_DETAILS_URL: string = "/consultation-details";
-export const PREVIOUS_CONSULTATIONS_URL: string = "/previous-consultations";
 
 //examination urls
 export const EXAMINATION_FORM_URL: string = "/examination-form";
@@ -227,6 +238,39 @@ export const FISTULA_ENTRY_FORM_URL: string = "/fistula-entry-form";
 // post surgery follow up
 export const POST_SURGERY_FOLLOW_UP_URL: string = "/post-surgery-follow-up";
 
+// IPD URLs
+export const IPD_ENROLLMENTS_URL: string = "/ipd-enrollments";
+export const IPD_ENROLLMENT_DETAILS_URL: string = "/ipd-enrollment-details";
+// export const IPD_PATIENTS_URL: string = "/ipd-patients";
+export const IPD_ENROLLMENT_FORM_URL = "/ipd/enrollment-form";
+export const IPD_ENROLLMENT_FORM_EDIT_URL = "/ipd/enrollment-form-edit";
+export const IPD_PATIENT_DETAIL_URL = "/ipd/patient-detail";
+
+// Nurse Notes
+export const NURSE_NOTES_URL = "/nurse-notes";
+export const NURSE_NOTE_ADD_URL = "/nurse-notes/add";
+export const NURSE_NOTE_EDIT_URL = "/nurse-notes/edit";
+
+//managementients
+export const IPD_PATIENTS_URL: string = "/ipd-patients-list";
+// export const IPD_PATIENTS_FORM_URL: string = "/ipd-patients-form";
+// export const IPD_PATIENTS_EDIT_URL: string = "/ipd-patients-edit";
+export const IPD_PATIENTS_DETAILS_URL: string = "/ipd-patients-details";
+export const PRELIMINARY_NOTES_URL: string = "/preliminary-notes";
+export const DOCTOR_NOTES_URL: string = "/doctor-notes";
+export const DOCTOR_NOTES_ADD_URL: string = "/doctor-notes/add";
+export const DOCTOR_NOTES_EDIT_URL: string = "/doctor-notes/edit";
+
+export const SURGERY_PROCEDURE_URL: string = "/surgery-procedure";
+export const SURGERY_LIST_URL: string = "/surgery-list";
+
+export const DOWNLOAD_SURGERY_FORM: string = "/download-surgery-form";
+export const DOWNLOAD_SURGERY_REPORTS: string = "/download-surgery-reports";
+
+// IPD Billing URLs
+export const IPD_BILLS_URL: string = "/ipd-bills";
+export const IPD_BILL_DETAILS_URL: string = "/ipd-bill-details";
+export const IPD_BILL_VIEW_URL: string = "/ipd-bill-view";
 // bank details urls
 export const BANK_DETAILS_TABLE_URL: string = "/bank-details-list";
 export const BANK_DETAILS_FORM_URL: string = "/bank-details-form";
@@ -235,4 +279,5 @@ export const BANK_DETAILS_DETAILS_URL: string = "/bank-details-details";
 
 // online appointments urls
 export const ONLINE_APPOINTMENT_TABLE_URL: string = "/online-appointments";
-export const ONLINE_APPOINTMENT_DETAILS_URL: string = "/online-appointments/:id";
+export const ONLINE_APPOINTMENT_DETAILS_URL: string =
+  "/online-appointments/:id";

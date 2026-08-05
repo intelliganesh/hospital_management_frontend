@@ -49,7 +49,7 @@ const DownloadSurgeryForm = () => {
     },
   ];
 
-  const DownloadCard = ({ item }) => {
+  const DownloadCard = (item: any) => {
     const Icon = item.icon;
     return (
       <button className="group relative flex items-center gap-4 p-4 bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl hover:border-slate-300 dark:hover:border-slate-600 hover:shadow-md transition-all duration-200 w-full sm:w-auto min-w-[240px]">
@@ -114,7 +114,6 @@ const DownloadSurgeryForm = () => {
           ))}
         </View>
       </Card>
-    
     </View>
   );
 };

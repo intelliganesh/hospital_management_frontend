@@ -7,13 +7,12 @@ import { useEffect, useState } from "react";
 import { validationForm } from "./validationForm";
 import { toast } from "@/utils/custom-hooks/use-toast";
 import { FormTypeProps } from "@/interfaces/dashboard";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useBeds } from "@/actions/calls/beds";
 import { clearBedDetailSlice } from "@/actions/slices/beds";
 import { Bed } from "@/interfaces/beds";
-import { useRoom } from "@/actions/calls/rooms";
+// import { useRoom } from "@/actions/calls/rooms";
 import { useWards } from "@/actions/calls/wards";
-import { RootState } from "@/actions/store";
 // import { RootState } from "@/actions/store";
 
 const BedsForm: React.FC<FormTypeProps> = ({ formType = "add" }) => {
@@ -27,9 +26,9 @@ const BedsForm: React.FC<FormTypeProps> = ({ formType = "add" }) => {
   const { wardDropdownHandler } = useWards();
   useEffect(() => {
     if (formType === "edit" && id) {
-      bedDetailHandler(id, () => { });
+      bedDetailHandler(id, () => {});
     }
-    wardDropdownHandler(() => { });
+    wardDropdownHandler(() => {});
     return () => {
       dispatch(clearBedDetailSlice());
     };
@@ -49,9 +48,6 @@ const BedsForm: React.FC<FormTypeProps> = ({ formType = "add" }) => {
       console.log("bedFormObj", bedFormObj);
       await validationForm.validate(bedFormObj, { abortEarly: false });
       setErrors({});
-
-
-
 
       // console.log("bedFormObj", bedFormObj);
       setIsSubmitting(true);

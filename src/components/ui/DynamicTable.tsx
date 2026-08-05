@@ -1,7 +1,7 @@
 import React from "react";
 import View from "../view";
 import Text from "../text";
-import { ArchiveX } from "lucide-react";
+import { ArchiveX, ArrowUp, ArrowDown, ArrowUpDown } from "lucide-react";
 import BouncingLoader from "../BouncingLoader";
 import {
   Table,
@@ -14,7 +14,7 @@ import {
 
 interface DynamicTableProps {
   tableData: any[];
-  tableHeaders: string[];
+  tableHeaders: (string | { label: string; key: string })[];
   isLoading?: boolean;
   emptyMessage?: string;
   emptyIcon?: React.ReactNode;
@@ -34,6 +34,9 @@ interface DynamicTableProps {
   footer?: {
     pagination?: React.ReactNode;
   };
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
+  onSort?: (key: string, order: "asc" | "desc") => void;
 }
 
 const DynamicTable: React.FC<DynamicTableProps> = ({
@@ -49,13 +52,16 @@ const DynamicTable: React.FC<DynamicTableProps> = ({
   onRowClick,
   header,
   footer,
+  sortBy,
+  sortOrder,
+  onSort,
 }) => {
   return (
     <View>
       {/* Header controls */}
-      {/* {(header?.search || header?.sort || header?.filter || header?.action) && ( */}
-      {/* <View className="p-4 border-b border-neutral-200 bg-card flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center  dark:border-none"> */}
-      <View className="p-6 border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
+      {
+        header && (
+          <View className="p-6 border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
         <View className="flex gap-2 w-full  justify-between items-center ">
           {header?.search}
           <View className="flex gap-3">
@@ -67,24 +73,45 @@ const DynamicTable: React.FC<DynamicTableProps> = ({
           </View>
         </View>
       </View>
-      {/* )} */}
+        )
+      }
 
       {/* Table */}
       <View className="overflow-x-auto">
         <Table className="w-full min-w-max">
           <TableHeader>
-            {/* <TableRow className="bg-neutral-100 font-bold border-b border-neutral-200 dark:bg-background dark:border-none"> */}
             <TableRow className="bg-slate-50 dark:bg-slate-700/50 border-b border-slate-200 dark:border-slate-600">
-              {tableHeaders.map((header, index) => (
-                <TableHead
-                  key={index}
-                  // className={`py-3 px-4 text-sm text-text-light dark:text-gray-400"}`}
-                  className="py-4 px-6 text-sm font-semibold text-slate-700 dark:text-slate-300 text-left"
-                  // style={{ fontWeight: "bold" }}
-                >
-                  {header}
-                </TableHead>
-              ))}
+              {tableHeaders.map((headerItem, index) => {
+                const label = typeof headerItem === "string" ? headerItem : headerItem.label;
+                const sortKey = typeof headerItem === "object" ? headerItem.key : undefined;
+                const isSorted = sortBy === sortKey;
+
+                return (
+                  <TableHead
+                    key={index}
+                    className={`py-4 px-6 text-sm font-semibold text-slate-700 dark:text-slate-300 text-left ${sortKey ? "cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700" : ""}`}
+                    onClick={() => {
+                        if (sortKey && onSort) {
+                            const newOrder = isSorted && sortOrder === "asc" ? "desc" : "asc";
+                            onSort(sortKey, newOrder);
+                        }
+                    }}
+                  >
+                   <View className="flex items-center justify-between gap-2">
+                    {label}
+                    {sortKey && (
+                        <View className="text-slate-400">
+                             {isSorted ? (
+                                sortOrder === "asc" ? <ArrowUp size={14} /> : <ArrowDown size={14} />
+                             ) : (
+                                <ArrowUpDown size={14} />
+                             )}
+                        </View>
+                    )}
+                   </View>
+                  </TableHead>
+                );
+              })}
             </TableRow>
           </TableHeader>
           <TableBody>

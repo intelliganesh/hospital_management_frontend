@@ -17,7 +17,7 @@ function useForm<T>(initialValues: T) {
     e:
       | ChangeEvent<HTMLInputElement>
       | ChangeEvent<HTMLTextAreaElement>
-      | ChangeEvent<HTMLSelectElement>
+      | ChangeEvent<HTMLSelectElement>,
   ) => {
     const { name, value, type } = e.target;
     // startTransition(() => {
@@ -58,7 +58,7 @@ function useForm<T>(initialValues: T) {
 
   const onSetHandler = (
     name: string,
-    value: string | boolean | number | File[] | string[] | any[]
+    value: string | boolean | number | File[] | string[] | any[],
   ) => {
     setValues((prevValues) => ({
       ...prevValues,

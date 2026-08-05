@@ -16,7 +16,6 @@ import {
 import DynamicTable from "@/components/ui/DynamicTable";
 import Text from "@/components/text";
 import getStatusColorScheme from "@/utils/statusColorSchemaDecider";
-import Input from "@/components/input";
 import SingleSelector from "@/components/SingleSelector";
 import { useIpdPatients } from "@/actions/calls/ipd";
 import { useDispatch, useSelector } from "react-redux";
@@ -324,12 +323,12 @@ const IpdEnrollmentsPage: React.FC = () => {
                 >
                   {patient.doctor_name}
                 </Text>
-                <Text
+                {/* <Text
                   as="span"
                   className="text-xs text-slate-500"
                 >
                   {patient.doctor_id}
-                </Text>
+                </Text> */}
               </View>
             </View>,
             patient.type || "N/A",

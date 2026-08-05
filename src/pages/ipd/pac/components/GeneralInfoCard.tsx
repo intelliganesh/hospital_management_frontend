@@ -174,7 +174,7 @@ const GeneralInfoCard: React.FC<Props> = ({ readOnly }) => {
             label="Age"
             value={anaesthesiaDetail?.ipd?.patient_age || "N/A"}
           />
-          <ViewField label="Gender" value={values?.gender || "N/A"} />
+          <ViewField label="Gender" value={anaesthesiaDetail?.ipd?.patient?.gender || "N/A"} />
         </View>
 
         {/* Input fields */}
@@ -277,21 +277,21 @@ const GeneralInfoCard: React.FC<Props> = ({ readOnly }) => {
             value={anaesthesiaDetail?.surgery?.surgeon || "N/A"}
           />
           <ViewField
-            label="Surgeon Assistants"
+            label="Assistant Surgeons"
             value={values?.surgeon_assistants || "N/A"}
           />
           <ViewField
-            label="Anesthesiologist"
+            label="Anesthetist"
             value={anaesthesiaDetail?.surgery?.anaesthetist || "N/A"}
           />
 
-          <Input
+          {/* <Input
             id="anesthesiologist_assistants"
             name="anaesthetist_assistant"
             label="Anaesthesiologist Assistants"
             value={values?.anaesthetist_assistant || ""}
             onChange={handleChange}
-          />
+          /> */}
         </View>
       </View>
 

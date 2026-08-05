@@ -1,7 +1,7 @@
 import Input from "@/components/input";
 import View from "@/components/view";
 import useForm from "@/utils/custom-hooks/use-form";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { RootState } from "@/actions/store";
 // import { Department } from "@/interfaces/departments";
 import { Bed, BedType } from "@/interfaces/beds";
@@ -28,10 +28,10 @@ const SectionOne: React.FC<SectionOneProps> = ({
   const [wardId, setWardId] = useState<number | null>(null);
   const { roomDropdownHandler } = useRoom();
   const roomDropdownData = useSelector(
-    (state: RootState) => state?.rooms?.roomDropdownData
+    (state: RootState) => state?.rooms?.roomDropdownData,
   );
   const wardDropdownData = useSelector(
-    (state: RootState) => state?.wards?.wardDropdownData
+    (state: RootState) => state?.wards?.wardDropdownData,
   );
   const roomObj = roomDropdownData?.map((room: any) => ({
     id: room?.id,
@@ -44,15 +44,15 @@ const SectionOne: React.FC<SectionOneProps> = ({
     value: ward?.id,
   }));
   const bedData = useSelector(
-    (state: RootState) => state?.beds?.bedDetailData
+    (state: RootState) => state?.beds?.bedDetailData,
   ) as Partial<Bed> | null;
   const { values, handleChange, onSetHandler } = useForm<Partial<Bed> | null>(
-    bedData
+    bedData,
   );
 
   useEffect(() => {
     if (wardId) {
-      roomDropdownHandler(wardId, () => { });
+      roomDropdownHandler(wardId, () => {});
     }
   }, [wardId]);
 

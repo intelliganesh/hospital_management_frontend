@@ -23,7 +23,7 @@ const PreOpEvalTab: React.FC<Props> = ({ detail, uploadPath, onPreview }) => {
       {/* ── ASA & Consent ── */}
       <View className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <ASAGradingTiles value={detail?.asa_grading} />
-        <ReadOnlyField
+        {/* <ReadOnlyField
           label="Informed Consent"
           value={
             detail?.informed_consent !== undefined &&
@@ -33,7 +33,7 @@ const PreOpEvalTab: React.FC<Props> = ({ detail, uploadPath, onPreview }) => {
                 : "No"
               : null
           }
-        />
+        /> */}
       </View>
 
       {/* ── Physical Examination ── */}

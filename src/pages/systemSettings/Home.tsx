@@ -61,11 +61,6 @@ const SystemSettingsPage = () => {
         } else {
           (systemSettingsObj as any)["email_notification"] = false;
         }
-        if (formData.get("whatsapp_notification") === "on") {
-          (systemSettingsObj as any)["whatsapp_notification"] = true;
-        } else {
-          (systemSettingsObj as any)["whatsapp_notification"] = false;
-        }
         if (key === "hospital_logo" && value instanceof File) {
           if (value.size > 0) {
             logoFile = value;
@@ -249,6 +244,9 @@ const SystemSettingsPage = () => {
             errorsVoucherPrefix={errors.voucher_prefix}
             errorsVoucherStartNumber={errors.voucher_start_number}
             errorsVoucherStatus={errors.voucher_status}
+            errorsWardPrefix={errors.ward_prefix}
+            errorsRoomPrefix={errors.room_prefix}
+            errorsBedPrefix={errors.bed_prefix}
           />
 
           {/* Theme Settings */}

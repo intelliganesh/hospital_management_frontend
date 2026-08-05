@@ -18,7 +18,11 @@ import { formSubmissionFailMessage } from "@/utils/helperFunctions";
 import { validationSchema } from "./nurseNotesFormValidation";
 import { RootState } from "@/actions/store";
 import { useOpd } from "@/actions/calls/opd";
-import { IPD_PATIENTS_DETAILS_URL, IPD_PATIENTS_URL, NURSE_NOTES_URL } from "@/utils/urls/frontend";
+import {
+  IPD_PATIENTS_DETAILS_URL,
+  IPD_PATIENTS_URL,
+  NURSE_NOTES_URL,
+} from "@/utils/urls/frontend";
 import BouncingLoader from "@/components/BouncingLoader";
 import {
   Breadcrumb,
@@ -30,9 +34,10 @@ import {
 } from "@/components/ui/breadcrumb";
 import { useDateFormater } from "@/utils/custom-hooks/useDateFormater";
 
-const NoteFormPage: React.FC<FormTypeProps> = ({
-  formType = "add"
-}) => {
+import { useIpdPatients } from "@/actions/calls/ipd";
+import { clearIpdPatientDetailDataSlice } from "@/actions/slices/ipd/ipdEnrollment";
+
+const NoteFormPage: React.FC<FormTypeProps> = ({ formType = "add" }) => {
   const { id: ipdID, noteId } = useParams<{
     id: string;
     noteId?: string;
@@ -40,174 +45,213 @@ const NoteFormPage: React.FC<FormTypeProps> = ({
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const isEditMode = formType === "edit";
-  const nurseNotesDetail = useSelector((state: RootState) => state.nurseNotes.nurseNotesDetailData);
-  const {getCurrentDateTimeLocal} = useDateFormater()
+  const nurseNotesDetail = useSelector(
+    (state: RootState) => state.nurseNotes.nurseNotesDetailData,
+  );
+  const ipdPatientDetailData = useSelector(
+    (state: RootState) => state.ipd.ipdPatientDetailData,
+  );
+  const { getCurrentDateTimeLocal } = useDateFormater();
 
-  const nurseList = useSelector((state: RootState) => state.opd.allUserList)?.filter((nurse: any) => nurse.role === "Nurse")?.map((nurse: any) => ({
-            label: nurse.name,
-            value: nurse.id,
-          }));
+  const nurseList = useSelector((state: RootState) => state.opd.allUserList)
+    ?.filter((nurse: any) => nurse.role === "Nurse")
+    ?.map((nurse: any) => ({
+      label: nurse.name,
+      value: nurse.id,
+    }));
 
   const [isLoading, setIsLoading] = useState(false);
-   
-  
 
-  const {addNurseNotesHandler, editNurseNotesHandler, nurseNotesListHandler,  nurseNotesDetailHandler, cleanUp} = useNurseNotes()
+  const {
+    addNurseNotesHandler,
+    editNurseNotesHandler,
+    nurseNotesDetailHandler,
+    cleanUp,
+  } = useNurseNotes();
 
-    const { PuaListHandler} = useOpd()
-  
+  const { ipdPatientDetailHandler } = useIpdPatients();
 
-    const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+  const { PuaListHandler } = useOpd();
+
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
- useEffect(() => {
-     if (formType === "add") {
-       dispatch(clearNurseNotesDetailSlice()); // start fresh for new patient
-     }
-   }, [formType, dispatch]);
-
-   useEffect(() => {
-       if (isEditMode && noteId ) {
-         nurseNotesDetailHandler(
-           noteId,
-           () => {},
-           [],
-           (status: LoadingStatus) => {
-             setIsLoading(
-               status === "pending"
-                 ? true
-                 : status === "failed"
-                 ? true
-                 : status === "success" && false
-             );
-           }
-         );
-       }
-       return () => {
-         cleanUp();
-         dispatch(clearNurseNotesDetailSlice());
-       };
-     }, [noteId, formType]);
-
-      useEffect(() => {
-               PuaListHandler(() => {});
-             }, []);
-     
-    const { values, handleChange, onSetHandler } =
-    useForm<NurseNotes>(nurseNotesDetail || {});
-
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
-      const formData = new FormData(e.currentTarget);
-  
-      let nurseNotesFormObj: Partial<NurseNotes> = {};
-  
-      for (let [key, value] of formData.entries()) {
-        nurseNotesFormObj[key as keyof NurseNotes] = value as any;
+  useEffect(() => {
+    if (formType === "add") {
+      dispatch(clearNurseNotesDetailSlice()); // start fresh for new patient
+      if (ipdID) {
+        ipdPatientDetailHandler(ipdID, () => {});
       }
+    }
+  }, [formType, ipdID, dispatch]);
 
-      nurseNotesFormObj = formType === "add" ? {...nurseNotesFormObj, ipd_id: ipdID}: {...nurseNotesFormObj, ipd_id: nurseNotesDetail?.ipd_id};
-
-      nurseNotesFormObj["nurse_id"] = Number(values["nurse_id"]);
-      nurseNotesFormObj["datetime"] = dayjs(values["datetime"]).format("YYYY-MM-DD HH:mm:ss");
-       
-      try {
-        await validationSchema.validate(nurseNotesFormObj, { abortEarly: false });
-        setFormErrors({});
-        setIsSubmitting(true);
-        if (formType === "add") {
-          // Add new patient
-          addNurseNotesHandler(
-            nurseNotesFormObj,
-            async (success: boolean) => {
-              if (success) {
-                navigate(`${IPD_PATIENTS_URL}${IPD_PATIENTS_DETAILS_URL}/${ipdID}${NURSE_NOTES_URL}`);
-  
-                toast({
-                  title: "Success!",
-                  description: "Note added successfully.",
-                  variant: "success",
-                });
-                
-                // await nurseNotesListHandler(ipdID, () => {});
-              } else {
-                setIsSubmitting(false);
-              }
-            }
+  useEffect(() => {
+    if (isEditMode && noteId) {
+      nurseNotesDetailHandler(
+        noteId,
+        () => {},
+        [],
+        (status: LoadingStatus) => {
+          setIsLoading(
+            status === "pending"
+              ? true
+              : status === "failed"
+                ? true
+                : status === "success" && false,
           );
-        } else if (noteId) {
-           editNurseNotesHandler(
-            noteId,
-            nurseNotesFormObj,
-            async (success: boolean) => {
-              if (success) {
-                navigate(`${IPD_PATIENTS_URL}${IPD_PATIENTS_DETAILS_URL}/${ipdID}${NURSE_NOTES_URL}`);
-  
-                toast({
-                  title: "Success!",
-                  description: "Note updated successfully.",
-                  variant: "success",
-                });
-                
-                // await nurseNotesListHandler(ipdID, () => {});
-              } else {
-                setIsSubmitting(false);
-              }
-            }
-          );
-          }
-        } catch (err: any) {
-        setIsSubmitting(false);
-        if (err.inner) {
-          const errors: Record<string, string> = {};
-          err.inner.forEach((e: any) => {
-            if (e.path) errors[e.path] = e.message;
-          });
-          setFormErrors(errors);
-  
-          formSubmissionFailMessage();
-        }
-      }
+        },
+      );
+    }
+    return () => {
+      cleanUp();
+      dispatch(clearNurseNotesDetailSlice());
+      dispatch(clearIpdPatientDetailDataSlice());
     };
+  }, [noteId, formType]);
 
-   
+  useEffect(() => {
+    PuaListHandler(() => {});
+  }, []);
+
+  const dutyNurse =
+    formType === "add"
+      ? ipdPatientDetailData?.staffs?.find(
+          (staff: any) =>
+            staff.user_role === "nurse" || staff.user_role === "duty_nurse",
+        )
+      : null;
+
+  const nurseNotesFormObj = {
+    ...nurseNotesDetail,
+    nurse_id: nurseNotesDetail?.nurse_id || dutyNurse?.user_id || "",
+  };
+
+  const { values, handleChange, onSetHandler } = useForm<NurseNotes>(
+    nurseNotesFormObj || {},
+  );
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+
+    let nurseNotesFormObj: Partial<NurseNotes> = {};
+
+    for (let [key, value] of formData.entries()) {
+      nurseNotesFormObj[key as keyof NurseNotes] = value as any;
+    }
+
+    nurseNotesFormObj =
+      formType === "add"
+        ? { ...nurseNotesFormObj, ipd_id: ipdID }
+        : { ...nurseNotesFormObj, ipd_id: nurseNotesDetail?.ipd_id };
+
+    nurseNotesFormObj["nurse_id"] = Number(values["nurse_id"]);
+    nurseNotesFormObj["datetime"] = dayjs(values["datetime"]).format(
+      "YYYY-MM-DD HH:mm:ss",
+    );
+
+    try {
+      await validationSchema.validate(nurseNotesFormObj, { abortEarly: false });
+      setFormErrors({});
+      setIsSubmitting(true);
+      if (formType === "add") {
+        // Add new patient
+        addNurseNotesHandler(nurseNotesFormObj, async (success: boolean) => {
+          if (success) {
+            navigate(
+              `${IPD_PATIENTS_URL}${IPD_PATIENTS_DETAILS_URL}/${ipdID}${NURSE_NOTES_URL}`,
+            );
+
+            toast({
+              title: "Success!",
+              description: "Note added successfully.",
+              variant: "success",
+            });
+
+            // await nurseNotesListHandler(ipdID, () => {});
+          } else {
+            setIsSubmitting(false);
+          }
+        });
+      } else if (noteId) {
+        editNurseNotesHandler(
+          noteId,
+          nurseNotesFormObj,
+          async (success: boolean) => {
+            if (success) {
+              navigate(
+                `${IPD_PATIENTS_URL}${IPD_PATIENTS_DETAILS_URL}/${ipdID}${NURSE_NOTES_URL}`,
+              );
+
+              toast({
+                title: "Success!",
+                description: "Note updated successfully.",
+                variant: "success",
+              });
+
+              // await nurseNotesListHandler(ipdID, () => {});
+            } else {
+              setIsSubmitting(false);
+            }
+          },
+        );
+      }
+    } catch (err: any) {
+      setIsSubmitting(false);
+      if (err.inner) {
+        const errors: Record<string, string> = {};
+        err.inner.forEach((e: any) => {
+          if (e.path) errors[e.path] = e.message;
+        });
+        setFormErrors(errors);
+
+        formSubmissionFailMessage();
+      }
+    }
+  };
 
   return (
     <View className="min-h-screen bg-slate-50 dark:bg-slate-900 p-4 flex flex-col items-center">
       {isLoading ? <BouncingLoader isLoading={isLoading} /> : null}
 
-       <View className="w-full max-w-4xl">
+      <View className="w-full max-w-4xl">
         <Breadcrumb className="mb-4">
-                      <BreadcrumbList>
-                        <BreadcrumbItem>
-                          <BreadcrumbLink to="/">Dashboard</BreadcrumbLink>
-                        </BreadcrumbItem>
-                        <BreadcrumbSeparator />
-                        <BreadcrumbItem>
-                          <BreadcrumbLink to={`${IPD_PATIENTS_URL}`}>IPD Patients</BreadcrumbLink>
-                        </BreadcrumbItem>
-                        <BreadcrumbSeparator />
-                        <BreadcrumbItem>
-                          <BreadcrumbLink to={`${IPD_PATIENTS_URL}${IPD_PATIENTS_DETAILS_URL}/${ipdID}`}>
-                            IPD Patient Details
-                          </BreadcrumbLink>
-                        </BreadcrumbItem>
-                        <BreadcrumbSeparator />
-                        <BreadcrumbItem>
-                          <BreadcrumbLink to={`${IPD_PATIENTS_URL}${IPD_PATIENTS_DETAILS_URL}/${ipdID}${NURSE_NOTES_URL}`}>
-                            Nurse Notes
-                          </BreadcrumbLink>
-                        </BreadcrumbItem>
-                        <BreadcrumbSeparator />
-                        <BreadcrumbItem>
-                          <BreadcrumbPage>
-                            {isEditMode ? "Edit Nurse Note" : "Add Nurse Note"}
-                          </BreadcrumbPage>
-                        </BreadcrumbItem>
-                      </BreadcrumbList>
-                    </Breadcrumb>
-       </View>
-     
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink to="/">Dashboard</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink to={`${IPD_PATIENTS_URL}`}>
+                IPD Patients
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink
+                to={`${IPD_PATIENTS_URL}${IPD_PATIENTS_DETAILS_URL}/${ipdID}`}
+              >
+                IPD Patient Details
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink
+                to={`${IPD_PATIENTS_URL}${IPD_PATIENTS_DETAILS_URL}/${ipdID}${NURSE_NOTES_URL}`}
+              >
+                Nurse Notes
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>
+                {isEditMode ? "Edit Nurse Note" : "Add Nurse Note"}
+              </BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+      </View>
+
       <View className="w-full max-w-4xl space-y-6">
         {/* Page Header */}
         <View className="flex justify-between items-center">
@@ -218,16 +262,23 @@ const NoteFormPage: React.FC<FormTypeProps> = ({
             >
               {isEditMode ? "Edit Nurse Note" : "Add Nurse Note"}
             </Text>
-            <Text
-              as="p"
-              className="text-slate-600 dark:text-slate-400 text-sm"
-            >
-              {formType === "add" ? dayjs().format("dddd, MMMM DD, YYYY") : nurseNotesDetail?.datetime ? dayjs(nurseNotesDetail?.datetime).format("dddd, MMMM DD, YYYY") : "N/A"}
+            <Text as="p" className="text-slate-600 dark:text-slate-400 text-sm">
+              {formType === "add"
+                ? dayjs().format("dddd, MMMM DD, YYYY")
+                : nurseNotesDetail?.datetime
+                  ? dayjs(nurseNotesDetail?.datetime).format(
+                      "dddd, MMMM DD, YYYY",
+                    )
+                  : "N/A"}
             </Text>
           </View>
           <Button
             variant="outline"
-            onPress={() => navigate(`${IPD_PATIENTS_URL}${IPD_PATIENTS_DETAILS_URL}/${ipdID}${NURSE_NOTES_URL}`)}
+            onPress={() =>
+              navigate(
+                `${IPD_PATIENTS_URL}${IPD_PATIENTS_DETAILS_URL}/${ipdID}${NURSE_NOTES_URL}`,
+              )
+            }
           >
             Cancel
           </Button>
@@ -265,8 +316,8 @@ const NoteFormPage: React.FC<FormTypeProps> = ({
                 Vitals
               </Text>
               <View className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <View>
-                    <Input
+                <View>
+                  <Input
                     id="temperature"
                     name="temperature"
                     label="Temperature (°F)"
@@ -280,8 +331,8 @@ const NoteFormPage: React.FC<FormTypeProps> = ({
                       {formErrors.temperature}
                     </Text>
                   )}
-                  </View>
-                  <View>
+                </View>
+                <View>
                   <Input
                     id="bp"
                     name="bp"
@@ -296,8 +347,8 @@ const NoteFormPage: React.FC<FormTypeProps> = ({
                       {formErrors.bp}
                     </Text>
                   )}
-                  </View>
-                  <View>
+                </View>
+                <View>
                   <Input
                     id="pulse"
                     name="pulse"
@@ -312,8 +363,8 @@ const NoteFormPage: React.FC<FormTypeProps> = ({
                       {formErrors.pulse}
                     </Text>
                   )}
-                  </View>
-                  <View>
+                </View>
+                <View>
                   <Input
                     id="spo2"
                     name="spo2"
@@ -328,7 +379,7 @@ const NoteFormPage: React.FC<FormTypeProps> = ({
                       {formErrors.spo2}
                     </Text>
                   )}
-                  </View>
+                </View>
               </View>
             </View>
 
@@ -360,19 +411,19 @@ const NoteFormPage: React.FC<FormTypeProps> = ({
               <View className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <View>
                   <SingleSelector
-                id="nurse"
-                name="nurse_id"
-                label="This Note document by"
-                value={values?.nurse_id || ""}
-                onChange={(value) => onSetHandler("nurse_id", value)}
-                options={nurseList}
-                placeholder="Select Nurse"
-              />
-              {formErrors.nurse && (
-                <Text className="text-red-500 text-sm mt-1">
-                  {formErrors.nurse}
-                </Text>
-              )}
+                    id="nurse"
+                    name="nurse_id"
+                    label="This Note document by"
+                    value={values?.nurse_id || ""}
+                    onChange={(value) => onSetHandler("nurse_id", value)}
+                    options={nurseList}
+                    placeholder="Select Nurse"
+                  />
+                  {formErrors.nurse && (
+                    <Text className="text-red-500 text-sm mt-1">
+                      {formErrors.nurse}
+                    </Text>
+                  )}
                 </View>
                 <View>
                   <Input
@@ -380,7 +431,10 @@ const NoteFormPage: React.FC<FormTypeProps> = ({
                     name="datetime"
                     label="Date & Time"
                     type="datetime-local"
-                    value={dayjs(values?.datetime).format("YYYY-MM-DDTHH:mm") || getCurrentDateTimeLocal()}
+                    value={
+                      dayjs(values?.datetime).format("YYYY-MM-DDTHH:mm") ||
+                      getCurrentDateTimeLocal()
+                    }
                     onChange={handleChange}
                     placeholder="Enter Date & Time"
                   />
@@ -398,13 +452,21 @@ const NoteFormPage: React.FC<FormTypeProps> = ({
               <Button
                 variant="outline"
                 onPress={() =>
-                  navigate(`${IPD_PATIENTS_URL}${IPD_PATIENTS_DETAILS_URL}/${ipdID}${NURSE_NOTES_URL}`)
+                  navigate(
+                    `${IPD_PATIENTS_URL}${IPD_PATIENTS_DETAILS_URL}/${ipdID}${NURSE_NOTES_URL}`,
+                  )
                 }
               >
                 Cancel
               </Button>
               <Button type="submit">
-                {isEditMode ? isSubmitting ? "Updating..." : "Update Note" : isSubmitting ? "Saving..." : "Save Note"}
+                {isEditMode
+                  ? isSubmitting
+                    ? "Updating..."
+                    : "Update Note"
+                  : isSubmitting
+                    ? "Saving..."
+                    : "Save Note"}
               </Button>
             </View>
           </View>

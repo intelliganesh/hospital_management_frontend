@@ -20,11 +20,6 @@ const EmailWatsappNotification: React.FC<{}> = () => {
       target: { name: "email_notification", value: String(checked) },
     } as any);
   };
-  const handleWhatsappSwitchChange = (checked: boolean) => {
-    handleChange({
-      target: { name: "whatsapp_notification", value: String(checked) },
-    } as any);
-  }
   return (
     <>
       <Card>
@@ -53,7 +48,7 @@ const EmailWatsappNotification: React.FC<{}> = () => {
                   labelPosition="right"
                   id="whatsapp_notification"
                   name="whatsapp_notification"
-                  onChange={handleWhatsappSwitchChange}
+                  onChange={handleSwitchChange}
                   defaultChecked={values?.whatsapp_notification}
                 />
               </View>

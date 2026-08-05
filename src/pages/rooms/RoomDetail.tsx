@@ -4,15 +4,16 @@ import { Building, MapPin, BedDouble } from "lucide-react";
 // import { RoomStatus } from "@/interfaces/master/rooms";
 import Button from "@/components/button";
 import { useEffect, useState } from "react";
-import { useRoom } from "@/actions/calls/room";
+import { useRoom } from "@/actions/calls/rooms";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/actions/store";
 import { Badge } from "@/components/ui/badge";
-import { clearRoomByIdSuccess } from "@/actions/slices/room";
+import { clearRoomDetailSlice } from "@/actions/slices/rooms";
 import View from "@/components/view";
 import Text from "@/components/text";
 import getStatusColorScheme from "@/utils/statusColorSchemaDecider";
 import BouncingLoader from "@/components/BouncingLoader";
+import { LoadingStatus } from "@/interfaces";
 
 const RoomDetails = () => {
   const { id } = useParams();
@@ -21,11 +22,11 @@ const RoomDetails = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
-  const roomData = useSelector((state: RootState) => state.room.currentRoom);
+  const roomData = useSelector((state: RootState) => state.rooms.roomDetailData);
 
   useEffect(() => {
     if (id) {
-      getRoomById(id, () => {}, [], (status) => {
+      getRoomById(id, () => {}, [], (status:LoadingStatus) => {
         setIsLoading(status === "pending" ? true : status === "failed" ? true : status === "success" && false);
       }
       );
@@ -33,7 +34,7 @@ const RoomDetails = () => {
     }
     return () => {
       cleanUp();
-      dispatch(clearRoomByIdSuccess());
+      dispatch(clearRoomDetailSlice());
     };
   }, []);
 

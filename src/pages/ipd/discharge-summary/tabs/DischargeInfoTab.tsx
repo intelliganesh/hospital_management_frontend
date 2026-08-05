@@ -27,7 +27,7 @@ interface Props {
 }
 
 const DischargeInfoTab: React.FC<Props> = ({ readOnly = false }) => {
-  const { values, handleChange, onSetHandler } = useForm<DischargeInfo>({
+  const { values, handleChange } = useForm<DischargeInfo>({
     medications: [{ name: "", dosage: "", frequency: "", duration: "" }],
   });
 

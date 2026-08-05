@@ -26,12 +26,15 @@ import { useSelector } from "react-redux";
 import { IPD_GENERATE_PDF_URL } from "@/utils/urls/backend";
 import { useDownloadIpdPdf } from "@/actions/calls/ipd/downloadIpdPdf";
 import BouncingLoader from "@/components/BouncingLoader";
+import PaginationComponent from "@/components/Pagination";
 
 const IpdBillsPage: React.FC = () => {
   const navigate = useNavigate();
   const { getIpdBillingList, cleanUp } = useIpdBilling();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [downloadingBillId, setDownloadingBillId] = useState<string | null>(null);
+  const [downloadingBillId, setDownloadingBillId] = useState<string | null>(
+    null,
+  );
   const [searchParams, setSearchParams] = useSearchParams();
   const billData = useSelector(
     (state: any) => state.ipdBilling.ipdBillingListData,
@@ -244,6 +247,23 @@ const IpdBillsPage: React.FC = () => {
                 }}
                 placeholder="Search by Bill No, Patient or MR No..."
                 className="w-full max-w-sm"
+              />
+            ),
+          }}
+          footer={{
+            pagination: (
+              <PaginationComponent
+                current_page={billData?.current_page}
+                last_page={billData?.last_page}
+                getPageNumberHandler={(page: number) => {
+                  setSearchParams(
+                    {
+                      ...Object.fromEntries([...searchParams]),
+                      currentPage: page.toString(),
+                    },
+                    { replace: true },
+                  );
+                }}
               />
             ),
           }}

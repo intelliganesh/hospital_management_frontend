@@ -5,16 +5,13 @@ import Button from "@/components/button";
 import { FileText, Upload as UploadIcon } from "lucide-react";
 import FormSection from "@/pages/ipd/pac/components/FormSection";
 import useForm from "@/utils/custom-hooks/use-form";
-import { useSurgeryReport } from "@/actions/calls/ipd/surgeryProcedure/surgeryReport";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "@/utils/custom-hooks/use-toast";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { RootState } from "@/actions/store";
-import { SurgeryReportData } from "@/interfaces/ipd/surgeryProcedure/surgeryReport";
 import { imageUpload } from "@/actions/calls/uesImage";
 import { useAnaesthesia } from "@/actions/calls/ipd/anaesthesia";
 import { AnaesthesiaDetails } from "@/interfaces/ipd/anaesthesia";
-import { clearAnaesthesiaDetailSlice } from "@/actions/slices/ipd/anaesthesia/anaesthesia";
 import Textarea from "@/components/Textarea";
 
 interface Props {
@@ -24,7 +21,6 @@ interface Props {
 const AnaesthesiaRecordForm: React.FC<Props> = ({ readOnly = false }) => {
   const { id: _id, pacId } = useParams<{ id: string; pacId?: string }>();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
   const { editAnaesthesiaHandler, anaesthesiaDetailHandler, cleanUp } =
     useAnaesthesia();
 

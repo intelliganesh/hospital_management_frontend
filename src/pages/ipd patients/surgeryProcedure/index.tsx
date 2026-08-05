@@ -12,16 +12,18 @@ import { useDownloadIpdPdf } from "@/actions/calls/ipd/downloadIpdPdf";
 import { IPD_GENERATE_PDF_URL } from "@/utils/urls/backend";
 import { useSelector } from "react-redux";
 import { RootState } from "@/actions/store";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import BouncingLoader from "@/components/BouncingLoader";
 
 const SurgeryProcedurePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("consent");
-  const { fetchAndDownloadPdf, isLoading: isPdfDownloading } = useDownloadIpdPdf();
+  const { fetchAndDownloadPdf, isLoading: isPdfDownloading } =
+    useDownloadIpdPdf();
 
   const surgeryReportData = useSelector(
-    (state: RootState) => state.surgeryReport.surgeryReportDetailData
+    (state: RootState) => state.surgeryReport.surgeryReportDetailData,
   );
 
   const handleGeneratePdf = () => {
@@ -47,10 +49,9 @@ const SurgeryProcedurePage: React.FC = () => {
       IPD_GENERATE_PDF_URL,
       type,
       () => {},
-      id // surgery_id
+      id, // surgery_id
     );
   };
-
 
   const tabs = [
     {
@@ -91,19 +92,32 @@ const SurgeryProcedurePage: React.FC = () => {
             checklists
           </Text>
         </View>
-        <Button
-          variant="outline"
-          className="flex items-center gap-2"
-          onPress={handleGeneratePdf}
-          disabled={isPdfDownloading}
-        >
-          {isPdfDownloading ? <BouncingLoader isLoading={isPdfDownloading} /> : <FileDown size={14} />}
-          {activeTab === "consent"
-            ? "Generate Consent Form"
-            : activeTab === "checklist"
-            ? "Generate Pre-Operative Checklist"
-            : "Generate Surgery Report"}
-        </Button>
+        <View className="flex gap-2">
+          <Button
+            variant="outline"
+            className="flex items-center gap-2"
+            onPress={handleGeneratePdf}
+            disabled={isPdfDownloading}
+          >
+            {isPdfDownloading ? (
+              <BouncingLoader isLoading={isPdfDownloading} />
+            ) : (
+              <FileDown size={14} />
+            )}
+            {activeTab === "consent"
+              ? "Generate Consent Form"
+              : activeTab === "checklist"
+                ? "Generate Pre-Operative Checklist"
+                : "Generate Surgery Report"}
+          </Button>
+          <Button
+            variant="outline"
+            className="flex items-center gap-2"
+            onPress={() => navigate(-1)}
+          >
+            Back
+          </Button>
+        </View>
       </View>
 
       {/* Basic Details Section */}

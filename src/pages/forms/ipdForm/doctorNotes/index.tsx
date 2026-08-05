@@ -11,7 +11,11 @@ import { useDoctorNotes } from "@/actions/calls/ipd/doctorNotes";
 import { clearDoctorNotesDetailSlice } from "@/actions/slices/ipd/doctorNotes";
 import { RootState } from "@/actions/store";
 import useForm from "@/utils/custom-hooks/use-form";
-import { DOCTOR_NOTES_URL, IPD_PATIENTS_DETAILS_URL, IPD_PATIENTS_URL } from "@/utils/urls/frontend";
+import {
+  DOCTOR_NOTES_URL,
+  IPD_PATIENTS_DETAILS_URL,
+  IPD_PATIENTS_URL,
+} from "@/utils/urls/frontend";
 import { formSubmissionFailMessage } from "@/utils/helperFunctions";
 import { LoadingStatus } from "@/interfaces";
 import { useOpd } from "@/actions/calls/opd";
@@ -30,6 +34,9 @@ import {
 } from "@/components/ui/breadcrumb";
 import BouncingLoader from "@/components/BouncingLoader";
 
+import { useIpdPatients } from "@/actions/calls/ipd";
+import { clearIpdPatientDetailDataSlice } from "@/actions/slices/ipd/ipdEnrollment";
+
 const DoctorNotesForm = ({ formType = "add" }: { formType?: string }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -40,9 +47,22 @@ const DoctorNotesForm = ({ formType = "add" }: { formType?: string }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const { addDoctorNotesHandler, editDoctorNotesHandler, doctorNotesListHandler, doctorNotesDetailHandler, cleanUp } = useDoctorNotes()
+  const {
+    addDoctorNotesHandler,
+    editDoctorNotesHandler,
+    doctorNotesDetailHandler,
+    cleanUp,
+  } = useDoctorNotes();
 
-  const doctorNotesDetail = useSelector((state: RootState) => state.doctorNotes.doctorNotesDetailData);
+  const { ipdPatientDetailHandler } = useIpdPatients();
+
+  const doctorNotesDetail = useSelector(
+    (state: RootState) => state.doctorNotes.doctorNotesDetailData,
+  );
+
+  const ipdPatientDetailData = useSelector(
+    (state: RootState) => state.ipd.ipdPatientDetailData,
+  );
 
   const doctors = useSelector((state: RootState) => state.opd.userList);
 
@@ -54,21 +74,24 @@ const DoctorNotesForm = ({ formType = "add" }: { formType?: string }) => {
 
   const { PuaListHandler } = useOpd();
   useEffect(() => {
-    PuaListHandler(() => { });
+    PuaListHandler(() => {});
   }, []);
 
   useEffect(() => {
     if (formType === "add") {
       dispatch(clearDoctorNotesDetailSlice()); // start fresh for new patient
+      if (ipdID) {
+        ipdPatientDetailHandler(ipdID, () => {});
+      }
     }
-  }, [formType, dispatch]);
+  }, [formType, ipdID, dispatch]);
 
   useEffect(() => {
     console.log("noteId", noteId);
     if (isEditMode && noteId) {
       doctorNotesDetailHandler(
         noteId,
-        () => { },
+        () => {},
         [],
         (status: LoadingStatus) => {
           setIsLoading(
@@ -76,25 +99,36 @@ const DoctorNotesForm = ({ formType = "add" }: { formType?: string }) => {
               ? true
               : status === "failed"
                 ? true
-                : status === "success" && false
+                : status === "success" && false,
           );
-        }
+        },
       );
     }
     return () => {
       cleanUp();
       dispatch(clearDoctorNotesDetailSlice());
+      dispatch(clearIpdPatientDetailDataSlice());
     };
   }, [noteId, formType]);
 
+  const dutyDoctor = formType === "add"
+    ? ipdPatientDetailData?.staffs?.find((staff: any) => staff.user_role === "duty_doctor")
+    : null;
+
   const doctorNotesFormObj = {
     ...doctorNotesDetail,
-    date: doctorNotesDetail?.date ? dayjs(doctorNotesDetail?.date).format("YYYY-MM-DD") : "",
-    time: doctorNotesDetail?.time ? dayjs(doctorNotesDetail?.time).format("HH:mm:ss") : "",
-  }
+    doctor_id: doctorNotesDetail?.doctor_id || dutyDoctor?.user_id || "",
+    date: doctorNotesDetail?.date
+      ? dayjs(doctorNotesDetail?.date).format("YYYY-MM-DD")
+      : "",
+    time: doctorNotesDetail?.time
+      ? dayjs(doctorNotesDetail?.time).format("HH:mm:ss")
+      : "",
+  };
 
-  const { values, handleChange, onSetHandler } =
-    useForm<DoctorNotes>(doctorNotesFormObj || {});
+  const { values, handleChange, onSetHandler } = useForm<DoctorNotes>(
+    doctorNotesFormObj || {},
+  );
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -108,43 +142,50 @@ const DoctorNotesForm = ({ formType = "add" }: { formType?: string }) => {
 
     console.log(ipdID);
 
-
-    doctorNotesFormObj = formType === "add" ? { ...doctorNotesFormObj, ipd_id: ipdID } : { ...doctorNotesFormObj, ipd_id: doctorNotesDetail?.ipd_id };
+    doctorNotesFormObj =
+      formType === "add"
+        ? { ...doctorNotesFormObj, ipd_id: ipdID }
+        : { ...doctorNotesFormObj, ipd_id: doctorNotesDetail?.ipd_id };
 
     doctorNotesFormObj["doctor_id"] = Number(values["doctor_id"]);
-    doctorNotesFormObj["datetime"] = dayjs(values["datetime"]).format("YYYY-MM-DD HH:mm:ss");
+    doctorNotesFormObj["datetime"] = dayjs(values["datetime"]).format(
+      "YYYY-MM-DD HH:mm:ss",
+    );
 
     try {
-      await validationSchema.validate(doctorNotesFormObj, { abortEarly: false });
+      await validationSchema.validate(doctorNotesFormObj, {
+        abortEarly: false,
+      });
       setErrors({});
       setIsSubmitting(true);
       if (formType === "add") {
         // Add new patient
-        addDoctorNotesHandler(
-          doctorNotesFormObj,
-          async (success: boolean) => {
-            if (success) {
-              navigate(`${IPD_PATIENTS_URL}${IPD_PATIENTS_DETAILS_URL}${DOCTOR_NOTES_URL}/${ipdID}`);
+        addDoctorNotesHandler(doctorNotesFormObj, async (success: boolean) => {
+          if (success) {
+            navigate(
+              `${IPD_PATIENTS_URL}${IPD_PATIENTS_DETAILS_URL}${DOCTOR_NOTES_URL}/${ipdID}`,
+            );
 
-              toast({
-                title: "Success!",
-                description: "Note added successfully.",
-                variant: "success",
-              });
+            toast({
+              title: "Success!",
+              description: "Note added successfully.",
+              variant: "success",
+            });
 
-              // await doctorNotesListHandler(ipdID, () => { });
-            } else {
-              setIsSubmitting(false);
-            }
+            // await doctorNotesListHandler(ipdID, () => { });
+          } else {
+            setIsSubmitting(false);
           }
-        );
+        });
       } else if (noteId) {
         editDoctorNotesHandler(
           noteId,
           doctorNotesFormObj,
           async (success: boolean) => {
             if (success) {
-              navigate(`${IPD_PATIENTS_URL}${IPD_PATIENTS_DETAILS_URL}${DOCTOR_NOTES_URL}/${ipdID}`);
+              navigate(
+                `${IPD_PATIENTS_URL}${IPD_PATIENTS_DETAILS_URL}${DOCTOR_NOTES_URL}/${ipdID}`,
+              );
 
               toast({
                 title: "Success!",
@@ -156,7 +197,7 @@ const DoctorNotesForm = ({ formType = "add" }: { formType?: string }) => {
             } else {
               setIsSubmitting(false);
             }
-          }
+          },
         );
       }
     } catch (err: any) {
@@ -184,17 +225,23 @@ const DoctorNotesForm = ({ formType = "add" }: { formType?: string }) => {
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbLink to={`${IPD_PATIENTS_URL}`}>IPD Patients</BreadcrumbLink>
+              <BreadcrumbLink to={`${IPD_PATIENTS_URL}`}>
+                IPD Patients
+              </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbLink to={`${IPD_PATIENTS_URL}${IPD_PATIENTS_DETAILS_URL}/${ipdID}`}>
+              <BreadcrumbLink
+                to={`${IPD_PATIENTS_URL}${IPD_PATIENTS_DETAILS_URL}/${ipdID}`}
+              >
                 IPD Patient Details
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbLink to={`${IPD_PATIENTS_URL}${IPD_PATIENTS_DETAILS_URL}${DOCTOR_NOTES_URL}/${ipdID}`}>
+              <BreadcrumbLink
+                to={`${IPD_PATIENTS_URL}${IPD_PATIENTS_DETAILS_URL}${DOCTOR_NOTES_URL}/${ipdID}`}
+              >
                 Doctor Notes
               </BreadcrumbLink>
             </BreadcrumbItem>
@@ -244,7 +291,10 @@ const DoctorNotesForm = ({ formType = "add" }: { formType?: string }) => {
                 name="datetime"
                 label="Date & Time"
                 type="datetime-local"
-                value={dayjs(values?.datetime).format("YYYY-MM-DDTHH:mm") || getCurrentDateTimeLocal()}
+                value={
+                  dayjs(values?.datetime).format("YYYY-MM-DDTHH:mm") ||
+                  getCurrentDateTimeLocal()
+                }
                 onChange={handleChange}
                 placeholder="Enter Date & Time"
               />
@@ -325,7 +375,7 @@ const DoctorNotesForm = ({ formType = "add" }: { formType?: string }) => {
                 error={errors?.clinical_notes}
               />
             </View>
-            <View>
+            {/* <View>
               <Textarea
                 id="diagnosis"
                 name="diagnosis"
@@ -335,7 +385,7 @@ const DoctorNotesForm = ({ formType = "add" }: { formType?: string }) => {
                 error={errors?.diagnosis}
                 value={values?.diagnosis || ""}
               />
-            </View>
+            </View> */}
           </>
           <View className="col-span-2 mt-6">
             <Button

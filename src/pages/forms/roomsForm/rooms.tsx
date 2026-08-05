@@ -6,11 +6,12 @@ import SectionOne from "./SectionOne";
 import { useEffect, useState } from "react";
 import { Rooms } from "@/interfaces/master/rooms";
 import { validationForm } from "./validationForm";
-import { useRoom } from "@/actions/calls/room";
+import { useRoom } from "@/actions/calls/rooms";
 import { toast } from "@/utils/custom-hooks/use-toast";
 import { FormTypeProps } from "@/interfaces/dashboard";
 import { useDispatch } from "react-redux";
-import { clearRoomByIdSuccess } from "@/actions/slices/room";
+import { clearRoomDetailSlice } from "@/actions/slices/rooms";
+// import { Rooms } from "@/interfaces/rooms";
 
 const RoomsForm: React.FC<FormTypeProps> = ({ formType = "add" }) => {
   const { id } = useParams();
@@ -25,7 +26,7 @@ const RoomsForm: React.FC<FormTypeProps> = ({ formType = "add" }) => {
       getRoomById(id, () => {});
     }
     return () => {
-      dispatch(clearRoomByIdSuccess());
+      dispatch(clearRoomDetailSlice());
     };
   }, [id, formType]);
 
@@ -52,11 +53,11 @@ const RoomsForm: React.FC<FormTypeProps> = ({ formType = "add" }) => {
             });
           } else {
             setIsSubmitting(false);
-            // toast({
-            //   title: "Error!",
-            //   description:  "Failed to add Room",
-            //   variant: "destructive",
-            // });
+            toast({
+              title: "Error!",
+              description:  "Failed to add Room",
+              variant: "destructive",
+            });
           }
         });
       } else if (id) {
@@ -70,11 +71,11 @@ const RoomsForm: React.FC<FormTypeProps> = ({ formType = "add" }) => {
             });
           } else {
             setIsSubmitting(false);
-            // toast({
-            //   title: "Error!",
-            //   description: "Failed to update Room",
-            //   variant: "destructive",
-            // });
+            toast({
+              title: "Error!",
+              description: "Failed to update Room",
+              variant: "destructive",
+            });
           }
           setIsSubmitting(false);
         });
@@ -113,13 +114,13 @@ const RoomsForm: React.FC<FormTypeProps> = ({ formType = "add" }) => {
         <form onSubmit={handleSubmit}>
           <SectionOne
             errorsName={errors.name}
-            errorsType={errors.type}
-            errorsWardName={errors.ward_name}
-            errorsWardType={errors.ward_type}
-            errorsCapacity={errors.capacity}
-            errorsLocation={errors.location}
+            errorsType={errors.room_type}
+            errorsRoomNumber={errors.room_number}
+            errorsWardId={errors.ward_id}
+            errorsBedCount={errors.bed_count}
             errorsStatus={errors.status}
             errorsFloor={errors.floor}
+            errorsDescription={errors.description}
           />
           <View className="col-span-2 mt-6">
             <Button

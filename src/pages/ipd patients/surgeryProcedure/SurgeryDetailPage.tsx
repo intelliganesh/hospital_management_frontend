@@ -5,7 +5,11 @@ import Text from "@/components/text";
 import Button from "@/components/button";
 import { Card } from "@/components/ui/card";
 import TabView from "@/components/Tabs";
-import { FileDown, Edit, ArrowLeft, User, Calendar, Clock, Bed, ClipboardList, FileText } from "lucide-react";
+import {
+  FileDown,
+  Edit,
+  ArrowLeft
+} from "lucide-react";
 import { useDownloadIpdPdf } from "@/actions/calls/ipd/downloadIpdPdf";
 import { IPD_GENERATE_PDF_URL } from "@/utils/urls/backend";
 import BouncingLoader from "@/components/BouncingLoader";
@@ -39,17 +43,22 @@ const SurgeryDetailPage: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const { fetchAndDownloadPdf, isLoading: isPdfDownloading } = useDownloadIpdPdf();
-  const { surgeryReportDetail, cleanUp: cleanSurgeryReport } = useSurgeryReport();
-  const { preOperativeChecklistDetail, cleanUp: cleanPreOpChecklist } = usePreOperativeChecklist();
-  const { ipdPatientDetailHandler, cleanUp: cleanIpdPatients } = useIpdPatients();
+  const { fetchAndDownloadPdf, isLoading: isPdfDownloading } =
+    useDownloadIpdPdf();
+  const { surgeryReportDetail, cleanUp: cleanSurgeryReport } =
+    useSurgeryReport();
+  const { preOperativeChecklistDetail, cleanUp: cleanPreOpChecklist } =
+    usePreOperativeChecklist();
+  const { ipdPatientDetailHandler, cleanUp: cleanIpdPatients } =
+    useIpdPatients();
 
   const surgeryReportData = useSelector(
     (state: RootState) => state.surgeryReport.surgeryReportDetailData,
   );
 
   const checklistDetailData = useSelector(
-    (state: RootState) => state.preOperativeChecklist.preOperativeChecklistDetailData,
+    (state: RootState) =>
+      state.preOperativeChecklist.preOperativeChecklistDetailData,
   );
 
   const ipdPatientDetailData = useSelector(
@@ -133,7 +142,7 @@ const SurgeryDetailPage: React.FC = () => {
       IPD_GENERATE_PDF_URL,
       type,
       () => {},
-      id
+      id,
     );
   };
 
@@ -235,14 +244,18 @@ const SurgeryDetailPage: React.FC = () => {
             {activeTab === "consent"
               ? "Generate Consent Form"
               : activeTab === "checklist"
-              ? "Generate Pre-Operative Checklist"
-              : "Generate Surgery Report"}
+                ? "Generate Pre-Operative Checklist"
+                : "Generate Surgery Report"}
           </Button>
 
           <Button
             variant="primary"
             className="flex items-center gap-2 shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all text-sm"
-            onPress={() => navigate(`/ipd-patients-list/ipd-patients-details/surgery-procedure/${id}`)}
+            onPress={() =>
+              navigate(
+                `/ipd-patients-list/ipd-patients-details/surgery-procedure/${id}`,
+              )
+            }
           >
             <Edit size={16} />
             Edit
@@ -268,18 +281,32 @@ const SurgeryDetailPage: React.FC = () => {
           <View>
             <SectionHeader label="Patient Demographics" />
             <View className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-x-8 gap-y-6">
-              <ReadOnlyField label="IP No" value={ipdPatientDetailData?.ipd_number} />
-              <ReadOnlyField label="Patient Name" value={ipdPatientDetailData?.patient_name} />
-              <ReadOnlyField label="Age" value={ipdPatientDetailData?.patient_age} />
+              <ReadOnlyField
+                label="IP No"
+                value={ipdPatientDetailData?.ipd_number}
+              />
+              <ReadOnlyField
+                label="Patient Name"
+                value={ipdPatientDetailData?.patient_name}
+              />
+              <ReadOnlyField
+                label="Age"
+                value={ipdPatientDetailData?.patient?.age}
+              />
               <ReadOnlyField
                 label="Gender"
-                value={ipdPatientDetailData?.patient?.gender ?? ipdPatientDetailData?.patient_gender}
+                value={
+                  ipdPatientDetailData?.patient?.gender ??
+                  ipdPatientDetailData?.patient_gender
+                }
               />
               <ReadOnlyField
                 label="Admission Date"
                 value={
-                  ipdPatientDetailData?.admission_date
-                    ? dayjs(ipdPatientDetailData.admission_date).format("DD MMM YYYY")
+                  ipdPatientDetailData?.admission_date_time
+                    ? dayjs(ipdPatientDetailData.admission_date_time).format(
+                        "DD MMM YYYY",
+                      )
                     : null
                 }
               />
@@ -291,18 +318,36 @@ const SurgeryDetailPage: React.FC = () => {
                     : null
                 }
               />
-              <ReadOnlyField label="Contact" value={ipdPatientDetailData?.patient_phone} />
+              <ReadOnlyField
+                label="Contact"
+                value={ipdPatientDetailData?.patient_phone}
+              />
             </View>
           </View>
 
           <View>
             <SectionHeader label="Clinical & Surgery Details" />
             <View className="grid grid-cols-1 md:grid-cols-3 gap-x-8 gap-y-6">
-              <ReadOnlyField label="Surgery Name" value={surgeryReportData?.surgery_name} />
-              <ReadOnlyField label="Surgery Type" value={surgeryReportData?.surgery_type} />
-              <ReadOnlyField label="Surgery Time" value={formattedSurgeryTime} />
-              <ReadOnlyField label="Surgeon" value={surgeryReportData?.surgeon} />
-              <ReadOnlyField label="Anaesthetist" value={surgeryReportData?.anaesthetist} />
+              <ReadOnlyField
+                label="Surgery Name"
+                value={surgeryReportData?.surgery_name}
+              />
+              <ReadOnlyField
+                label="Surgery Type"
+                value={surgeryReportData?.surgery_type}
+              />
+              <ReadOnlyField
+                label="Surgery Time"
+                value={formattedSurgeryTime}
+              />
+              <ReadOnlyField
+                label="Surgeon"
+                value={surgeryReportData?.surgeon}
+              />
+              <ReadOnlyField
+                label="Anaesthetist"
+                value={surgeryReportData?.anaesthetist}
+              />
             </View>
           </View>
         </View>
@@ -310,9 +355,7 @@ const SurgeryDetailPage: React.FC = () => {
 
       {/* Tab Sections */}
       <Card className="border-slate-100 shadow-xl shadow-slate-200/30 rounded-2xl bg-white dark:bg-slate-900 overflow-hidden">
-        <TabView
-          tabs={tabs}
-        />
+        <TabView tabs={tabs} />
       </Card>
 
       {/* Document Preview Modal */}

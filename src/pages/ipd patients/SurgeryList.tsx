@@ -2,7 +2,7 @@ import View from "@/components/view";
 import Modal from "@/components/Modal";
 import Button from "@/components/button";
 import { Card } from "@/components/ui/card";
-import { Edit, PlusCircle, Trash } from "lucide-react";
+import { PlusCircle } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import DynamicTable from "@/components/ui/DynamicTable";
 import Text from "@/components/text";
@@ -35,18 +35,24 @@ const SurgeryList: React.FC = () => {
   const navigate = useNavigate();
   const { id: patientId } = useParams();
 
-  const { getSurgeryList, addSurgeryReport, deleteSurgery, cleanUp } =
-    useSurgeryReport();
+  const {
+    getSurgeryList,
+    addSurgeryReport,
+    updateSurgeryReport,
+    deleteSurgery,
+    cleanUp,
+  } = useSurgeryReport();
 
   const surgeryData = useSelector(
     (state: RootState) => state?.surgeryReport?.surgeryList,
   );
   const { PuaListHandler } = useOpd();
   useEffect(() => {
-    PuaListHandler(() => { });
+    PuaListHandler(() => {});
   }, []);
   const [isLoading, setIsLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [editingSurgery, setEditingSurgery] = useState<any | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -67,13 +73,45 @@ const SurgeryList: React.FC = () => {
     value: doctor.id,
   }));
 
+  const closeSurgeryModal = () => {
+    setShowModal(false);
+    setEditingSurgery(null);
+    resetForm();
+    setErrors({});
+  };
+
+  const handleOpenAdd = () => {
+    setEditingSurgery(null);
+    resetForm();
+    setErrors({});
+    setShowModal(true);
+  };
+
+  const handleOpenEdit = (surgery: any) => {
+    const selectedDoctor = doctors?.find(
+      (doctor: any) =>
+        String(doctor.id) === String(surgery.doctor_id) ||
+        doctor.name === surgery.surgeon,
+    );
+
+    setEditingSurgery(surgery);
+    onSetHandler("ipd_id", surgery.ipd_id || patientId || "");
+    onSetHandler("surgery_type", surgery.surgery_type || "Surgical");
+    onSetHandler("surgery_name", surgery.surgery_name || "");
+    onSetHandler("surgeon", surgery.surgeon || selectedDoctor?.name || "");
+    onSetHandler("doctor_id", surgery.doctor_id || selectedDoctor?.id || "");
+    onSetHandler("surgery_date", String(surgery.surgery_date || "").slice(0, 10));
+    setErrors({});
+    setShowModal(true);
+  };
+
   /* ================== FETCH LIST ================== */
   useEffect(() => {
     if (patientId) {
       getSurgeryList(
         patientId,
         1,
-        () => { },
+        () => {},
         null,
         null,
         null,
@@ -96,16 +134,29 @@ const SurgeryList: React.FC = () => {
         ipd_id: patientId,
         surgery_type: values.surgery_type,
         surgery_name: values.surgery_name,
+        doctor_id: values.doctor_id,
         surgeon: values.surgeon,
         surgery_date: values.surgery_date,
       };
 
+      if (editingSurgery?.id) {
+        updateSurgeryReport(editingSurgery.id, payload, (success) => {
+          if (success) {
+            closeSurgeryModal();
+            getSurgeryList(patientId, 1, () => {});
+          } else {
+            setErrors({
+              general: "Failed to update surgery. Please try again.",
+            });
+          }
+        });
+        return;
+      }
+
       addSurgeryReport(payload, (success, response: any) => {
         if (success) {
-          setShowModal(false);
-          resetForm();
-          setErrors({});
-          getSurgeryList(patientId, 1, () => { });
+          closeSurgeryModal();
+          getSurgeryList(patientId, 1, () => {});
         } else {
           if (response?.errors) {
             const backendErrors: Record<string, string> = {};
@@ -147,7 +198,7 @@ const SurgeryList: React.FC = () => {
       (success) => {
         if (success) {
           setDeleteId(null);
-          patientId && getSurgeryList(patientId, 1, () => { });
+          patientId && getSurgeryList(patientId, 1, () => {});
         }
       },
       (status) => setIsDeleting(status === "pending"),
@@ -185,19 +236,23 @@ const SurgeryList: React.FC = () => {
             List of surgeries for this IPD patient
           </Text>
         </View>
-
+       <View className="flex gap-2">
         <Button
           variant="primary"
           className="flex items-center gap-2 px-6 py-3"
-          onPress={() => {
-            resetForm();
-            setErrors({});
-            setShowModal(true);
-          }}
+          onPress={handleOpenAdd}
         >
           <PlusCircle className="h-5 w-5" />
           Add Surgery
         </Button>
+        <Button
+          variant="outline"
+          className="flex items-center gap-2 px-6 py-3"
+          onPress={() => navigate(`${IPD_PATIENTS_URL}${IPD_PATIENTS_DETAILS_URL}/${patientId}`, { replace: true })}
+        >
+          Back
+        </Button>
+        </View>
       </View>
 
       {/* TABLE */}
@@ -221,17 +276,11 @@ const SurgeryList: React.FC = () => {
               onView: () =>
                 navigate(
                   IPD_PATIENTS_URL +
-                  IPD_PATIENTS_DETAILS_URL +
-                  SURGERY_PROCEDURE_URL +
-                  `/${data.id}/view`,
+                    IPD_PATIENTS_DETAILS_URL +
+                    SURGERY_PROCEDURE_URL +
+                    `/${data.id}/view`,
                 ),
-              onEdit: () =>
-                navigate(
-                  IPD_PATIENTS_URL +
-                  IPD_PATIENTS_DETAILS_URL +
-                  SURGERY_PROCEDURE_URL +
-                  `/${data.id}`,
-                ),
+              onEdit: () => handleOpenEdit(data),
               onDelete: () => setDeleteId(data.id),
             }),
           ])}
@@ -239,21 +288,19 @@ const SurgeryList: React.FC = () => {
         />
       </Card>
 
-      {/* ADD MODAL */}
+      {/* ADD / EDIT MODAL */}
       {showModal && (
         <Modal
-          title="Add Surgery"
+          title={editingSurgery ? "Edit Surgery" : "Add Surgery"}
           isOpen={showModal}
-          onClose={() => {
-            setShowModal(false);
-            resetForm();
-            setErrors({});
-          }}
+          onClose={closeSurgeryModal}
           size="xl"
         >
           {errors?.general && (
             <View className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-              <Text className="text-red-600 dark:text-red-400 text-sm">{errors.general}</Text>
+              <Text className="text-red-600 dark:text-red-400 text-sm">
+                {errors.general}
+              </Text>
             </View>
           )}
 
@@ -271,6 +318,28 @@ const SurgeryList: React.FC = () => {
                   { label: "Non-Surgical", value: "Non-Surgical" },
                 ]}
                 error={errors?.surgery_type}
+              />
+            </View>
+
+            <View>
+              <SingleSelector
+                id="doctor_id"
+                label="Doctor"
+                name="doctor_id"
+                required={true}
+                value={values?.doctor_id || ""}
+                placeholder="Select Doctor"
+                onChange={(value) => {
+                  onSetHandler("doctor_id", value);
+                  const selectedDoctor = doctors?.find(
+                    (doc: any) => String(doc.id) === String(value),
+                  );
+                  if (selectedDoctor) {
+                    onSetHandler("surgeon", selectedDoctor.name);
+                  }
+                }}
+                options={doctorsObj}
+                error={errors?.doctor_id}
               />
             </View>
 
@@ -299,41 +368,17 @@ const SurgeryList: React.FC = () => {
                 error={errors?.surgery_date}
               />
             </View>
-
-            <View>
-              <SingleSelector
-                id="doctor_id"
-                label="Doctor"
-                name="doctor_id"
-                required={true}
-                value={values?.doctor_id || ""}
-                placeholder="Select Doctor"
-                onChange={(value) => {
-                  onSetHandler("doctor_id", value);
-                  const selectedDoctor = doctors?.find((doc: any) => doc.id === value);
-                  if (selectedDoctor) {
-                    onSetHandler("surgeon", selectedDoctor.name);
-                  }
-                }}
-                options={doctorsObj}
-                error={errors?.doctor_id}
-              />
-            </View>
           </View>
 
           <View className="flex justify-end gap-2 pt-4">
             <Button
               variant="outline"
-              onPress={() => {
-                setShowModal(false);
-                resetForm();
-                setErrors({});
-              }}
+              onPress={closeSurgeryModal}
             >
               Cancel
             </Button>
             <Button variant="primary" onPress={handleSave}>
-              Save
+              {editingSurgery ? "Update" : "Save"}
             </Button>
           </View>
         </Modal>

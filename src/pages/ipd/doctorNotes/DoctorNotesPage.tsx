@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import View from "@/components/view";
 import Text from "@/components/text";
 import Button from "@/components/button";
 import PatientInfoCard from "@/components/Notes Components/PatientInfoCard";
 import CustomDateSelector from "@/components/Notes Components/CustomDateSelector";
-import NoteCard, { NoteData } from "@/components/Notes Components/NoteCard";
+import NoteCard from "@/components/Notes Components/NoteCard";
 import { FileDown, Plus } from "lucide-react";
 import dayjs from "dayjs";
 import {
@@ -295,7 +295,7 @@ const DoctorNotesPage: React.FC = () => {
               )}
               Generate PDF
             </Button>
-            <Button variant="outline" onPress={() => navigate(-1)}>
+            <Button variant="outline" onPress={() => navigate(`${IPD_PATIENTS_URL}${IPD_PATIENTS_DETAILS_URL}/${ipdID}`, { replace: true })}>
               Back
             </Button>
           </View>

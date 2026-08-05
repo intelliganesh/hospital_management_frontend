@@ -2,14 +2,12 @@ import React, { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import View from "@/components/view";
 import Text from "@/components/text";
-import Button from "@/components/button";
 import {
   User,
   Calendar,
   Clock,
   Bed,
   FileText,
-  FileDown,
   ClipboardList,
 } from "lucide-react";
 import { useIpdPatients } from "@/actions/calls/ipd";

@@ -3,6 +3,7 @@ import View from "@/components/view";
 import Text from "@/components/text";
 import { Card } from "@/components/ui/card";
 import { LucideIcon } from "lucide-react";
+import { FontWeight } from "@/interfaces/components/text";
 
 interface FormSectionProps {
   title: string;
@@ -10,7 +11,7 @@ interface FormSectionProps {
   children: React.ReactNode;
   className?: string;
   titleClassName?: string;
-  titleFontWeight?: string;
+  titleFontWeight?: FontWeight;
 }
 
 const FormSection: React.FC<FormSectionProps> = ({

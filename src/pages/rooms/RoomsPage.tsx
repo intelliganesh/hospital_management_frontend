@@ -1,4 +1,4 @@
-import { useRoom } from "@/actions/calls/room";
+import { useRoom } from "@/actions/calls/rooms";
 import { RootState } from "@/actions/store";
 import BouncingLoader from "@/components/BouncingLoader";
 import Button from "@/components/button";
@@ -30,16 +30,16 @@ const RoomsPage: React.FC<{}> = () => {
   const { getRoomList, cleanUp, deleteRoom } = useRoom();
   const [searchParams, setSearchParams] = useSearchParams();
   const [deleteId, setDeleteId] = useState<null | string>(null);
-    const [isDeleting, setIsDeleting] = useState(false);
-  
+  const [isDeleting, setIsDeleting] = useState(false);
+
   const [isLoading, setIsLoading] = useState(false);
-  const roomsData = useSelector((state: RootState) => state?.room?.rooms);
+  const roomsData = useSelector((state: RootState) => state?.rooms?.rooms);
 
   useEffect(() => {
     if (searchParams?.has("currentPage")) {
       getRoomList(
         searchParams?.get("currentPage") ?? 1,
-        () => {},
+        () => { },
         searchParams.get("search") ?? null,
         searchParams.get("sort_by") ?? null,
         searchParams.get("sort_order") ?? null,
@@ -68,29 +68,26 @@ const RoomsPage: React.FC<{}> = () => {
       deleteRoom(deleteId, (success: boolean) => {
         if (success) {
           modalCloseHandler();
-          getRoomList(searchParams?.get("currentPage") ?? 1, () => {});
+          getRoomList(searchParams?.get("currentPage") ?? 1, () => { });
         }
+
       },
-      (status) => {
-        setIsDeleting(status === "pending" ? true : status === "failed" ? true : status === "success" && false);
-      }
-    );
+        (status) => {
+          setIsDeleting(status === "pending" ? true : status === "failed" ? true : status === "success" && false);
+        }
+      );
     }
   };
 
   const sortOptions: SortOption[] = [
     { label: "Name (A-Z)", value: "name", order: "asc" },
     { label: "Name (Z-A)", value: "name", order: "desc" },
-    { label: "Type (A-Z)", value: "type", order: "asc" },
-    { label: "Type (Z-A)", value: "type", order: "desc" },
-    { label: "Ward Name (A-Z)", value: "ward_name", order: "asc" },
-    { label: "Ward Name (Z-A)", value: "ward_name", order: "desc" },
-    { label: "Ward Type (A-Z)", value: "ward_type", order: "asc" },
-    { label: "Ward Type (Z-A)", value: "ward_type", order: "desc" },
-    { label: "Capacity (A-Z)", value: "capacity", order: "asc" },
-    { label: "Capacity (Z-A)", value: "capacity", order: "desc" },
-    // { label: "Location (A-Z)", value: "location_asc" },
-    // { label: "Location (Z-A)", value: "location_desc" },
+    { label: "Type (A-Z)", value: "room_type", order: "asc" },
+    { label: "Type (Z-A)", value: "room_type", order: "desc" },
+    { label: "Room Number (A-Z)", value: "room_number", order: "asc" },
+    { label: "Room Number (Z-A)", value: "room_number", order: "desc" },
+    { label: "Beds Capacity (A-Z)", value: "bed_count", order: "asc" },
+    { label: "Beds Capacity (Z-A)", value: "bed_count", order: "desc" },
     { label: "Floor (A-Z)", value: "floor", order: "asc" },
     { label: "Floor (Z-A)", value: "floor", order: "desc" },
     { label: "Status (A-Z)", value: "status", order: "asc" },
@@ -194,24 +191,24 @@ const RoomsPage: React.FC<{}> = () => {
           tableHeaders={[
             "Name",
             "Type",
-            "Ward Name",
-            "Ward Type",
-            "Capacity",
+            "Room Number",
+            "Beds Capacity",
             "Floor",
+            "Ward",
             "Status",
             "Action",
           ]}
           tableData={roomsData?.data?.map((room: any) => [
             <Link to={`${ROOMS_TABLE_URL + ROOMS_DETAIL_URL}/${room.id}`}>
               <Text as="span" className="font-medium text-text-DEFAULT">
-                {room.name}
+                {room?.name}
               </Text>
             </Link>,
-            room.type,
-            room.ward_name,
-            room.ward_type,
-            room.capacity,
-            room.floor,
+            room?.room_type,
+            room?.room_number,
+            room?.bed_count,
+            room?.floor,
+            `${room?.ward?.name || "N/A"} (${room?.ward?.ward_number || "N/A"})`,
             <Text
               as="span"
               className="inline-flex px-2 py-1 text-xs font-medium rounded-full"

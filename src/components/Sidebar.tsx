@@ -21,8 +21,9 @@ import {
   // Proportions,
   Wallet,
   Proportions,
+  Hospital,
   NotebookText,
-  // CalendarRange,
+  CalendarRange,
 } from "lucide-react";
 import {
   SETTINGS_URL,
@@ -33,10 +34,10 @@ import {
   APPOINTMENT_TABLE_URL,
   CONSULTATION_TABLE_URL,
   ROLES_TABLE_URL,
-  TEST_TABLE_URL,
-  MEDICINE_TABLE_URL,
-  ALLERGY_TABLE_URL,
-  MEDICINE_CATEGORY_TABLE_URL,
+  // TEST_TABLE_URL,
+  // MEDICINE_TABLE_URL,
+  // ALLERGY_TABLE_URL,
+  // MEDICINE_CATEGORY_TABLE_URL,
   DOSHA_ANALYSIS_URL,
   PRAKRITI_URL,
   VIKRUTI_URL,
@@ -46,29 +47,37 @@ import {
   YOGA_ASANA_TABLE_URL,
   INVOICE_URL,
   DEPARTMENT_TABLE_URL,
-  CONSULTATION_FEES_URL,
-  SURGICAL_HISTORY_TABLE_URL,
-  CHIEF_COMPLAINT_URL,
-  ON_EXAMINATION_TABLE_URL,
-  AMOUNT_TYPE_TABLE_URL,
+  // CONSULTATION_FEES_URL,
+  // SURGICAL_HISTORY_TABLE_URL,
+  // CHIEF_COMPLAINT_URL,
+  // ON_EXAMINATION_TABLE_URL,
+  // AMOUNT_TYPE_TABLE_URL,
   SERVICE_COST_TABLE_URL,
-  COMORBIDITIES_TABLE_URL,
+  // COMORBIDITIES_TABLE_URL,
   DIET_TABLE_URL,
   // DIAGNOSIS_TABLE_URL,
-  FOOD_ADVICE_TABLE_URL,
+  // FOOD_ADVICE_TABLE_URL,
   EXPENSES_TABLE_URL,
   REPORT_EXPENSES,
   REPORT_INVOICE,
   DRE_TABLE_URL,
   PROCTOSCOPY_TABLE_URL,
-  FISTULA_TABLE_URL,
-  MANAGEMENT_TABLE_URL,
+  // FISTULA_TABLE_URL,
+  // MANAGEMENT_TABLE_URL,
   REPORT_FISTULA,
   REPORT_CONSULTATION,
-  REFERRED_BY_TABLE_URL,
+  // REFERRED_BY_TABLE_URL,
+  IPD_ENROLLMENTS_URL,
+  WARD_TABLE_URL,
+  // ROOMS_TABLE_URL,
+  // BED_TABLE_URL,
+  IPD_PATIENTS_URL,
   FISTULA_ENTRY_LIST_URL,
+  IPD_BILLS_URL,
   BANK_DETAILS_TABLE_URL,
-  // ONLINE_APPOINTMENT_TABLE_URL,
+  ROOMS_TABLE_URL,
+  BED_TABLE_URL,
+  ONLINE_APPOINTMENT_TABLE_URL,
 } from "@/utils/urls/frontend";
 import { useSelector } from "react-redux";
 // import { ExaminationsPage } from "@/pages/examinations/ExaminationsPage";
@@ -171,16 +180,16 @@ export const sidebarItems = [
     href:
       APPOINTMENT_TABLE_URL +
       `?currentPage=1&from_date=${dayjs().format(
-        "YYYY-MM-DD"
+        "YYYY-MM-DD",
       )}&to_date=${dayjs().format("YYYY-MM-DD")}`,
     requiredPermission: PERMISSIONS.VIEW_APPOINTMENTS,
   },
-  // {
-  //   icon: <CalendarRange size={20} />,
-  //   label: "Online Appointments",
-  //   href: ONLINE_APPOINTMENT_TABLE_URL + "?currentPage=1",
-  //   requiredPermission: PERMISSIONS.VIEW_ONLINE_APPOINTMENTS,
-  // },
+  {
+    icon: <CalendarRange size={20} />,
+    label: "Online Appointments",
+    href: ONLINE_APPOINTMENT_TABLE_URL + "?currentPage=1",
+    requiredPermission: PERMISSIONS.VIEW_ONLINE_APPOINTMENTS,
+  },
   {
     icon: <ClipboardList size={20} />,
     label: "Consultations",
@@ -192,7 +201,34 @@ export const sidebarItems = [
     //     "YYYY-MM-DD"
     //   )}&to_date=${dayjs().format("YYYY-MM-DD")}`,
   },
-  // ipd
+  
+  // IPD
+  {
+    icon: <Hospital size={20} />,
+    label: "IPD",
+    requiredPermission: PERMISSIONS.VIEW_IPD,
+    children: (
+      <SidebarDropdown
+        title="IPD"
+        icon={<Hospital size={20} />}
+        variant="secondary"
+      >
+        <SidebarDropdownItem
+          to={`${IPD_ENROLLMENTS_URL}?currentPage=1`}
+          label="IPD Enrollments"
+        />
+        <SidebarDropdownItem
+          to={`${IPD_PATIENTS_URL}?currentPage=1`}
+          label="IPD Patients"
+        />
+        <SidebarDropdownItem
+          to={`${IPD_BILLS_URL}?currentPage=1`}
+          label="IPD Bills"
+        />
+      </SidebarDropdown>
+    ),
+  },
+
   {
     icon: <FileText size={20} />,
     label: "Bills",
@@ -227,28 +263,28 @@ export const sidebarItems = [
       >
         <SidebarDropdownItem
           to={`${REPORT_EXPENSES}?currentPage=1&from_date=${dayjs().format(
-            "YYYY-MM-DD"
+            "YYYY-MM-DD",
           )}&to_date=${dayjs().format("YYYY-MM-DD")}`}
           label="Expenses Report"
           requiredPermission={PERMISSIONS.VIEW_EXPENSE_REPORT}
         />
         <SidebarDropdownItem
           to={`${REPORT_INVOICE}?currentPage=1&from_date=${dayjs().format(
-            "YYYY-MM-DD"
+            "YYYY-MM-DD",
           )}&to_date=${dayjs().format("YYYY-MM-DD")}`}
           label="Invoice Report"
           requiredPermission={PERMISSIONS.VIEW_INVOICE_REPORT}
         />
         <SidebarDropdownItem
           to={`${REPORT_FISTULA}?currentPage=1&from_date=${dayjs().format(
-            "YYYY-MM-DD"
+            "YYYY-MM-DD",
           )}&to_date=${dayjs().format("YYYY-MM-DD")}`}
           label="Fistula Report"
           requiredPermission={PERMISSIONS.VIEW_FISTULA_REPORT}
         />
         <SidebarDropdownItem
           to={`${REPORT_CONSULTATION}?currentPage=1&from_date=${dayjs().format(
-            "YYYY-MM-DD"
+            "YYYY-MM-DD",
           )}&to_date=${dayjs().format("YYYY-MM-DD")}`}
           label="Consultation Report"
           requiredPermission={PERMISSIONS.VIEW_CONSULTATION_REPORT}
@@ -282,13 +318,22 @@ export const sidebarItems = [
           label="Departments"
         />
         <SidebarDropdownItem
+          to={`${WARD_TABLE_URL}?currentPage=1`}
+          label="Wards"
+        />
+        <SidebarDropdownItem
           to={`${BANK_DETAILS_TABLE_URL}?currentPage=1`}
           label="Bank Details"
         />
-        {/* <SidebarDropdownItem
+        <SidebarDropdownItem
           to={`${ROOMS_TABLE_URL}?currentPage=1`}
           label="Rooms"
-        /> */}
+        />
+        <SidebarDropdownItem
+          to={`${BED_TABLE_URL}?currentPage=1`}
+          label="Beds"
+        />
+         {/*
         <SidebarDropdownItem
           to={`${FISTULA_TABLE_URL}?currentPage=1`}
           label="Fistula"
@@ -428,7 +473,7 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
   const { hasPermission } = usePermissions();
 
   const settingsData = useSelector(
-    (state: any) => state.systemSettings.settings
+    (state: any) => state.systemSettings.settings,
   );
 
   useEffect(() => {
@@ -476,7 +521,7 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
                         settingsData?.hospital_logo
                       }
                       onError={(
-                        e: React.SyntheticEvent<HTMLImageElement, Event>
+                        e: React.SyntheticEvent<HTMLImageElement, Event>,
                       ) => {
                         const target = e.target as HTMLImageElement;
                         target.onerror = null; // prevent looping
@@ -571,9 +616,12 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
                       active={
                         // Check if current path starts with the item's base path
                         // This will make parent items stay active for their children routes
-                        location.pathname.startsWith(item.href?.split("?")[0] || "") ||
+                        location.pathname.startsWith(
+                          item.href?.split("?")[0] || "",
+                        ) ||
                         // Special case for dashboard since it's the root
-                        (item.href === DASHBOARD_URL && location.pathname === '/')
+                        (item.href === DASHBOARD_URL &&
+                          location.pathname === "/")
                       }
                     />
                   )}

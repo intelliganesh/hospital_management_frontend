@@ -80,6 +80,14 @@ const SectionFour: React.FC = () => {
           />
         </View>
       </View>
+      <Textarea
+            id="examination_comments"
+            name="examination_comments"
+            label="Comment"
+            placeholder="Comments on examination findings"
+            onChange={handleChange}
+            value={values?.examination_comments || ""}
+          />
     </>
   );
 };

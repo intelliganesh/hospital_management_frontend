@@ -20,10 +20,10 @@ const ConsentTab: React.FC<Props> = ({ detail, onPreview }) => (
         label="Type of Anaesthesia"
         value={detail?.type_of_anaesthesia}
       />
-      <ReadOnlyField
+      {/* <ReadOnlyField
         label="Operative Procedure"
         value={detail?.operative_procedure}
-      />
+      /> */}
     </View>
 
     <SectionDivider label="Consent Summary" />

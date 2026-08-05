@@ -37,7 +37,7 @@ export interface PreOperativeChecklistData {
   upload_pdf_path?: File[] | string[] | null | string;
 }
 
-// export interface PreOperativeChecklist {
-//   preOperativeChecklistDetailData: PreOperativeChecklistData | null;
-//   preOperativeChecklistList: PreOperativeChecklistData[];
-// }
+export interface PreOperativeChecklist {
+  preOperativeChecklistDetailData: PreOperativeChecklistData | null;
+  preOperativeChecklistList: PreOperativeChecklistData[];
+}

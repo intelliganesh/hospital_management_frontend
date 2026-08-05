@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import dayjs from "dayjs";
 import {
-  getAppointmentConfirmedMessage,
+  // getAppointmentConfirmedMessage,
   getPaymentRejectedMessage,
   openWhatsApp,
 } from "@/utils/whatsappTemplates";
@@ -19,7 +19,6 @@ import {
   CheckCircle,
   CreditCard,
   ExternalLink,
-  MessageCircle,
   // MessageSquare,
   // Link as LinkIcon,
   Calendar,
@@ -27,9 +26,6 @@ import {
 } from "lucide-react";
 import SingleSelector from "@/components/SingleSelector";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { RootState } from "@/actions/store";
-import { toast } from "@/utils/custom-hooks/use-toast";
 
 interface VerifyPaymentModalProps {
   isOpen: boolean;
@@ -45,7 +41,7 @@ const VerifyPaymentModal: React.FC<VerifyPaymentModalProps> = ({
   const {
     confirmPayment,
     rejectPayment,
-    onlineAppointmentGenerateLinkHandler,
+    // onlineAppointmentGenerateLinkHandler,
   } = useOnlineAppointments();
 
   const [transactionId, setTransactionId] = useState("");
@@ -54,13 +50,6 @@ const VerifyPaymentModal: React.FC<VerifyPaymentModalProps> = ({
   const [visitType, setVisitType] = useState("First Visit");
   const [selectedFileList, setSelectedFileList] = useState<any[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSendingWhatsApp, setIsSendingWhatsApp] = useState(false);
-  const [isVerified, setIsVerified] = useState(false);
-  const [verifiedAppointment, setVerifiedAppointment] =
-    useState<OnlineAppointment | null>(null);
-  const whatsappNotificationEnabled = useSelector((state: RootState) =>
-    Boolean(state.systemSettings?.settings?.whatsapp_notification),
-  );
 
   const navigate = useNavigate();
   // const [isGeneratingLink, setIsGeneratingLink] = useState(false);
@@ -101,110 +90,9 @@ const VerifyPaymentModal: React.FC<VerifyPaymentModalProps> = ({
         setPaymentDate(new Date().toISOString().split("T")[0]);
       }
 
-      setVisitType(
-        appointment.visit_type || appointment.visti_type || "First Visit",
-      );
       setSelectedFileList([]);
-      setIsVerified(false);
-      setVerifiedAppointment(null);
     }
   }, [isOpen, appointment]);
-
-  const getMeetingLinkFromResponse = (data: any) => {
-    if (!data) return "";
-
-    return (
-      data?.meeting_link ||
-      data?.data?.meeting_link ||
-      data?.appointment?.meeting_link ||
-      data?.data?.appointment?.meeting_link ||
-      (typeof data === "string" ? data : "")
-    );
-  };
-
-  const getManualWhatsAppMessage = (appointmentWithLink?: OnlineAppointment) => {
-    const sourceAppointment =
-      appointmentWithLink || verifiedAppointment || appointment;
-    if (!sourceAppointment) return "";
-
-    const appointmentDate = sourceAppointment.appointment_datetime
-      ? dayjs(sourceAppointment.appointment_datetime).format("DD MMM YYYY")
-      : "TBA";
-    const appointmentTime = sourceAppointment.appointment_datetime
-      ? dayjs(sourceAppointment.appointment_datetime).format("hh:mm A")
-      : "TBA";
-
-    const doctorName =
-      sourceAppointment.doctor?.name ||
-      appointment?.doctor?.name ||
-      (sourceAppointment as any)?.doctor_name ||
-      (sourceAppointment as any)?.doctorName ||
-      (sourceAppointment as any)?.assigned_doctor?.name ||
-      "Doctor";
-
-    const confirmationMessage = getAppointmentConfirmedMessage(
-      sourceAppointment.name,
-      doctorName,
-      appointmentDate,
-      appointmentTime,
-    );
-
-    return sourceAppointment.meeting_link
-      ? `${confirmationMessage}\nMeeting link: ${sourceAppointment.meeting_link}`
-      : confirmationMessage;
-  };
-
-  const handleSendLinkViaWhatsApp = async () => {
-    const sourceAppointment = verifiedAppointment || appointment;
-    if (!sourceAppointment?.phone) return;
-
-    if (sourceAppointment.meeting_link) {
-      openWhatsApp(sourceAppointment.phone, getManualWhatsAppMessage());
-      onClose();
-      return;
-    }
-
-    setIsSendingWhatsApp(true);
-    await onlineAppointmentGenerateLinkHandler(
-      sourceAppointment.id,
-      (success, data) => {
-        if (success) {
-          const meetingLink = getMeetingLinkFromResponse(data);
-
-          if (meetingLink) {
-            const appointmentWithLink = {
-              ...appointment,
-              ...sourceAppointment,
-              doctor: sourceAppointment.doctor || appointment?.doctor,
-              meeting_link: meetingLink,
-            } as OnlineAppointment;
-
-            setVerifiedAppointment(appointmentWithLink);
-            openWhatsApp(
-              appointmentWithLink.phone,
-              getManualWhatsAppMessage(appointmentWithLink),
-            );
-            onClose();
-          } else {
-            toast({
-              title: "Meeting link unavailable",
-              description: "The meeting link was not returned by the server.",
-              variant: "destructive",
-            });
-          }
-        } else {
-          toast({
-            title: "Failed",
-            description: "Failed to generate meeting link.",
-            variant: "destructive",
-          });
-        }
-
-        setIsSendingWhatsApp(false);
-      },
-      { whatsapp_notification: false },
-    );
-  };
 
   const handleVerify = async () => {
     // if (!appointment || !meetingLink) return;
@@ -220,13 +108,8 @@ const VerifyPaymentModal: React.FC<VerifyPaymentModalProps> = ({
       paymentDate,
       // meetingLink,
       visitType,
-      async (success: any, data?: any) => {
+      async (success: any) => {
         if (success) {
-          setVerifiedAppointment({
-            ...appointment,
-            ...(data as Partial<OnlineAppointment>),
-            doctor: (data as OnlineAppointment)?.doctor || appointment.doctor,
-          });
           const newFile = selectedFileList.find((f) => !f.isExisting)?.file;
           if (newFile) {
             const uploadData = {
@@ -242,11 +125,7 @@ const VerifyPaymentModal: React.FC<VerifyPaymentModalProps> = ({
             });
           }
 
-          if (whatsappNotificationEnabled) {
-            navigate("/online-appointments/" + appointment?.id);
-          } else {
-            setIsVerified(true);
-          }
+          navigate("/online-appointments/" + appointment?.id);
           // const appointmentDate = appointment.appointment_datetime
           //   ? dayjs(appointment.appointment_datetime).format("DD MMM YYYY")
           //   : "TBA";
@@ -266,7 +145,6 @@ const VerifyPaymentModal: React.FC<VerifyPaymentModalProps> = ({
         }
         setIsSubmitting(false);
       },
-      { whatsapp_notification: whatsappNotificationEnabled },
     );
   };
 
@@ -335,20 +213,10 @@ const VerifyPaymentModal: React.FC<VerifyPaymentModalProps> = ({
               onPress={handleVerify}
               loading={isSubmitting}
               className="gap-2 flex flex-row items-center bg-green-600 hover:bg-green-700 border-none text-white font-bold h-11 px-6 shadow-md"
-              disabled={isVerified}
+              // disabled={!meetingLink}
             >
               <CheckCircle size={18} /> Confirm & Verify
             </Button>
-            {!whatsappNotificationEnabled && isVerified && (
-              <Button
-                onPress={handleSendLinkViaWhatsApp}
-                loading={isSendingWhatsApp}
-                disabled={isSendingWhatsApp}
-                className="gap-2 flex flex-row items-center bg-emerald-600 hover:bg-emerald-700 border-none text-white font-bold h-11 px-6 shadow-md"
-              >
-                <MessageCircle size={18} /> Send Link via WhatsApp
-              </Button>
-            )}
           </View>
         </View>
       }
@@ -429,7 +297,7 @@ const VerifyPaymentModal: React.FC<VerifyPaymentModalProps> = ({
               </Text>
               <SingleSelector
                 value={visitType}
-                onChange={(value: string) => setVisitType(value)}
+                onChange={(e: any) => setVisitType(e.target.value)}
                 options={[
                   { label: "First Visit", value: "First Visit" },
                   { label: "Follow-up", value: "Follow-up" },

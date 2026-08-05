@@ -6,7 +6,7 @@ import Button from "@/components/button";
 import { Card } from "@/components/ui/card";
 import DynamicTable from "@/components/ui/DynamicTable";
 import BouncingLoader from "@/components/BouncingLoader";
-import { Edit, PlusCircle } from "lucide-react";
+import { PlusCircle } from "lucide-react";
 import Modal from "@/components/Modal";
 import Select from "@/components/Select";
 import {
@@ -29,7 +29,6 @@ import {
   SURGERY_PROCEDURE_URL,
 } from "@/utils/urls/frontend";
 import DeleteLoader from "@/components/deleteLoader";
-import { ipdBillingDetailSlice } from "@/actions/slices/ipd/billing";
 // import { AnaesthesiaListResponse } from "@/interfaces/ipd/anaesthesia";
 
 /**
@@ -64,7 +63,7 @@ const PACListPage: React.FC = () => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedSurgery, setSelectedSurgery] = useState<string>("");
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
 
   // useEffect(() => {
   //   if (!id) return;
@@ -228,14 +227,27 @@ const PACListPage: React.FC = () => {
             Manage PAC records for this IPD patient
           </Text>
         </View>
-        <Button
-          variant="primary"
-          className="flex items-center gap-2 px-6 py-3"
-          onPress={() => setShowAddModal(true)}
-        >
-          <PlusCircle className="h-5 w-5" />
-          Add PAC
-        </Button>
+        <View className="flex gap-2">
+          <Button
+            variant="primary"
+            className="flex items-center gap-2 px-6 py-3"
+            onPress={() => setShowAddModal(true)}
+          >
+            <PlusCircle className="h-5 w-5" />
+            Add PAC
+          </Button>
+          <Button
+            variant="outline"
+            className="flex items-center gap-2"
+            onPress={() =>
+              navigate(`${IPD_PATIENTS_URL}${IPD_PATIENTS_DETAILS_URL}/${id}`, {
+                replace: true,
+              })
+            }
+          >
+            Back
+          </Button>
+        </View>
       </View>
 
       <Card className="overflow-hidden border-0 shadow-medium bg-white dark:bg-slate-800">
@@ -244,8 +256,8 @@ const PACListPage: React.FC = () => {
             "Surgery Date",
             "Surgery",
             "IPD No",
+            "Surgeon",
             "Anaesthetist",
-            "Anaesthetist Assistant",
             // { label: "Status", key: "status" },
             "Actions",
           ]}
@@ -265,8 +277,8 @@ const PACListPage: React.FC = () => {
                   >
                     {row?.ipd?.ipd_number || "N/A"}
                   </Link>,
+                  row?.surgery?.surgeon || "N/A",
                   row?.surgery?.anaesthetist || "N/A",
-                  row?.anaesthetist_assistant || "N/A",
                   ActionMenu({
                     onView: () => {
                       navigate(`/ipd/${id}/pac/${row.id}/view`);

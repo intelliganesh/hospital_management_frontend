@@ -13,12 +13,29 @@ export const PATIENT_DETAIL_URL: string = "/patient_details";
 export const PATIENT_STATS_URL: string = "/patient_statistics";
 export const FORGOT_PASSWORD_URL: string = "/forgot_password";
 
+// wards url
+export const WARD_LIST_URL: string = "/ward_list";
+export const WARD_ADD_URL: string = "/ward_add";
+export const WARD_EDIT_URL: string = "/ward_update";
+export const WARD_DELETE_URL: string = "/ward_delete";
+export const WARD_DETAILS_URL: string = "/ward_details";
+export const WARD_DROPDOWN_URL: string = "/wards_list_for_dropdown";
+
 // Room urls
 export const ROOM_DETAIL_URL: string = "/room_details";
 export const ROOM_ADD_URL: string = "/room_add";
 export const ROOM_LIST_URL: string = "/room_list";
 export const ROOM_UPDATE_URL: string = "/room_update";
 export const ROOM_DELETE_URL: string = "/room_delete";
+export const ROOM_DROPDOWN_URL: string = "/rooms_list_for_dropdown";
+
+// Bed url
+export const BED_LIST_URL: string = "/bed_list";
+export const BED_ADD_URL: string = "/bed_add";
+export const BED_EDIT_URL: string = "/bed_update";
+export const BED_DELETE_URL: string = "/bed_delete";
+export const BED_DETAILS_URL: string = "/bed_details";
+export const BED_DROPDOWN_URL: string = "/beds_list_for_dropdown";
 
 // URLs for system settings APIs
 export const ADD_SYSTEM_SETTING_URL: string = "/add_system_settings";
@@ -99,9 +116,6 @@ export const CONSULTATION_EDIT_URL: string = "/consultations_update";
 export const CONSULTATION_DELETE_URL: string = "/consultations_delete";
 export const CONSULTATION_DETAIL_URL: string = "/consultations_details";
 export const CONSULTATION_STATS_URL: string = "/consultations_statistics";
-export const CONSULTATION_DATES_URL: string = "/consultation_dates";
-export const CONSULTATION_PRESCRIPTION_URL: string =
-  "consultation_prescription";
 
 // examination url
 export const EXAMINATION_LIST_URL: string = "/examinations_list";
@@ -389,6 +403,95 @@ export const REFERED_BY_DOCTOR_DETAILS_URL: string =
 export const REFERED_BY_DOCTOR_DROPDOWN_URL: string =
   "/referral_doctors_dropdown_list";
 
+//ipd
+export const IPD_PATIENT_LIST_URL: string = "/ipd_list";
+export const IPD_PATIENT_ENROLLMENT_LIST_URL: string = "/ipd_enrollment_list";
+export const IPD_PATIENT_ENROLLMENT_URL: string = "/ipd_add";
+export const IPD_PATIENT_ENROLLMENT_EDIT_URL: string = "/ipd_update";
+export const IPD_PATIENT_ENROLLMENT_DETAILS_URL: string = "/ipd_details";
+export const IPD_PATIENT_ENROLLMENT_DELETE_URL: string =
+  "/ipd_enrollment_delete";
+export const IPD_PATIENT_DETAILS_URL: string = "/ipd_details";
+export const IPD_PATIENT_STATS_URL: string = "/ipd_patient_statistics";
+
+export const ADD_PRELIMINARY_NOTES_URL: string = "/preliminary_notes";
+export const UPDATE_PRELIMINARY_NOTES_URL: string = "/preliminary_notes";
+export const PRELIMINARY_NOTES_DETAIL_URL: string = "/preliminary_notes";
+
+export const UPDATE_DISCHARGE_SUMMARY_URL: string = "/ipd_discharge_summary_update";
+export const DISCHARGE_SUMMARY_DETAIL_URL: string = "/ipd_discharge_summary_details";
+
+// nurse notes urls
+export const NURSE_NOTES_LIST_URL: string = "/ipd_nurse_notes_list";
+export const ADD_NURSE_NOTES_URL: string = "/ipd_nurse_notes_add";
+export const UPDATE_NURSE_NOTES_URL: string = "/ipd_nurse_notes_update";
+export const NURSE_NOTES_DETAIL_URL: string = "/ipd_nurse_notes_details";
+export const NURSE_NOTES_DELETE_URL: string = "/ipd_nurse_notes_delete";
+
+// doctor notes urls
+export const DOCTOR_NOTES_LIST_URL: string = "/ipd_doctor_notes_list";
+export const ADD_DOCTOR_NOTES_URL: string = "/ipd_doctor_notes_add";
+export const UPDATE_DOCTOR_NOTES_URL: string = "/ipd_doctor_notes_update";
+export const DOCTOR_NOTES_DETAIL_URL: string = "/ipd_doctor_notes_details";
+export const DOCTOR_NOTES_DELETE_URL: string = "/ipd_doctor_notes_delete";
+
+// anaesthesia urls
+export const ADD_ANAESTHESIA_URL: string = "/ipd_anaesthesia_add";
+export const ANAESTHESIA_LIST_URL: string = "/ipd_anaesthesia_list";
+export const UPDATE_ANAESTHESIA_URL: string = "/ipd_anaesthesia_update";
+export const ANAESTHESIA_DELETE_URL: string = "/ipd_anaesthesia_delete";
+export const ANAESTHESIA_DETAIL_URL: string = "/ipd_anaesthesia_details";
+
+export const PATIENT_PREOPERATIVE_CHECKLIST_DOWNLOAD: string =
+  "patient_preoperative_checklist";
+
+export const IPD_GENERATE_PDF_URL: string = "ipd_generate_pdf";
+export const IPD_DOWNLOAD_PDF_URL: string = "ipd_download_pdf";
+
+export const IPD_SURGERY_LIST_URL: string = "/ipd_surgery_list";
+export const IPD_SURGERY_ADD_URL: string = "/ipd_surgery_add";
+export const IPD_SURGERY_DELETE_URL: string = "/ipd_surgery_delete";
+export const UPDATE_SURGERY_REPORT_URL: string = "/ipd_surgery_update";
+export const SURGERY_REPORT_DETAIL_URL: string = "/ipd_surgery_details";
+export const SURGERY_DROPDOWN_URL: string = "/ipd_surgery_list_by_ipd";
+
+export const UPDATE_SURGERY_CONSENT_FORM_URL: string =
+  "/ipd_surgery_consent_form_update";
+
+export const IPD_PRE_OPERATIVE_CHECKLIST_DETAILS_URL: string =
+  "/ipd_pre_operative_checklist_details";
+export const IPD_PRE_OPERATIVE_CHECKLIST_UPDATE_URL: string =
+  "/ipd_pre_operative_checklist_update";
+
+// IPD Pre-Operative Anaesthesia Evalution
+export const IPD_PRE_OP_ANAESTHESIA_EVAL_LIST =
+  "ipd_pre_operative_anaesthesia_evaluation_list";
+export const IPD_PRE_OP_ANAESTHESIA_EVAL_DETAILS =
+  "ipd_pre_operative_anaesthesia_evaluation_details";
+export const IPD_PRE_OP_ANAESTHESIA_EVAL_ADD =
+  "ipd_pre_operative_anaesthesia_evaluation_add";
+export const IPD_PRE_OP_ANAESTHESIA_EVAL_UPDATE =
+  "ipd_pre_operative_anaesthesia_evaluation_update";
+
+// IPD Department of Anaesthesia
+export const IPD_DEPARTMENT_OF_ANAESTHESIA_LIST =
+  "ipd_anaesthesia_department_list";
+export const IPD_DEPARTMENT_OF_ANAESTHESIA_DETAILS =
+  "ipd_anaesthesia_department_details";
+export const IPD_DEPARTMENT_OF_ANAESTHESIA_ADD =
+  "ipd_anaesthesia_department_add";
+export const IPD_DEPARTMENT_OF_ANAESTHESIA_UPDATE =
+  "ipd_anaesthesia_department_update";
+
+// IPD Anaesthesia Recovery Observation
+export const IPD_ANAESTHESIA_RECOVERY_OBSERVATION_LIST =
+  "ipd_anaesthesia_recover_observation_list";
+export const IPD_ANAESTHESIA_RECOVERY_OBSERVATION_DETAILS =
+  "ipd_anaesthesia_recover_observation_details";
+export const IPD_ANAESTHESIA_RECOVERY_OBSERVATION_ADD =
+  "ipd_anaesthesia_recover_observation_add";
+export const IPD_ANAESTHESIA_RECOVERY_OBSERVATION_UPDATE =
+  "ipd_anaesthesia_recover_observation_update";
 // Bank details
 export const BANK_DETAILS_LIST_URL: string = "/bank_information_list";
 export const BANK_DETAILS_ADD_URL: string = "/bank_information_add";
@@ -417,3 +520,13 @@ export const ONLINE_APPOINTMENTS_GENERATE_LINK_URL_PREFIX: string =
 export const ONLINE_APPOINTMENTS_GENERATE_LINK_URL_SUFFIX: string =
   "/generate_link";
 export const ONLINE_APPOINTMENTS_RESEND_LINK_URL_SUFFIX: string = "/send_link";
+
+
+export const IPD_BILLING_LIST_URL: string = "/ipd_billing_list";
+export const IPD_BILLING_DETAILS_URL: string = "/ipd_billing_details";
+export const IPD_BILLING_UPDATE_CHARGES_URL: string = "/ipd_billing_update_charges";
+export const IPD_FINALBILLING_DISCHARGE_URL: string = "/ipd_billing_update";
+export const IPD_BILLING_ADD_PAYMENT_URL: string = "/ipd_billing_add_payment";
+export const IPD_BILLING_ADD_CHARGES_URL: string = "/ipd_billing_add_charges";
+export const IPD_BILLING_PAYMENT_DETAILS_URL: string = "/ipd_billing_get_payment_details";
+export const IPD_BILLING_DELETE_CHARGES_URL: string = "ipd_billing_delete_charges"

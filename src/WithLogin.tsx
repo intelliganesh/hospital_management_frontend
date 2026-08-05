@@ -146,15 +146,39 @@ import {
   REFERRED_BY_TABLE_URL,
   REFERRED_BY_FORM_URL,
   REFERRED_BY_EDIT_FORM_URL,
+  IPD_ENROLLMENTS_URL,
+  IPD_ENROLLMENT_FORM_URL,
+  WARD_TABLE_URL,
+  WARD_FORM_URL,
+  WARD_EDIT_URL,
+  BED_TABLE_URL,
+  BED_FORM_URL,
+  BED_EDIT_URL,
+  BED_DETAILS_URL,
+  IPD_PATIENTS_URL,
+  IPD_PATIENTS_DETAILS_URL,
+  PRELIMINARY_NOTES_URL,
+  DOCTOR_NOTES_URL,
+  NURSE_NOTES_URL,
+  NURSE_NOTE_ADD_URL,
+  NURSE_NOTE_EDIT_URL,
+  DOCTOR_NOTES_ADD_URL,
+  IPD_ENROLLMENT_DETAILS_URL,
+  IPD_ENROLLMENT_FORM_EDIT_URL,
+  SURGERY_PROCEDURE_URL,
+  // DOWNLOAD_FORM_AND_REPORTS,
+  SURGERY_LIST_URL,
+  DOWNLOAD_SURGERY_FORM,
+  DOWNLOAD_SURGERY_REPORTS,
   FISTULA_ENTRY_LIST_URL,
   FISTULA_ENTRY_FORM_URL,
+  DOCTOR_NOTES_EDIT_URL,
   BANK_DETAILS_TABLE_URL,
   BANK_DETAILS_FORM_URL,
   BANK_DETAILS_EDIT_URL,
   BANK_DETAILS_DETAILS_URL,
   ONLINE_APPOINTMENT_TABLE_URL,
   ONLINE_APPOINTMENT_DETAILS_URL,
-  PREVIOUS_CONSULTATIONS_URL,
 } from "@/utils/urls/frontend";
 import OpdCaseForm from "./pages/forms/opdForm/opd";
 import OpdPage from "./pages/opd/OpdPage";
@@ -175,7 +199,6 @@ import ExaminationDetailsPage from "./pages/examinations/ExaminationDetailsPage"
 import ExaminationForm from "./pages/forms/examinationForm/examination";
 import ConsultationPage from "./pages/consultation/ConsultationPage";
 import ConsultationDetails from "./pages/consultation/ConsultationDetail";
-import PreviousConsultationsPage from "./pages/consultation/PreviousConsultationsPage";
 import TestPage from "./pages/test/TestPage";
 import TestDetails from "./pages/test/TestDetail";
 import MedicinesForm from "./pages/forms/medicinesForm/medicines";
@@ -255,6 +278,36 @@ import PostSurgeryFollowUp from "./pages/patient/postSurgeryFollowUp";
 import FistulaDetailsPage from "./pages/fistula/FistulaDetailsPage";
 import ReferedByDocPage from "./pages/referedByDoc/ReferedByDoc";
 import RefferedByDocForm from "./pages/forms/refferedByDoctor/RefferedByDoc";
+import IpdEnrollmentsPage from "./pages/ipd/IpdEnrollmentsPage";
+import IpdEnrollmentForm from "./pages/forms/ipdForm/IpdEnrollmentForm";
+import NurseNotesPage from "./pages/ipd/NurseNotesPage";
+import NoteFormPage from "./pages/forms/ipdForm/nurseNotes/NoteFormPage";
+import WardsPage from "./pages/wards/WardsPage";
+import WardsForm from "./pages/forms/wardsForm/wards";
+import BedsPage from "./pages/beds/BedsPage";
+import BedsForm from "./pages/forms/bedsForm/beds";
+import BedDetails from "./pages/beds/BedDetails";
+import IpdPatientsPage from "./pages/ipd patients/ipdPatientsPage";
+import IpdPatientDetailsPage from "./pages/ipd patients/ipdPatientsDetail";
+import PreliminaryNotesForm from "./pages/ipd patients/preliminary notes";
+import DoctorNotesPage from "./pages/ipd/doctorNotes/DoctorNotesPage";
+import IpdEnrollmentDetailsPage from "./pages/ipd/IpdEnrollmentDetailsPage";
+import PreOperativeChecklist from "./pages/ipd patients/surgeryProcedure";
+import SurgeryDetailPage from "./pages/ipd patients/surgeryProcedure/SurgeryDetailPage";
+import PACListPage from "./pages/ipd/pac/PACListPage";
+import PACFormPage from "./pages/ipd/pac/PACFormPage";
+import PACDetailPage from "./pages/ipd/pac/PACDetailPage";
+// import DownloadFormsAndReports from "./pages/ipd patients/downloads/SurgeryFormDownload";
+import SurgeryList from "./pages/ipd patients/SurgeryList";
+import DownloadSurgeryReports from "./pages/ipd patients/downloads/SurgeryReportsDownload";
+import DownloadSurgeryForm from "./pages/ipd patients/downloads/SurgeryFormDownload";
+import DischargeSummaryPage from "./pages/ipd/discharge-summary/DischargeSummaryPage";
+import IpdBillViewPage from "./pages/ipd/billing/IpdBillViewPage";
+import IpdBillDetailsPage from "./pages/ipd/billing/IpdBillDetailsPage";
+import IpdBillsPage from "./pages/ipd/billing/IpdBillsPage";
+// import DownloadFormsAndReports from "./pages/ipd patients/downloads";
+// import PreAnesthesiaAssessmentsPage from "./pages/ipd/pac/PreAnesthesiaAssessmentsPage";
+// import PreAnesthesiaEvaluationPage from "./pages/ipd/pac/PreAnesthesiaEvaluationPage";
 import FistulaEntryList from "./pages/patient/FistulaEntryList";
 import FistulaEntryForm from "./pages/patient/FistulaEntryForm";
 import OnlineAppointmentPage from "./pages/onlineAppointments/OnlineAppointmentPage";
@@ -262,9 +315,69 @@ import OnlineAppointmentDetailsPage from "./pages/onlineAppointments/OnlineAppoi
 // import ProtectedRoute from "./ProtectedRoute";
 // import { PERMISSIONS } from "./rolesRoute";
 // import { GetPatientConsultationList } from "./utils/fetcher";
+import {
+  IPD_BILLS_URL,
+  IPD_BILL_DETAILS_URL,
+  IPD_BILL_VIEW_URL,
+} from "@/utils/urls/frontend";
+import DoctorNotesForm from "./pages/forms/ipdForm/doctorNotes";
+
 const WithLogin: React.FC<{}> = () => {
   return (
     <Routes>
+      <Route
+        path={IPD_BILLS_URL}
+        element={
+          <DashboardLayout>
+            <IpdBillsPage />
+          </DashboardLayout>
+        }
+      />
+      <Route
+        path={IPD_BILL_DETAILS_URL + "/:id"}
+        element={
+          <DashboardLayout>
+            <IpdBillDetailsPage />
+          </DashboardLayout>
+        }
+      />
+      <Route
+        path={
+          IPD_PATIENTS_URL +
+          IPD_PATIENTS_DETAILS_URL +
+          IPD_BILL_DETAILS_URL +
+          "/:id"
+        }
+        element={
+          <DashboardLayout>
+            <IpdBillDetailsPage />
+          </DashboardLayout>
+        }
+      />
+      <Route
+        path={IPD_BILL_VIEW_URL + "/:id"}
+        element={
+          <DashboardLayout>
+            <IpdBillViewPage />
+          </DashboardLayout>
+        }
+      />
+      {/* <Route
+        path={PAC_LIST_URL + "/:patientId"}
+        element={
+            <DashboardLayout>
+                <PreAnesthesiaAssessmentsPage />
+            </DashboardLayout>
+        }
+      />
+      <Route
+        path={PAC_DETAILS_URL + "/:action/:patientId"}
+        element={
+            <DashboardLayout>
+                <PreAnesthesiaEvaluationPage />
+            </DashboardLayout>
+        }
+      /> */}
       <Route
         path={USER_TABLE_URL + USER_URL}
         element={
@@ -365,6 +478,30 @@ const WithLogin: React.FC<{}> = () => {
           </DashboardLayout>
         }
       /> */}
+      <Route
+        path={WARD_TABLE_URL}
+        element={
+          <DashboardLayout>
+            <WardsPage />
+          </DashboardLayout>
+        }
+      />
+      <Route
+        path={WARD_TABLE_URL + WARD_FORM_URL}
+        element={
+          <DashboardLayout>
+            <WardsForm />
+          </DashboardLayout>
+        }
+      />
+      <Route
+        path={WARD_TABLE_URL + WARD_EDIT_URL + "/:id"}
+        element={
+          <DashboardLayout>
+            <WardsForm formType="edit" />
+          </DashboardLayout>
+        }
+      />
       <Route
         path={ROLES_TABLE_URL}
         element={
@@ -486,6 +623,38 @@ const WithLogin: React.FC<{}> = () => {
         element={
           <DashboardLayout>
             <RoomsForm formType="edit" />
+          </DashboardLayout>
+        }
+      />
+      <Route
+        path={BED_TABLE_URL}
+        element={
+          <DashboardLayout>
+            <BedsPage />
+          </DashboardLayout>
+        }
+      />
+      <Route
+        path={BED_TABLE_URL + BED_FORM_URL}
+        element={
+          <DashboardLayout>
+            <BedsForm />
+          </DashboardLayout>
+        }
+      />
+      <Route
+        path={BED_TABLE_URL + BED_EDIT_URL + "/:id"}
+        element={
+          <DashboardLayout>
+            <BedsForm formType="edit" />
+          </DashboardLayout>
+        }
+      />
+      <Route
+        path={BED_TABLE_URL + BED_DETAILS_URL + "/:id"}
+        element={
+          <DashboardLayout>
+            <BedDetails />
           </DashboardLayout>
         }
       />
@@ -705,18 +874,6 @@ const WithLogin: React.FC<{}> = () => {
           </DashboardLayout>
         }
       />
-      <Route
-        path={
-          CONSULTATION_TABLE_URL +
-          PREVIOUS_CONSULTATIONS_URL +
-          "/:patientId/:consultationId"
-        }
-        element={
-          <DashboardLayout>
-            <PreviousConsultationsPage />
-          </DashboardLayout>
-        }
-      />
 
       <Route
         path={MEDICINE_TABLE_URL + MEDICINE_FORM_URL}
@@ -835,6 +992,110 @@ const WithLogin: React.FC<{}> = () => {
         element={
           <DashboardLayout>
             <RefferedByDocForm formType="edit" />
+          </DashboardLayout>
+        }
+      />
+
+      {/* IPD Routes */}
+      <Route
+        path={IPD_ENROLLMENTS_URL}
+        element={
+          <DashboardLayout>
+            <IpdEnrollmentsPage />
+          </DashboardLayout>
+        }
+      />
+      <Route
+        path={IPD_ENROLLMENT_FORM_URL + "/:patientId/:consultationId?"}
+        element={
+          <DashboardLayout>
+            <IpdEnrollmentForm formType="addEnrollment" />
+          </DashboardLayout>
+        }
+      />
+      <Route
+        path={IPD_ENROLLMENT_FORM_EDIT_URL + "/:patientId/:ipdCaseId"}
+        element={
+          <DashboardLayout>
+            <IpdEnrollmentForm formType="editEnrollment" />
+          </DashboardLayout>
+        }
+      />
+
+      {/* PAC Routes */}
+      <Route
+        path="/ipd/:id/pac"
+        element={
+          <DashboardLayout>
+            <PACListPage />
+          </DashboardLayout>
+        }
+      />
+      <Route
+        path="/ipd/:id/pac/new"
+        element={
+          <DashboardLayout>
+            <PACFormPage />
+          </DashboardLayout>
+        }
+      />
+      <Route
+        path="/ipd/:id/pac/:pacId"
+        element={
+          <DashboardLayout>
+            <PACFormPage />
+          </DashboardLayout>
+        }
+      />
+      <Route
+        path="/ipd/:id/pac/:pacId/view"
+        element={
+          <DashboardLayout>
+            <PACDetailPage />
+          </DashboardLayout>
+        }
+      />
+
+      {/* Discharge Summary Routes */}
+      <Route
+        path="/ipd/:id/discharge-summary/new"
+        element={
+          <DashboardLayout>
+            <DischargeSummaryPage />
+          </DashboardLayout>
+        }
+      />
+      <Route
+        path="/ipd/:id/discharge-summary/:summaryId"
+        element={
+          <DashboardLayout>
+            <DischargeSummaryPage />
+          </DashboardLayout>
+        }
+      />
+
+      {/* Nurse Notes Routes */}
+      <Route
+        path={`${IPD_PATIENTS_URL}${IPD_PATIENTS_DETAILS_URL}/:id${NURSE_NOTES_URL}`}
+        element={
+          <DashboardLayout>
+            <NurseNotesPage />
+          </DashboardLayout>
+        }
+      />
+      <Route
+        path={`${IPD_PATIENTS_URL}${IPD_PATIENTS_DETAILS_URL}/:id${NURSE_NOTE_ADD_URL}`}
+        element={
+          <DashboardLayout>
+            <NoteFormPage />
+          </DashboardLayout>
+        }
+      />
+      <Route
+        path={`${IPD_PATIENTS_URL}${IPD_PATIENTS_DETAILS_URL}/:id${NURSE_NOTE_EDIT_URL}/:noteId`}
+        element={
+          <DashboardLayout>
+            <NoteFormPage formType="edit" />
           </DashboardLayout>
         }
       />
@@ -1601,6 +1862,157 @@ const WithLogin: React.FC<{}> = () => {
         element={
           <DashboardLayout>
             <PostSurgeryFollowUp />
+          </DashboardLayout>
+        }
+      />
+      <Route
+        path={IPD_ENROLLMENT_DETAILS_URL + "/:id"}
+        element={
+          <DashboardLayout>
+            <IpdEnrollmentDetailsPage />
+          </DashboardLayout>
+        }
+      />
+      <Route
+        path={IPD_PATIENTS_URL}
+        element={
+          <DashboardLayout>
+            <IpdPatientsPage />
+          </DashboardLayout>
+        }
+      />
+      <Route
+        path={IPD_PATIENTS_URL + IPD_PATIENTS_DETAILS_URL + "/:id"}
+        element={
+          <DashboardLayout>
+            <IpdPatientDetailsPage />
+          </DashboardLayout>
+        }
+      />
+      <Route
+        path={
+          IPD_PATIENTS_URL +
+          IPD_PATIENTS_DETAILS_URL +
+          PRELIMINARY_NOTES_URL +
+          "/add/:id"
+        }
+        element={
+          <DashboardLayout>
+            <PreliminaryNotesForm formType="add" />
+          </DashboardLayout>
+        }
+      />
+      <Route
+        path={
+          IPD_PATIENTS_URL +
+          IPD_PATIENTS_DETAILS_URL +
+          PRELIMINARY_NOTES_URL +
+          "/edit/:id"
+        }
+        element={
+          <DashboardLayout>
+            <PreliminaryNotesForm formType="edit" />
+          </DashboardLayout>
+        }
+      />
+      <Route
+        path={
+          IPD_PATIENTS_URL +
+          IPD_PATIENTS_DETAILS_URL +
+          DOCTOR_NOTES_URL +
+          "/:id"
+        }
+        element={
+          <DashboardLayout>
+            <DoctorNotesPage />
+          </DashboardLayout>
+        }
+      />
+      <Route
+        path={`${IPD_PATIENTS_URL}${IPD_PATIENTS_DETAILS_URL}/:id${DOCTOR_NOTES_ADD_URL}`}
+        element={
+          <DashboardLayout>
+            <DoctorNotesForm />
+          </DashboardLayout>
+        }
+      />
+      <Route
+        path={
+          IPD_PATIENTS_URL +
+          IPD_PATIENTS_DETAILS_URL +
+          "/:id" +
+          DOCTOR_NOTES_EDIT_URL +
+          "/:noteId"
+        }
+        element={
+          <DashboardLayout>
+            <DoctorNotesForm formType="edit" />
+          </DashboardLayout>
+        }
+      />
+
+      <Route
+        path={
+          IPD_PATIENTS_URL +
+          IPD_PATIENTS_DETAILS_URL +
+          SURGERY_LIST_URL +
+          "/:id"
+        }
+        element={
+          <DashboardLayout>
+            <SurgeryList />
+          </DashboardLayout>
+        }
+      />
+      <Route
+        path={
+          IPD_PATIENTS_URL +
+          IPD_PATIENTS_DETAILS_URL +
+          SURGERY_PROCEDURE_URL +
+          "/:id"
+        }
+        element={
+          <DashboardLayout>
+            <PreOperativeChecklist />
+          </DashboardLayout>
+        }
+      />
+      <Route
+        path={
+          IPD_PATIENTS_URL +
+          IPD_PATIENTS_DETAILS_URL +
+          SURGERY_PROCEDURE_URL +
+          "/:id/view"
+        }
+        element={
+          <DashboardLayout>
+            <SurgeryDetailPage />
+          </DashboardLayout>
+        }
+      />
+      <Route
+        path={
+          IPD_PATIENTS_URL +
+          IPD_PATIENTS_DETAILS_URL +
+          DOWNLOAD_SURGERY_FORM +
+          "/:id"
+        }
+        element={
+          <DashboardLayout>
+            <DownloadSurgeryForm />
+          </DashboardLayout>
+        }
+      />
+      <Route
+        path={
+          IPD_PATIENTS_URL +
+          IPD_PATIENTS_DETAILS_URL +
+          DOWNLOAD_SURGERY_REPORTS +
+          "/:id"
+        }
+        element={
+          <DashboardLayout>
+            <DownloadSurgeryReports />
           </DashboardLayout>
         }
       />

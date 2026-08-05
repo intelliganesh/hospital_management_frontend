@@ -34,17 +34,17 @@ const SectionOne: React.FC<SectionOneProps> = ({
   const { amountTypeDropdownHandler } = useAmountType();
   const { PuaListHandler } = useOpd();
   const allUserList = useSelector(
-    (state: RootState) => state?.opd?.allUserList
+    (state: RootState) => state?.opd?.allUserList,
   );
 
   const allUserOptions = allUserList?.map((user: any) => ({
     id: user.id,
-    label: `${user.name} (${user.role})`, 
+    label: `${user.name} (${user.role})`,
     value: user.name,
   }));
 
   const expensesData = useSelector(
-    (state: RootState) => state.expenses.expensesDetails
+    (state: RootState) => state.expenses.expensesDetails,
   );
 
   const isEdit = !!expensesData?.id;
@@ -64,7 +64,7 @@ const SectionOne: React.FC<SectionOneProps> = ({
   // };
 
   const amountTypeData = useSelector(
-    (state: RootState) => state.amountType.amountTypeDropdownData
+    (state: RootState) => state.amountType.amountTypeDropdownData,
   );
   const { values, handleChange, onSetHandler } =
     useForm<Partial<Expenses> | null>(expenseDataDetail);
@@ -296,10 +296,10 @@ const SectionOne: React.FC<SectionOneProps> = ({
             typeof values?.image === "string"
               ? values?.image
               : Array.isArray(values?.image) && values?.image.length > 0
-              ? values?.image
-                  .filter((item) => typeof item === "string")
-                  .join(",")
-              : ""
+                ? values?.image
+                    .filter((item) => typeof item === "string")
+                    .join(",")
+                : ""
           }
           onChange={(fileList: any) => {
             const file =

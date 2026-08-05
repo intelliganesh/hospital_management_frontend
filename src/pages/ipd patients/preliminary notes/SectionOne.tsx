@@ -1,32 +1,19 @@
 import Input from "@/components/input";
 import View from "@/components/view";
 import useForm from "@/utils/custom-hooks/use-form";
-import SingleSelector from "@/components/SingleSelector";
 import { PreliminaryNotes } from "@/interfaces/preliminaryNotes";
-import { genderOptions } from "./preliminaryFormOptions";
-import Textarea from "@/components/Textarea";
 import Text from "@/components/text";
 import { useSelector } from "react-redux";
 import { RootState } from "@/actions/store";
 
-interface SectionOneProps {
-  errorsName: string;
-  errorsAge: string;
-  errorsGender: string;
-}
-
-const SectionOne: React.FC<SectionOneProps> = ({
-  errorsName,
-  errorsAge,
-  errorsGender,
-}) => {
+const SectionOne: React.FC = () => {
   const preliminaryNotes = useSelector(
     (state: RootState) => state.preliminaryNotes.preliminaryNotesDetailData.ipd
   ) as Partial<PreliminaryNotes> | null;
 
   console.log("jdsfa", preliminaryNotes);
 
-  const { values, handleChange, onSetHandler } =
+  const { values, handleChange } =
     useForm<Partial<PreliminaryNotes> | null>(preliminaryNotes);
 
   return (

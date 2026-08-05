@@ -14,7 +14,7 @@ import { handleSortChange } from "@/utils/helperFunctions";
 import getStatusColorScheme from "@/utils/statusColorSchemaDecider";
 import {
   BED_DETAILS_URL,
-  BED_EDIT_URL,
+  // BED_EDIT_URL,
   BED_FORM_URL,
   BED_TABLE_URL,
 } from "@/utils/urls/frontend";
@@ -26,12 +26,10 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 
 const BedsPage: React.FC<{}> = () => {
   const navigate = useNavigate();
-  const {  bedListHandler, deleteBedHandler, cleanUp,
-  } = useBeds();
+  const { bedListHandler, deleteBedHandler, cleanUp } = useBeds();
   const [searchParams, setSearchParams] = useSearchParams();
   const [deleteId, setDeleteId] = useState<null | string>(null);
-  const bedsData = useSelector((state: RootState) => state?.beds?.bedListData
-  );
+  const bedsData = useSelector((state: RootState) => state?.beds?.bedListData);
 
   useEffect(() => {
     if (searchParams?.has("currentPage")) {
@@ -40,7 +38,7 @@ const BedsPage: React.FC<{}> = () => {
         () => {},
         searchParams.get("search") ?? null,
         searchParams.get("sort_by") ?? null,
-        searchParams.get("sort_order") ?? null
+        searchParams.get("sort_order") ?? null,
       );
     }
     return () => {
@@ -151,7 +149,7 @@ const BedsPage: React.FC<{}> = () => {
             >
               {bed?.status || "N/A"}
             </Text>,
-            // bed.status ? 
+            // bed.status ?
             // (
             //   <Text
             //   as="span"
@@ -170,9 +168,9 @@ const BedsPage: React.FC<{}> = () => {
             // </Text>
             // ),
             <ActionMenu
-              onEdit={() =>
-                navigate(`${BED_TABLE_URL + BED_EDIT_URL}/${bed.id}`)
-              }
+              // onEdit={() =>
+              //   navigate(`${BED_TABLE_URL + BED_EDIT_URL}/${bed.id}`)
+              // }
               onDelete={() => setDeleteId(bed.id)}
             />,
           ])}
@@ -197,7 +195,7 @@ const BedsPage: React.FC<{}> = () => {
                     option,
                     setActiveSort,
                     setSearchParams,
-                    searchParams
+                    searchParams,
                   )
                 }
               />
@@ -224,7 +222,7 @@ const BedsPage: React.FC<{}> = () => {
                       ...Object.fromEntries(searchParams),
                       currentPage: `${page}`,
                     },
-                    { replace: true }
+                    { replace: true },
                   )
                 }
               />

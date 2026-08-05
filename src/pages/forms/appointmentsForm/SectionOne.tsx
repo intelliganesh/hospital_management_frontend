@@ -119,6 +119,7 @@ const SectionOne: React.FC<SectionOneProps> = ({
 
   useEffect(() => {
     if (
+      
       !values?.front_desk_user_id &&
       userLoginDetails?.id &&
       formType === "add"

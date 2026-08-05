@@ -75,7 +75,7 @@ const SearchSelect: React.FC<SearchSelectProps> = ({
   return (
     <View>
       {label && (
-        <label htmlFor={name}>
+        <label htmlFor={name} className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
           {label}
           {required && <span className="text-red-600 ">*</span>}
         </label>

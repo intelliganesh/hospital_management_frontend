@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import View from "@/components/view";
-import Input from "@/components/input";
 import Upload from "@/components/Upload";
 import useForm from "@/utils/custom-hooks/use-form";
 import Button from "@/components/button";
@@ -12,9 +11,8 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/actions/store";
 import { AnaesthesiaDetails } from "@/interfaces/ipd/anaesthesia";
 import FormSection from "../components/FormSection";
-import { FileText, UploadIcon } from "lucide-react";
+import { UploadIcon } from "lucide-react";
 import Textarea from "@/components/Textarea";
-import Select from "@/components/Select";
 import SingleSelector from "@/components/SingleSelector";
 
 interface Props {
@@ -38,7 +36,7 @@ const ConsentForm: React.FC<Props> = ({ readOnly = false }) => {
 
   useEffect(() => {
     if (pacId) {
-      anaesthesiaDetailHandler(pacId, () => { });
+      anaesthesiaDetailHandler(pacId, () => {});
     }
     //  return () => {
     //       cleanUp();

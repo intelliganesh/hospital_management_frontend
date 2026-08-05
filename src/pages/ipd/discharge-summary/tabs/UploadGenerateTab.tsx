@@ -1,6 +1,5 @@
 import React from "react";
 import View from "@/components/view";
-import Upload from "@/components/Upload";
 import Button from "@/components/button";
 import { FileDown, Eye } from "lucide-react";
 
@@ -8,12 +7,7 @@ interface Props {
   readOnly?: boolean;
 }
 
-const UploadGenerateTab: React.FC<Props> = ({ readOnly = false }) => {
-  const handleGeneratePDF = () => {
-    console.log("Generate PDF from form data");
-    // TODO: Implement PDF generation logic
-  };
-
+const UploadGenerateTab: React.FC<Props> = () => {
   const handlePreviewPDF = () => {
     console.log("Preview PDF");
     // TODO: Implement PDF preview logic

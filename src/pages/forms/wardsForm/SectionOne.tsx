@@ -1,5 +1,4 @@
 import Input from "@/components/input";
-import Select from "@/components/Select";
 import View from "@/components/view";
 import useForm from "@/utils/custom-hooks/use-form";
 import { wardStatusOptions, wardTypeOptions } from "./wardFormOptions";

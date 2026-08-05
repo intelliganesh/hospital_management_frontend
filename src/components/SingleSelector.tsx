@@ -59,14 +59,14 @@ interface SizeClassesProps {
   small: string;
   medium: string;
   large: string;
-  default: string;
+  // default: string;
 }
 
 const sizeClasses: SizeClassesProps = {
-  small: "min-h-9 text-sm px-3 py-1.5 rounded-md",
-  medium: "min-h-11 text-sm px-4 py-2.5 rounded-lg",
+  small: "min-h-9 text-sm px-3 py-2 rounded-md",
+  medium: "min-h-10 text-sm px-4 py-2.5 rounded-lg",
   large: "min-h-13 text-base px-5 py-3 rounded-xl",
-  default: "min-h-11 text-sm px-4 py-2.5 rounded-lg",
+  // default: "min-h-9 text-sm px-4 py-2 rounded-md",
 };
 
 const variantClasses: VariantProps = {
@@ -320,7 +320,7 @@ const SingleSelector: React.FC<SingleSelectorProps> = ({
         </label>
       )}
 
-      <View className={`mt-2 relative ${fullWidth ? "w-full" : ""}`}>
+      <View className={`${label ? "mt-2" : "mt-0"} relative ${fullWidth ? "w-full" : ""}`}>
         <View ref={dropdownRef}>
           {leftIcon && (
             <View className="absolute left-4 top-1/2 transform -translate-y-1/2 pointer-events-none text-muted-foreground z-10">
@@ -370,8 +370,8 @@ const SingleSelector: React.FC<SingleSelectorProps> = ({
             <View className={`absolute right-4 top-1/2 transform -translate-y-1/2 pointer-events-none text-slate-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}>
               <svg 
                 xmlns="http://www.w3.org/2000/svg" 
-                width="18" 
-                height="18" 
+                width="15" 
+                height="15" 
                 viewBox="0 0 24 24" 
                 fill="none" 
                 stroke="currentColor" 

@@ -1,7 +1,5 @@
 import * as Yup from "yup";
 
-const yup = Yup.object();
-
 export const validationSchema = Yup.object().shape({
     patient_id: Yup.string().when("$formType", (formType: any, schema: any) => {
         if (formType[0] === "addPatientWithEnrollment" || formType[0] === "editEnrollment") return schema.optional();

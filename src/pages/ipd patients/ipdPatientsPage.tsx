@@ -27,6 +27,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import PaginationComponent from "@/components/Pagination";
 
 const IpdPatientsPage: React.FC<{}> = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -37,13 +38,18 @@ const IpdPatientsPage: React.FC<{}> = () => {
 
   const { ipdPatientListHandler, cleanUp } = useIpdPatients();
 
-  const ipdEnrollmedPatients = useSelector((state: RootState) => state.ipd.ipdPatientList);
+  const ipdEnrollmedPatients = useSelector(
+    (state: RootState) => state.ipd.ipdPatientList,
+  );
+  const ipdpatientallData = useSelector(
+    (state: RootState) => state.ipd.ipdEnrollmentData,
+  );
 
   useEffect(() => {
     if (location.state?.refresh || searchParams.has("currentPage")) {
       ipdPatientListHandler(
         searchParams?.get("currentPage") ?? 1,
-        () => { },
+        () => {},
         searchParams.get("search") ?? null,
         searchParams.get("sort_by") ?? null,
         searchParams.get("sort_order") ?? null,
@@ -54,9 +60,9 @@ const IpdPatientsPage: React.FC<{}> = () => {
               ? true
               : status === "failed"
                 ? true
-                : status === "success" && false
+                : status === "success" && false,
           );
-        }
+        },
       );
     }
     return () => {
@@ -151,55 +157,77 @@ const IpdPatientsPage: React.FC<{}> = () => {
             "Actions",
           ]}
           tableData={
-            ipdEnrollmedPatients.length > 0 ? ipdEnrollmedPatients?.map((ipdPatient: any) => [
-              ipdPatient?.ipd_number,
-              ipdPatient?.admission_date_time ? dayjs(ipdPatient?.admission_date_time).format("DD-MM-YYYY hh:mm a") : "",
-              <View className="flex flex-col">
-                <View className="flex items-center">
-                  <View className="h-8 w-8 rounded-full bg-secondary-50 flex items-center justify-center mr-3">
-                    <Text
-                      as="span"
-                      className="text-xs font-medium text-secondary-600"
-                    >
-                      {ipdPatient?.patient?.first_name[0] || "" + ipdPatient?.patient?.last_name[0] || ""}
-                    </Text>
-                  </View>
+            ipdEnrollmedPatients.length > 0
+              ? ipdEnrollmedPatients?.map((ipdPatient: any) => [
+                  ipdPatient?.ipd_number,
+                  ipdPatient?.admission_date_time
+                    ? dayjs(ipdPatient?.admission_date_time).format(
+                        "DD-MM-YYYY hh:mm a",
+                      )
+                    : "",
                   <View className="flex flex-col">
-                    <Text as="span" className="font-medium">
-                      {ipdPatient?.patient?.first_name || "" + " " + ipdPatient?.patient?.last_name || ""}
-                    </Text>
+                    <View className="flex items-center">
+                      <View className="h-8 w-8 rounded-full bg-secondary-50 flex items-center justify-center mr-3">
+                        <Text
+                          as="span"
+                          className="text-xs font-medium text-secondary-600"
+                        >
+                          {ipdPatient?.patient?.first_name[0] ||
+                            "" + ipdPatient?.patient?.last_name[0] ||
+                            ""}
+                        </Text>
+                      </View>
+                      <View className="flex flex-col">
+                        <Text as="span" className="font-medium">
+                          {ipdPatient?.patient?.first_name ||
+                            "" + " " + ipdPatient?.patient?.last_name ||
+                            ""}
+                        </Text>
+                        <Text
+                          as="span"
+                          className="text-xs text-muted-foreground"
+                        >
+                          {ipdPatient?.patient_number}
+                        </Text>
+                      </View>
+                    </View>
+                  </View>,
+                  ipdPatient?.patient?.phone_no,
+                  <View className="flex flex-col">
+                    <Text as="span">{ipdPatient?.ward_type || "N/A"}</Text>
                     <Text as="span" className="text-xs text-muted-foreground">
-                      {ipdPatient?.patient_number}
+                      {ipdPatient?.ward_number || "N/A"}
                     </Text>
-                  </View>
-                </View>
-
-              </View>,
-              ipdPatient?.patient?.phone_no,
-              <View className="flex flex-col">
-                <Text as="span">
-                  {ipdPatient?.ward_type || "N/A"}
-                </Text>
-                <Text as="span" className="text-xs text-muted-foreground">
-                  {ipdPatient?.ward_number || "N/A"}
-                </Text>
-              </View>,
-              (ipdPatient?.room_number || "N/A") + "/" + (ipdPatient?.bed_number || "N/A"),
-              <Text
-                as="span"
-                className="inline-flex px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-700"
-              >
-                {ipdPatient?.status}
-              </Text>,
-              <ActionMenu
-                onView={() => navigate(`${IPD_PATIENTS_URL}${IPD_PATIENTS_DETAILS_URL}/${ipdPatient?.id}`)}
-                onEdit={() => navigate(`${IPD_ENROLLMENT_FORM_EDIT_URL}/${ipdPatient?.patient?.id}/${ipdPatient?.id}`)}
-              // onDischarge={() => { }}
-              />,
-            ]) : []
+                  </View>,
+                  (ipdPatient?.room_number || "N/A") +
+                    "/" +
+                    (ipdPatient?.bed_number || "N/A"),
+                  <Text
+                    as="span"
+                    className="inline-flex px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-700"
+                  >
+                    {ipdPatient?.status}
+                  </Text>,
+                  <ActionMenu
+                    onView={() =>
+                      navigate(
+                        `${IPD_PATIENTS_URL}${IPD_PATIENTS_DETAILS_URL}/${ipdPatient?.id}`,
+                      )
+                    }
+                    onEdit={() =>
+                      navigate(
+                        `${IPD_ENROLLMENT_FORM_EDIT_URL}/${ipdPatient?.patient?.id}/${ipdPatient?.id}`,
+                      )
+                    }
+                    // onDischarge={() => { }}
+                  />,
+                ])
+              : []
           }
           sortBy={searchParams.get("sort_by") || undefined}
-          sortOrder={searchParams.get("sort_order") as "asc" | "desc" || undefined}
+          sortOrder={
+            (searchParams.get("sort_order") as "asc" | "desc") || undefined
+          }
           onSort={(key, order) => {
             setSearchParams({
               ...Object.fromEntries([...searchParams]),
@@ -291,6 +319,23 @@ const IpdPatientsPage: React.FC<{}> = () => {
             //     ]}
             //   />
             // ),
+          }}
+          footer={{
+            pagination: (
+              <PaginationComponent
+                current_page={ipdpatientallData?.current_page}
+                last_page={ipdpatientallData?.last_page}
+                getPageNumberHandler={(page: number) => {
+                  setSearchParams(
+                    {
+                      ...Object.fromEntries([...searchParams]),
+                      currentPage: page.toString(),
+                    },
+                    { replace: true },
+                  );
+                }}
+              />
+            ),
           }}
         />
       </Card>

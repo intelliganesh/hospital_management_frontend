@@ -95,6 +95,7 @@ const SurgeryReportForm: React.FC<Props> = ({ readOnly = false }) => {
 
     await updateSurgeryReport(surgeryId, payload, (success: boolean) => {
       if (success) {
+        surgeryReportDetail(surgeryId, () => {});
         toast({
           title: "Success",
           description: "Surgery report submitted successfully",
@@ -195,7 +196,9 @@ const SurgeryReportForm: React.FC<Props> = ({ readOnly = false }) => {
             name="surgery_start_datetime"
             label="Surgery Start Date & Time"
             type="datetime-local"
-            value={toDateTimeInputValue(values?.surgery_start_datetime)}
+            value={toDateTimeInputValue(
+              values?.surgery_start_datetime || values?.surgery_date,
+            )}
             onChange={handleChange}
             disabled={readOnly}
           />
@@ -225,6 +228,16 @@ const SurgeryReportForm: React.FC<Props> = ({ readOnly = false }) => {
             placeholder="Select Surgeon"
           />
           <SingleSelector
+            id="assistant_surgeon"
+            name="assistant_surgeon"
+            label="Assistant Surgeon"
+            value={values?.assistant_surgeon || ""}
+            onChange={(value) => onSetHandler("assistant_surgeon", value)}
+            options={doctorList}
+            disabled={readOnly}
+            placeholder="Select Assistant Surgeon"
+          />
+          <SingleSelector
             id="anaesthetist"
             name="anaesthetist"
             label="Anaesthetist"
@@ -234,15 +247,13 @@ const SurgeryReportForm: React.FC<Props> = ({ readOnly = false }) => {
             disabled={readOnly}
             placeholder="Select Anaesthetist"
           />
-          <SingleSelector
-            id="assistant_surgeon"
-            name="assistant_surgeon"
-            label="Assistant Surgeon"
-            value={values?.assistant_surgeon || ""}
-            onChange={(value) => onSetHandler("assistant_surgeon", value)}
-            options={doctorList}
-            disabled={readOnly}
-            placeholder="Select Assistant Surgeon"
+          <Input
+            name="external_anaesthetist"
+            label="External Anaesthetist"
+            // value={values?.external_anaesthetist || ""}
+            onChange={handleChange}
+            // disabled={readOnly}
+            placeholder="Enter External Anaesthetist"
           />
           <SingleSelector
             id="scrub_nurse"

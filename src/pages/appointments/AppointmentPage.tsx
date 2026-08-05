@@ -88,7 +88,7 @@ export const AppointmentPage = () => {
     if (searchParams?.has("currentPage")) {
       appointmentListHandler(
         filterData ? 1 : searchParams?.get("currentPage") ?? 1,
-        () => {},
+        () => { },
         searchParams.get("search") ?? null,
         searchParams.get("sort_by") ?? null,
         searchParams.get("sort_order") ?? null,
@@ -100,8 +100,8 @@ export const AppointmentPage = () => {
             status === "pending"
               ? true
               : status === "failed"
-              ? true
-              : status === "success" && false
+                ? true
+                : status === "success" && false
           );
         }
       );
@@ -120,7 +120,7 @@ export const AppointmentPage = () => {
   ]);
 
   useEffect(() => {
-    appointmentStatsHandler(() => {});
+    appointmentStatsHandler(() => { });
   }, []);
 
   const modalCloseHandler = () => {
@@ -203,33 +203,6 @@ export const AppointmentPage = () => {
     (state: RootState) => state.appointment.appointmentStatsData
   );
 
-  // useEffect(() => {
-  //   if (!searchParams.has("sort_by") && !searchParams.has("sort_order")) {
-  //     const defaultSort = sortOptions[0];
-  //     setSearchParams({
-  //       ...Object.fromEntries([...searchParams]),
-  //       currentPage: searchParams.get("currentPage") || "1",
-  //       sort_by: defaultSort.value,
-  //       sort_order: defaultSort.order || "asc"
-  //     }, { replace: true });
-  //   }
-  // })
-
-  // const handleSortChange = (option: SortOption) => {
-
-  //     setActiveSort(option);
-  //     if(option.order){
-  //       setSearchParams(
-  //         {
-  //           ...Object.fromEntries([...searchParams]),
-  //           currentPage: "1",
-  //           sort_by:  option.value,
-  //           sort_order: option.order,
-  //         },
-  //         { replace: true }
-  //       );
-  //     }
-  //   };
   return (
     <React.Fragment>
       <View className="fixed top-4 left-0  w-full z-50">
@@ -267,8 +240,8 @@ export const AppointmentPage = () => {
                       status === "pending"
                         ? true
                         : status === "failed"
-                        ? false
-                        : status === "success" && false
+                          ? false
+                          : status === "success" && false
                     );
                   }
                 );
@@ -559,7 +532,7 @@ export const AppointmentPage = () => {
             </View>,
             appointment?.doctor_name,
             appointment?.consultation_only_department_type?.department_type ||
-              "N/A",
+            "N/A",
             <Text
               as="span"
               className={`inline-flex px-2 py-1 text-xs font-medium rounded-full`}
@@ -573,19 +546,19 @@ export const AppointmentPage = () => {
                 appointment.status === GenericStatus.COMPLETED
                   ? undefined
                   : () =>
-                      navigate(
-                        APPOINTMENT_TABLE_URL +
-                          APPOINTMENT_FORM_URL +
-                          "/" +
-                          appointment.id
-                      )
+                    navigate(
+                      APPOINTMENT_TABLE_URL +
+                      APPOINTMENT_FORM_URL +
+                      "/" +
+                      appointment.id
+                    )
               }
               onDelete={
                 appointment.status === GenericStatus.COMPLETED
                   ? undefined
                   : () => {
-                      setDeleteId(appointment.id);
-                    }
+                    setDeleteId(appointment.id);
+                  }
               }
             />,
           ])}
@@ -619,7 +592,7 @@ export const AppointmentPage = () => {
             filter: (
               <Filter
                 apiCall={() => {
-                  PuaListHandler(() => {});
+                  PuaListHandler(() => { });
                 }}
                 title="Appointment Filter"
                 onResetFilter={() => {
