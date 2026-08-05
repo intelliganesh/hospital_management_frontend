@@ -79,7 +79,7 @@ import {
 import dayjs from "dayjs";
 import { PERMISSIONS } from "@/rolesRoute";
 import { usePermissions } from "@/utils/custom-hooks/use-permissions";
-
+ 
 interface SidebarItemProps {
   href?: string;
   label?: string;
@@ -89,7 +89,6 @@ interface SidebarItemProps {
   children?: React.ReactNode;
   onSelect?: () => void;
 }
-
 const SidebarItem: React.FC<SidebarItemProps> = ({
   icon,
   label,
