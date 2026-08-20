@@ -362,6 +362,7 @@ const SurgeryDetailPage: React.FC = () => {
       <Modal
         isOpen={isPreviewOpen}
         onClose={() => setIsPreviewOpen(false)}
+        closeOnOutsideClick={false}
         title={previewTitle}
         size="full"
       >

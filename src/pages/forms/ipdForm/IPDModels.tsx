@@ -29,6 +29,7 @@ const IPDModels: React.FC<{
           onClose={() => {
             dispatch(setPatientModel(false));
           }}
+          closeOnOutsideClick={false}
           title="Edit Patient"
         >
           <PatientForm

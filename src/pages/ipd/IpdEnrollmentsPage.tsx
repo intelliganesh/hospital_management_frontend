@@ -113,6 +113,7 @@ const IpdEnrollmentsPage: React.FC = () => {
           title="Delete IPD Enrollment"
           isOpen={deleteId ? true : false}
           onClose={modalCloseHandler}
+          closeOnOutsideClick={false}
           description="Are you sure you want to delete this IPD enrollment? This action cannot be undone."
         >
           <View className="flex justify-end gap-2">
@@ -163,6 +164,7 @@ const IpdEnrollmentsPage: React.FC = () => {
             setShowEnrollmentModel(false)
             setShowEnrollmentForm(false)
           }}
+          closeOnOutsideClick={false}
           size={showEnrollmentForm ? "full" : "lg"}
         >
           {

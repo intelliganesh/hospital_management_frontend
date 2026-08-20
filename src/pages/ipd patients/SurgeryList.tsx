@@ -214,6 +214,7 @@ const SurgeryList: React.FC = () => {
         title="Delete Surgery"
         isOpen={deleteId ? true : false}
         onClose={() => setDeleteId(null)}
+        closeOnOutsideClick={false}
         description="Are you sure you want to delete this surgery?"
       >
         <View className="flex justify-end gap-2">
@@ -294,6 +295,7 @@ const SurgeryList: React.FC = () => {
           title={editingSurgery ? "Edit Surgery" : "Add Surgery"}
           isOpen={showModal}
           onClose={closeSurgeryModal}
+          closeOnOutsideClick={false}
           size="xl"
         >
           {errors?.general && (

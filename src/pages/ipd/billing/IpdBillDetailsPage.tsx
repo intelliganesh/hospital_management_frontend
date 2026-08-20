@@ -704,6 +704,7 @@ const IpdBillDetailsPage: React.FC = () => {
       <Modal
         isOpen={isReceivePaymentOpen}
         onClose={() => setIsReceivePaymentOpen(false)}
+        closeOnOutsideClick={false}
         title="Receive Payment"
         description="Record a new payment against this bill."
       >
@@ -840,6 +841,7 @@ const IpdBillDetailsPage: React.FC = () => {
       <Modal
         isOpen={isDischargeOpen}
         onClose={() => setIsDischargeOpen(false)}
+        closeOnOutsideClick={false}
         title="Confirm Discharge"
         description="This will finalize all charges and generate the final bill."
       >
@@ -895,6 +897,7 @@ const IpdBillDetailsPage: React.FC = () => {
       <Modal
         isOpen={isChargeModalOpen}
         onClose={() => setIsChargeModalOpen(false)}
+        closeOnOutsideClick={false}
         title={editingCharge ? "Edit Charge" : "Add New Charge"}
         description={
           editingCharge
@@ -1006,6 +1009,7 @@ const IpdBillDetailsPage: React.FC = () => {
       <Modal
         isOpen={deleteChargeId ? true : false}
         onClose={() => setDeleteChargeId(null)}
+        closeOnOutsideClick={false}
         title="Charge Delete"
         description="Are you sure you want to delete this charge? This action cannot be undone and will permanently remove the charge from the bill."
       >

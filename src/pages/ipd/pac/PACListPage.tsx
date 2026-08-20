@@ -151,6 +151,7 @@ const PACListPage: React.FC = () => {
         title="Delete PAC"
         isOpen={deleteId ? true : false}
         onClose={modalCloseHandler}
+        closeOnOutsideClick={false}
         description="Are you sure you want to delete this PAC? This action cannot be undone and will permanently remove the data from the system."
       >
         <View className="flex justify-end gap-2">
@@ -320,6 +321,7 @@ const PACListPage: React.FC = () => {
       <Modal
         isOpen={showAddModal}
         onClose={() => setShowAddModal(false)}
+        closeOnOutsideClick={false}
         title="Add PAC"
         description="Select surgery to create Pre-Anaesthesia Assessment"
       >

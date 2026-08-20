@@ -213,6 +213,7 @@ const DoctorNotesPage: React.FC = () => {
         title="Delete Note"
         isOpen={deleteId ? true : false}
         onClose={modalCloseHandler}
+        closeOnOutsideClick={false}
         description="Are you sure you want to delete this note? This action cannot be undone and will permanently remove the data from the system."
       >
         <View className="flex justify-end gap-2">
