@@ -3,11 +3,13 @@ import LaunchApi from "../api";
 import { ApiCallback } from "@/interfaces/api";
 import {
   CONSULTATION_ADD_URL,
+  CONSULTATION_DATES_URL,
   CONSULTATION_DELETE_URL,
   CONSULTATION_DETAIL_URL,
   CONSULTATION_DROPDOWN_URL,
   CONSULTATION_EDIT_URL,
   CONSULTATION_LIST_URL,
+  CONSULTATION_PRESCRIPTION_URL,
   CONSULTATION_STATS_URL,
 } from "@/utils/urls/backend";
 import { AuthPayload } from "@/interfaces/slices/auth";
@@ -24,6 +26,28 @@ const api = new LaunchApi();
 
 export const useConsultation = () => {
   const dispatch = useDispatch();
+
+  const extractReportPreview = (data: any) => {
+    const payload = data?.data || data;
+    return {
+      html:
+        payload?.html_data ||
+        payload?.html ||
+        payload?.report_html ||
+        payload?.consultation_html ||
+        payload?.content ||
+        (typeof payload === "string" && payload.trim().startsWith("<")
+          ? payload
+          : ""),
+      url:
+        payload?.url ||
+        payload?.report_url ||
+        payload?.download_url ||
+        (typeof payload === "string" && !payload.trim().startsWith("<")
+          ? payload
+          : ""),
+    };
+  };
 
   const addConsultationHandler = async <T>(
     data: T,
@@ -218,6 +242,71 @@ export const useConsultation = () => {
     }
   };
 
+  const consultationDatesHandler = async (
+    patientId: string,
+    callback: ApiCallback,
+    isLoading?: (status: LoadingStatus) => void
+  ): Promise<void> => {
+    try {
+      await api.get(
+        `${CONSULTATION_DATES_URL}/${patientId}`,
+        (response: AuthPayload, success: boolean, statusCode: number) => {
+          if (success && statusCode === 200) {
+            return callback(true, response.data);
+          } else {
+            response && handleApiError(response);
+            return callback(false);
+          }
+        },
+        undefined,
+        (status) => {
+          isLoading?.(status);
+        }
+      );
+    } catch (error) {
+      error && handleApiError(error);
+      callback(false);
+    }
+  };
+
+  const consultationReportPreviewHandler = async (
+    appointmentId: string,
+    callback: ApiCallback
+  ): Promise<void> => {
+    try {
+      const baseUrl = import.meta.env.VITE_BASE_URL;
+      const token = localStorage.getItem("token");
+
+      const response = await fetch(
+        `${baseUrl}${CONSULTATION_PRESCRIPTION_URL}/${appointmentId}`,
+        {
+          method: "GET",
+          headers: {
+            Accept: "application/json, text/html",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+        }
+      );
+
+      if (!response.ok) {
+        response && handleApiError(response);
+        return callback(false);
+      }
+
+      const contentType = response.headers.get("content-type") || "";
+      if (contentType.includes("text/html")) {
+        const html = await response.text();
+        return callback(true, { success: true, data: { html } });
+      }
+
+      const data = await response.json();
+      return callback(true, { success: true, data: extractReportPreview(data) });
+    } catch (error) {
+      error && handleApiError(error);
+      callback(false);
+    }
+  };
+
   const cleanUp = () => {
     api.cleanup();
   };
@@ -231,5 +320,7 @@ export const useConsultation = () => {
     consultationDeleteHandler,
     consultationDropdownHandler,
     consultationStatsHandler,
+    consultationDatesHandler,
+    consultationReportPreviewHandler,
   };
 };

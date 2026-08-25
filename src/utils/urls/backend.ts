@@ -116,6 +116,9 @@ export const CONSULTATION_EDIT_URL: string = "/consultations_update";
 export const CONSULTATION_DELETE_URL: string = "/consultations_delete";
 export const CONSULTATION_DETAIL_URL: string = "/consultations_details";
 export const CONSULTATION_STATS_URL: string = "/consultations_statistics";
+export const CONSULTATION_DATES_URL: string = "/consultation_dates";
+export const CONSULTATION_PRESCRIPTION_URL: string =
+  "consultation_prescription";
 
 // examination url
 export const EXAMINATION_LIST_URL: string = "/examinations_list";

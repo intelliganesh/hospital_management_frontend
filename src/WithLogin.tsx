@@ -179,6 +179,7 @@ import {
   BANK_DETAILS_DETAILS_URL,
   ONLINE_APPOINTMENT_TABLE_URL,
   ONLINE_APPOINTMENT_DETAILS_URL,
+  PREVIOUS_CONSULTATIONS_URL,
 } from "@/utils/urls/frontend";
 import OpdCaseForm from "./pages/forms/opdForm/opd";
 import OpdPage from "./pages/opd/OpdPage";
@@ -199,6 +200,7 @@ import ExaminationDetailsPage from "./pages/examinations/ExaminationDetailsPage"
 import ExaminationForm from "./pages/forms/examinationForm/examination";
 import ConsultationPage from "./pages/consultation/ConsultationPage";
 import ConsultationDetails from "./pages/consultation/ConsultationDetail";
+import PreviousConsultationsPage from "./pages/consultation/PreviousConsultationsPage";
 import TestPage from "./pages/test/TestPage";
 import TestDetails from "./pages/test/TestDetail";
 import MedicinesForm from "./pages/forms/medicinesForm/medicines";
@@ -871,6 +873,18 @@ const WithLogin: React.FC<{}> = () => {
         element={
           <DashboardLayout>
             <ConsultationDetails />
+          </DashboardLayout>
+        }
+      />
+      <Route
+        path={
+          CONSULTATION_TABLE_URL +
+          PREVIOUS_CONSULTATIONS_URL +
+          "/:patientId/:consultationId"
+        }
+        element={
+          <DashboardLayout>
+            <PreviousConsultationsPage />
           </DashboardLayout>
         }
       />

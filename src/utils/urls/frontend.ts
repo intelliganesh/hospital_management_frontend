@@ -71,6 +71,7 @@ export const CONSULTATION_FORM_URL: string = "/consultation-form";
 export const CONSULTATION_EDIT_URL: string = "/consultation-edit";
 export const CONSULTATION_TABLE_URL: string = "/consultation-list";
 export const CONSULTATION_DETAILS_URL: string = "/consultation-details";
+export const PREVIOUS_CONSULTATIONS_URL: string = "/previous-consultations";
 
 //examination urls
 export const EXAMINATION_FORM_URL: string = "/examination-form";
