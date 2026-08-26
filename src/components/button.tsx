@@ -28,6 +28,7 @@ const setButtonSize: SetButtonSizeProps = {
   large: "px-6 py-3 text-base",
   small: "px-3 py-1.5 text-sm",
   medium: "px-4 py-2 text-sm",
+  icon: "p-2",
 };
 const Button: React.FC<ButtonProps> = ({
   style,

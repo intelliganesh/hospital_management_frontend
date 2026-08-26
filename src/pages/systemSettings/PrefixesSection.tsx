@@ -28,6 +28,9 @@ interface PrefixesProps {
   errorsInvoiceStatus: string;
   errorsVoucherStartNumber: string;
   errorsVoucherStatus: string;
+  errorsWardPrefix: string;
+  errorsRoomPrefix: string;
+  errorsBedPrefix: string;
 }
 
 const PrefixesSection: React.FC<PrefixesProps> = ({
@@ -45,6 +48,9 @@ const PrefixesSection: React.FC<PrefixesProps> = ({
   errorsVoucherPrefix,
   errorsVoucherStartNumber,
   errorsVoucherStatus,
+  errorsWardPrefix,
+  errorsRoomPrefix,
+  errorsBedPrefix,
 }) => {
   const settingsData = useSelector(
     (state: RootState) => state.systemSettings.settings
@@ -78,6 +84,66 @@ const PrefixesSection: React.FC<PrefixesProps> = ({
 
             <p className="text-xs text-text-light">
               Used for hospital identifiers
+            </p>
+          </View>
+
+          <View className="space-y-2">
+            <Text as="label" className="text-sm font-medium">
+              Ward ID Prefix{" "}
+              <Text as="span" className="text-red-500">
+                *
+              </Text>
+            </Text>
+            <Input
+              id="ward_prefix"
+              name="ward_prefix"
+              placeholder="WAD"
+              error={errorsWardPrefix}
+              value={values?.ward_prefix}
+              onChange={handleChange}
+            />
+            <p className="text-xs text-text-light">
+              Used for ward identifiers
+            </p>
+          </View>
+
+          <View className="space-y-2">
+            <Text as="label" className="text-sm font-medium">
+              Room ID Prefix{" "}
+              <Text as="span" className="text-red-500">
+                *
+              </Text>
+            </Text>
+            <Input
+              id="room_prefix"
+              name="room_prefix"
+              placeholder="ROM"
+              error={errorsRoomPrefix}
+              value={values?.room_prefix}
+              onChange={handleChange}
+            />
+            <p className="text-xs text-text-light">
+              Used for room identifiers
+            </p>
+          </View>
+
+          <View className="space-y-2">
+            <Text as="label" className="text-sm font-medium">
+              Bed ID Prefix{" "}
+              <Text as="span" className="text-red-500">
+                *
+              </Text>
+            </Text>
+            <Input
+              id="bed_prefix"
+              name="bed_prefix"
+              placeholder="BED"
+              error={errorsBedPrefix}
+              value={values?.bed_prefix}
+              onChange={handleChange}
+            />
+            <p className="text-xs text-text-light">
+              Used for bed identifiers
             </p>
           </View>
 

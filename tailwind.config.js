@@ -7,6 +7,23 @@ export default {
   darkMode: 'class',
   // Add to tailwind.config.js
   safelist: [
+  {
+    pattern:
+      /(from|via|to)-(slate|indigo|teal|fuchsia|violet|rose|lime|yellow|blue|emerald)-(100|200|300|400|500|600|700|800)/,
+  },
+  {
+    pattern:
+      /text-(slate|indigo|teal|fuchsia|violet|rose|lime|yellow|blue|emerald)-(300|700)/,
+  },
+  {
+    pattern:
+      /bg-(slate|indigo|teal|fuchsia|violet|rose|lime|yellow|blue|emerald|orange|red)-(100|200|300|400|500|600|700|800)/,
+  },
+  {
+    pattern:
+      /shadow-(slate|indigo|teal|fuchsia|violet|rose|lime|yellow|blue|emerald)-500\/25/,
+  },
+  "bg-gradient-to-br",
   { pattern: /^bg-primary-/ },
   { pattern: /^text-primary-/ },
   { pattern: /^border-primary-/ },

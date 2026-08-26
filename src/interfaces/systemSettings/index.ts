@@ -41,6 +41,9 @@ export interface SystemSettings {
   voucher_prefix: string; // Example: "VOU-"
   voucher_start_number: number;
   voucher_status: boolean;
+  ward_prefix: string; // Example: "WAD-"
+  room_prefix: string; // Example: "ROM-"
+  bed_prefix: string; // Example: "BED-"
 
   primary_color: ColorFormat;
   bg_primary_color: ColorFormat;

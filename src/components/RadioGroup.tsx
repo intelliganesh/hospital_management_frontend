@@ -12,9 +12,9 @@ interface RadioOption {
 interface RadioGroupProps {
   options: RadioOption[];
   name: string;
-  value?: string;
+  value?: string | any;
   defaultValue?: string;
-  onChange?: (value: string) => void;
+  onChange?: (value: string | any) => void;
   disabled?: boolean;
   direction?: "horizontal" | "vertical";
   size?: "small" | "medium" | "large";

@@ -27,4 +27,5 @@ export interface SetButtonSizeProps {
   large: string;
   small: string;
   medium: string;
+  icon: string;
 }

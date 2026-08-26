@@ -1,4 +1,12 @@
 // Common interfaces
+export interface ListResponse {
+  current_page: number;
+  from: number;
+  last_page: number;
+  per_page: number;
+  to: number;
+  total: number;
+}
 
 export enum Gender {
   MALE = "Male",
@@ -121,6 +129,9 @@ export enum GenericStatus {
   ROOM_AVAILABLE = "available",
   ROOM_OCCUPIED = "occupied",
   ROOM_MAINTAINANCE = "maintainance",
+  UNDER_MAINTAINANCE = "Under Maintenance",
+  UNDER_CLEANING = "Under Cleaning",
+  RESERVED = "Reserved",
   PAYMENT_LINK_SENT = "Payment Link Sent",
   PAYMENT_REJECTED = "Payment Rejected",
   CONFIRMED = "Confirmed",
@@ -128,6 +139,8 @@ export enum GenericStatus {
   IPD= "IPD",
   YES = "Yes",
   NO = "No",
+  RUNNING = "Running",
+  PAID = "Paid",
 }
 
 export enum PaymentType {

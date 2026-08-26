@@ -202,7 +202,15 @@ export const statusColorMap: Partial<Record<GenericStatus, StatusColorScheme>> =
       background: "#DCFCE7",
       color: "#16A34A",
     },
+    [GenericStatus.PAID]: {
+      background: "#DCFCE7",
+      color: "#16A34A",
+    },
     [GenericStatus.PAYMENT_PENDING]: {
+      background: "#FEF3C7",
+      color: "#D97706",
+    },
+    [GenericStatus.RUNNING]: {
       background: "#FEF3C7",
       color: "#D97706",
     },
