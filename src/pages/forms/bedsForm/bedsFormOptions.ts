@@ -14,7 +14,7 @@ export const bedTypeOptions = Object.values(BedType).map((value) => ({
 export const bedStatusOptions = Object.values([
   GenericStatus.ROOM_AVAILABLE,
   GenericStatus.ROOM_OCCUPIED,
-  GenericStatus.RESERVED,
+  // GenericStatus.RESERVED,
   GenericStatus.UNDER_CLEANING,
 ]).map((value) => {
   return {

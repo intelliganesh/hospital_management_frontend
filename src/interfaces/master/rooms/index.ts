@@ -19,13 +19,24 @@ export type Location =
   | RoomLocation.NORTH
   | RoomLocation.SOUTH;
 
+export enum RoomTypes {
+  GENERAL = "General",
+  ICU = "ICU",
+  PRIVATE = "Private",
+  SEMI_PRIVATE = "Semi Private",
+  DELUXE = "Deluxe",
+  SUITE = "Suite",
+  NICU = "NICU",
+  ISOLATION = "Isolation",
+}
+
 export interface Rooms {
   name: string;
-  type: string;
-  ward_name: string;
-  ward_type: string;
-  capacity: number; //default 1
-  location: Location;
+  room_type: RoomTypes;
+  ward_id: number | string;
+  room_number: string;
+  bed_count: number;
+  description: string;
   status: RoomStatus;
   floor: string;
 }

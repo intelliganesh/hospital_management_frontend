@@ -14,6 +14,7 @@ import { handleSortChange } from "@/utils/helperFunctions";
 import getStatusColorScheme from "@/utils/statusColorSchemaDecider";
 import {
   BED_DETAILS_URL,
+  BED_EDIT_URL,
   // BED_EDIT_URL,
   BED_FORM_URL,
   BED_TABLE_URL,
@@ -168,9 +169,9 @@ const BedsPage: React.FC<{}> = () => {
             // </Text>
             // ),
             <ActionMenu
-              // onEdit={() =>
-              //   navigate(`${BED_TABLE_URL + BED_EDIT_URL}/${bed.id}`)
-              // }
+              onEdit={() =>
+                navigate(`${BED_TABLE_URL + BED_EDIT_URL}/${bed.id}`)
+              }
               onDelete={() => setDeleteId(bed.id)}
             />,
           ])}

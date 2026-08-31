@@ -97,8 +97,10 @@ const IpdEnrollmentsPage: React.FC = () => {
       patient.first_name +
       " " +
       patient.last_name +
-      ")",
+      ")" +
+      (patient.phone_no?.length > 4 ? " - " + patient.phone_no : ""),
     value: patient.id,
+    phone_no: patient.phone_no,
   }));
 
   const modalCloseHandler = () => {
