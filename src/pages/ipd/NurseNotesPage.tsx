@@ -35,7 +35,10 @@ import { clearIpdPatientDetailDataSlice } from "@/actions/slices/ipd/ipdEnrollme
 import useColors from "@/utils/custom-hooks/use-colors";
 import { FileDown, Plus } from "lucide-react";
 import { useDownloadIpdPdf } from "@/actions/calls/ipd/downloadIpdPdf";
-import { IPD_GENERATE_PDF_URL } from "@/utils/urls/backend";
+import {
+  IPD_DOWNLOAD_PDF_URL,
+  IPD_GENERATE_PDF_URL,
+} from "@/utils/urls/backend";
 
 const NurseNotesPage: React.FC = () => {
   const { id: ipdID } = useParams<{ id: string }>();
@@ -61,6 +64,19 @@ const NurseNotesPage: React.FC = () => {
   const ipdPatientDetailData = useSelector(
     (state: RootState) => state.ipd.ipdPatientDetailData,
   );
+  const isDischarged =
+    ipdPatientDetailData?.status?.toLowerCase() === "discharged";
+
+  const handleNurseNotesPdf = () => {
+    if (!ipdID) return;
+
+    fetchAndDownloadPdf(
+      ipdID,
+      isDischarged ? IPD_DOWNLOAD_PDF_URL : IPD_GENERATE_PDF_URL,
+      "nurse_notes",
+      () => {},
+    );
+  };
 
   useEffect(() => {
     if (ipdID) {
@@ -263,16 +279,7 @@ const NurseNotesPage: React.FC = () => {
             <Button
               variant="outline"
               className="flex items-center gap-2"
-              onPress={() => {
-                if (ipdID) {
-                  fetchAndDownloadPdf(
-                    ipdID,
-                    IPD_GENERATE_PDF_URL,
-                    "nurse_notes",
-                    () => {},
-                  );
-                }
-              }}
+              onPress={handleNurseNotesPdf}
               disabled={isPdfDownloading}
             >
               {isPdfDownloading ? (
@@ -280,7 +287,7 @@ const NurseNotesPage: React.FC = () => {
               ) : (
                 <FileDown className="h-4 w-4" />
               )}
-              Generate PDF
+              {isDischarged ? "Download PDF" : "Generate PDF"}
             </Button>
             <Button variant="outline" onPress={() => navigate(`${IPD_PATIENTS_URL}${IPD_PATIENTS_DETAILS_URL}/${ipdID}`)}>
               Back

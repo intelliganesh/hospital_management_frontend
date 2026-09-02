@@ -18,7 +18,10 @@ import { RootState } from "@/actions/store";
 import BouncingLoader from "@/components/BouncingLoader";
 import { FileDown } from "lucide-react";
 import { useDownloadIpdPdf } from "@/actions/calls/ipd/downloadIpdPdf";
-import { IPD_GENERATE_PDF_URL } from "@/utils/urls/backend";
+import {
+  IPD_DOWNLOAD_PDF_URL,
+  IPD_GENERATE_PDF_URL,
+} from "@/utils/urls/backend";
 
 const PreliminaryNotesForm: React.FC<FormTypeProps> = ({
   formType = "add",
@@ -42,6 +45,8 @@ const PreliminaryNotesForm: React.FC<FormTypeProps> = ({
     updatePreliminaryNotes,
     preliminaryNotesDetail,
   } = usePreliminaryNotes();
+  const isDischarged =
+    preliminaryNotesData?.ipd?.status?.toLowerCase() === "discharged";
 
   useEffect(() => {
     if (formType === "edit" && id) {
@@ -143,6 +148,17 @@ const PreliminaryNotesForm: React.FC<FormTypeProps> = ({
     }
   };
 
+  const handlePreliminaryNotesPdf = () => {
+    if (!id) return;
+
+    fetchAndDownloadPdf(
+      id,
+      isDischarged ? IPD_DOWNLOAD_PDF_URL : IPD_GENERATE_PDF_URL,
+      "preliminary_notes",
+      () => {},
+    );
+  };
+
   // Show loading spinner while fetching preliminary notes data
   if (isLoading) {
     return <BouncingLoader isLoading={true} />;
@@ -160,16 +176,7 @@ const PreliminaryNotesForm: React.FC<FormTypeProps> = ({
               <Button
                 variant="outline"
                 className="flex items-center gap-2"
-                onPress={() => {
-                  if (id) {
-                    fetchAndDownloadPdf(
-                      id,
-                      IPD_GENERATE_PDF_URL,
-                      "preliminary_notes",
-                      () => {},
-                    );
-                  }
-                }}
+                onPress={handlePreliminaryNotesPdf}
                 disabled={isPdfDownloading}
               >
                 {isPdfDownloading ? (
@@ -177,7 +184,7 @@ const PreliminaryNotesForm: React.FC<FormTypeProps> = ({
                 ) : (
                   <FileDown size={14} />
                 )}
-                Generate PDF
+                {isDischarged ? "Download PDF" : "Generate PDF"}
               </Button>
             )}
             <Button variant="outline" onPress={() => navigate(-1)}>

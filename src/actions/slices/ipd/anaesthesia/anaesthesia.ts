@@ -5,6 +5,7 @@ const initialState: AnaesthesiaState = {
   anaesthesiaDetailData: {},
   anaesthesiaListData: null,
   anaesthesiaDropdownData: [],
+  prefilledUploadedPdfData: [],
 };
 
 const anaesthesiaSlice = createSlice({
@@ -23,6 +24,12 @@ const anaesthesiaSlice = createSlice({
     clearAnaesthesiaDetailSlice: (state) => {
       state.anaesthesiaDetailData = {};
     },
+    prefilledUploadedPdfSlice: (state, action) => {
+      state.prefilledUploadedPdfData = action.payload;
+    },
+    clearPrefilledUploadedPdfSlice: (state) => {
+      state.prefilledUploadedPdfData = [];
+    },
   },
 });
 
@@ -31,6 +38,8 @@ export const {
   anaesthesiaListSlice,
   clearAnaesthesiaDetailSlice,
   anaesthesiaDropdownSlice,
+  prefilledUploadedPdfSlice,
+  clearPrefilledUploadedPdfSlice,
 } = anaesthesiaSlice.actions;
 
 export default anaesthesiaSlice.reducer;

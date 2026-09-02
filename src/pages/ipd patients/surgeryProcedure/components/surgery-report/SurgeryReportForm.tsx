@@ -34,12 +34,17 @@ const SurgeryReportForm: React.FC<Props> = ({ readOnly = false }) => {
   const surgeryReportData = useSelector(
     (state: RootState) => state.surgeryReport.surgeryReportDetailData,
   );
-  const doctorList = useSelector((state: RootState) => state.opd.userList)
-    ?.filter((doctor: any) => doctor.role === "Doctor")
-    ?.map((doctor: any) => ({
-      label: doctor.name,
-      value: doctor.name,
-    }));
+  const doctors = useSelector((state: RootState) => state.opd.userList)
+    ?.filter((doctor: any) => doctor.role === "Doctor");
+  const doctorList = doctors?.map((doctor: any) => ({
+    label: doctor.name,
+    value: doctor.name,
+  }));
+  const surgeonDoctorList = doctors?.map((doctor: any) => ({
+    id: doctor.id,
+    label: doctor.name,
+    value: doctor.id,
+  }));
   const nurseList = useSelector((state: RootState) => state.opd.allUserList)
     ?.filter((nurse: any) => nurse.role === "Nurse")
     ?.map((nurse: any) => ({
@@ -83,11 +88,17 @@ const SurgeryReportForm: React.FC<Props> = ({ readOnly = false }) => {
       : value;
   };
 
+  const selectedSurgeonDoctorId =
+    values?.doctor_id ||
+    doctors?.find((doctor: any) => doctor.name === values?.surgeon)?.id ||
+    "";
+
   const handleSubmit = async () => {
     if (!surgeryId) return;
 
     const payload = {
       ...values,
+      doctor_id: selectedSurgeonDoctorId,
       surgery_start_datetime: toApiDateTime(values?.surgery_start_datetime),
       surgery_end_datetime: toApiDateTime(values?.surgery_end_datetime),
     };
@@ -219,13 +230,19 @@ const SurgeryReportForm: React.FC<Props> = ({ readOnly = false }) => {
         <View className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <SingleSelector
             id="surgeon"
-            name="surgeon"
-            label="Surgeon"
-            value={values?.surgeon || ""}
-            onChange={(value) => onSetHandler("surgeon", value)}
-            options={doctorList}
+            name="doctor_id"
+            label="Doctor"
+            value={selectedSurgeonDoctorId}
+            onChange={(value) => {
+              const selectedDoctor = doctors?.find(
+                (doctor: any) => String(doctor.id) === String(value),
+              );
+              onSetHandler("doctor_id", value);
+              onSetHandler("surgeon", selectedDoctor?.name || "");
+            }}
+            options={surgeonDoctorList}
             disabled={readOnly}
-            placeholder="Select Surgeon"
+            placeholder="Select Doctor"
           />
           <SingleSelector
             id="assistant_surgeon"
@@ -250,9 +267,9 @@ const SurgeryReportForm: React.FC<Props> = ({ readOnly = false }) => {
           <Input
             name="external_anaesthetist"
             label="External Anaesthetist"
-            // value={values?.external_anaesthetist || ""}
+            value={values?.external_anaesthetist || ""}
             onChange={handleChange}
-            // disabled={readOnly}
+            disabled={readOnly}
             placeholder="Enter External Anaesthetist"
           />
           <SingleSelector

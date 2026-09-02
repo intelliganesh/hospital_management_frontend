@@ -5,6 +5,7 @@ const initialState: SurgeryReport = {
   surgeryReportDetailData: [],
   surgeryList: [],
   surgeryDropdownData: [],
+  prefilledUploadedPdfData: [],
 };
 
 const surgeryReportSlice = createSlice({
@@ -26,6 +27,12 @@ const surgeryReportSlice = createSlice({
     clearSurgeryDropdownSlice: (state) => {
       state.surgeryDropdownData = [];
     },
+    prefilledUploadedPdfSlice: (state, action) => {
+      state.prefilledUploadedPdfData = action.payload;
+    },
+    clearPrefilledUploadedPdfSlice: (state) => {
+      state.prefilledUploadedPdfData = [];
+    },
   },
 });
 
@@ -35,6 +42,8 @@ export const {
   surgeryListSlice,
   surgeryDropdownSlice,
   clearSurgeryDropdownSlice,
+  prefilledUploadedPdfSlice,
+  clearPrefilledUploadedPdfSlice,
 } = surgeryReportSlice.actions;
 
 export default surgeryReportSlice.reducer;

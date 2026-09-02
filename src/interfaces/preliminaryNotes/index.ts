@@ -4,6 +4,7 @@ export interface PreliminaryNotes {
     ipd_number?: string;
     patient_name?: string;
     patient_phone?: string;
+    status?: string;
   };
 
   patient_name: string;

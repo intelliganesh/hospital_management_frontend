@@ -3,13 +3,9 @@ import View from "@/components/view";
 import ReadOnlyField from "./components/ReadOnlyField";
 import TagPill from "./components/TagPill";
 import SectionDivider from "./components/SectionDivider";
-import TabUploadSection from "./components/TabUploadSection";
 
 interface Props {
   detail: any;
-  uploadPath?: string | null;
-  onPreview: (url: string, title: string) => void;
-  onDownload: () => void;
 }
 
 const parseArrayField = (value: any) => {
@@ -36,11 +32,7 @@ const parseObjectField = (value: any) => {
   }
 };
 
-const DeptAnaesthesiaTab: React.FC<Props> = ({
-  detail,
-  uploadPath,
-  onPreview,
-}) => {
+const DeptAnaesthesiaTab: React.FC<Props> = ({ detail }) => {
   const abp = parseObjectField(detail?.abp_details);
   const cvp = parseObjectField(detail?.cvp_details);
 
@@ -288,17 +280,6 @@ const DeptAnaesthesiaTab: React.FC<Props> = ({
       />
 
       <ReadOnlyField label="Summary" value={detail?.summary} />
-
-      {/* Uploaded Documents */}
-      <TabUploadSection
-        docs={[
-          {
-            label: "Anaesthesia Form",
-            path: uploadPath || detail?.upload_pdf_path,
-          },
-        ]}
-        onPreview={onPreview}
-      />
     </View>
   );
 };

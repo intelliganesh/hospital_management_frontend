@@ -381,7 +381,7 @@ const RecoveryObsForm: React.FC = () => {
                     options={[
                       "ECG",
                       "NIBP",
-                      "SaO2",
+                      "SpO2",
                       "ABP",
                       "CVP",
                       "Urine Output",
@@ -577,7 +577,7 @@ const RecoveryObsForm: React.FC = () => {
                     },
                     {
                       key: "spo2",
-                      label: "SaO2",
+                      label: "SpO2",
                       type: "text",
                       placeholder: "%",
                       colSpan: 1,

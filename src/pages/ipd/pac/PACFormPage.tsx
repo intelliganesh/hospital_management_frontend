@@ -196,13 +196,13 @@ const PACFormPage: React.FC = () => {
             <View className="flex flex-wrap justify-center gap-4 p-4 pt-2">
               {[
                 { label: "Generate Pre-Op Anesthesia Evaluation", value: "pre-op" },
-                { label: "Generate Anaesthesia Form", value: "dept-anaes" },
-                { label: "Generate Recovery Room Observation", value: "recovery" },
                 { label: "Consent for Anaesthesia Form", value: "consent" },
+                { label: "Generate Anaesthesia Form", value: "dept-anaes" },
                 {
                   label: "Generate Anaesthesia Record Form",
                   value: "anaesthesia-record",
                 },
+                { label: "Generate Recovery Room Observation", value: "recovery" },
               ].map((d) => (
                 <Button
                   key={d.value}

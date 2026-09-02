@@ -3,12 +3,10 @@ import View from "@/components/view";
 import Text from "@/components/text";
 import ReadOnlyField from "@/pages/ipd/pac/components/ReadOnlyField";
 import SectionDivider from "@/pages/ipd/pac/components/SectionDivider";
-import TabUploadSection from "@/pages/ipd/pac/components/TabUploadSection";
 import initialQuestionsData from "./pre-operative/initialQuestions.json";
 
 interface Props {
   detail: any;
-  onPreview: (url: string, title: string) => void;
 }
 
 const fieldMapping: Record<string, string> = {
@@ -44,7 +42,7 @@ const fieldMapping: Record<string, string> = {
   q24: "q24_last_food_intake",
 };
 
-const PreOpChecklistTab: React.FC<Props> = ({ detail, onPreview }) => {
+const PreOpChecklistTab: React.FC<Props> = ({ detail }) => {
   const renderQuestion = (q: any, isSub: boolean = false) => {
     const fieldName = fieldMapping[q.id];
     let ansVal = "-";
@@ -118,18 +116,9 @@ const PreOpChecklistTab: React.FC<Props> = ({ detail, onPreview }) => {
         {initialQuestionsData.map((q: any) => renderQuestion(q))}
       </View>
 
-      <SectionDivider label="Summary & Files" />
+      <SectionDivider label="Summary" />
       <ReadOnlyField label="Checklist Summary" value={detail?.summary} />
 
-      <TabUploadSection
-        docs={[
-          {
-            label: "Pre-Operative Checklist Form",
-            path: detail?.upload_pdf_path,
-          },
-        ]}
-        onPreview={onPreview}
-      />
     </View>
   );
 };

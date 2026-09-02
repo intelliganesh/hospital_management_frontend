@@ -34,7 +34,10 @@ import DeleteLoader from "@/components/deleteLoader";
 import { useDoctorNotes } from "@/actions/calls/ipd/doctorNotes";
 import useColors from "@/utils/custom-hooks/use-colors";
 import { useDownloadIpdPdf } from "@/actions/calls/ipd/downloadIpdPdf";
-import { IPD_GENERATE_PDF_URL } from "@/utils/urls/backend";
+import {
+  IPD_DOWNLOAD_PDF_URL,
+  IPD_GENERATE_PDF_URL,
+} from "@/utils/urls/backend";
 
 const DoctorNotesPage: React.FC = () => {
   const { id: ipdID } = useParams<{ id: string }>();
@@ -60,6 +63,19 @@ const DoctorNotesPage: React.FC = () => {
   const ipdPatientDetailData = useSelector(
     (state: RootState) => state.ipd.ipdPatientDetailData,
   );
+  const isDischarged =
+    ipdPatientDetailData?.status?.toLowerCase() === "discharged";
+
+  const handleDoctorNotesPdf = () => {
+    if (!ipdID) return;
+
+    fetchAndDownloadPdf(
+      ipdID,
+      isDischarged ? IPD_DOWNLOAD_PDF_URL : IPD_GENERATE_PDF_URL,
+      "doctor_notes",
+      () => {},
+    );
+  };
 
   // useEffect(() => {
   //   // Group notes by date
@@ -277,16 +293,7 @@ const DoctorNotesPage: React.FC = () => {
             <Button
               variant="outline"
               className="flex items-center gap-2"
-              onPress={() => {
-                if (ipdID) {
-                  fetchAndDownloadPdf(
-                    ipdID,
-                    IPD_GENERATE_PDF_URL,
-                    "doctor_notes",
-                    () => {},
-                  );
-                }
-              }}
+              onPress={handleDoctorNotesPdf}
               disabled={isPdfDownloading}
             >
               {isPdfDownloading ? (
@@ -294,7 +301,7 @@ const DoctorNotesPage: React.FC = () => {
               ) : (
                 <FileDown className="h-4 w-4" />
               )}
-              Generate PDF
+              {isDischarged ? "Download PDF" : "Generate PDF"}
             </Button>
             <Button variant="outline" onPress={() => navigate(`${IPD_PATIENTS_URL}${IPD_PATIENTS_DETAILS_URL}/${ipdID}`, { replace: true })}>
               Back

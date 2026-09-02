@@ -5,13 +5,9 @@ import ReadOnlyField from "./components/ReadOnlyField";
 import TagPill from "./components/TagPill";
 import SectionDivider from "./components/SectionDivider";
 import dayjs from "dayjs";
-import TabUploadSection from "./components/TabUploadSection";
 
 interface Props {
   detail: any;
-  uploadPath?: string | null;
-  onPreview: (url: string, title: string) => void;
-  onDownload: () => void;
 }
 
 /**
@@ -41,7 +37,7 @@ const VitalMonitoringTable: React.FC<{ rows: any[] }> = ({ rows }) => {
               "Consciousness",
               "Respiration",
               "Pulse Rate",
-              "SpO₂",
+              "SpO2",
               "Remarks",
             ].map((h) => (
               <th
@@ -60,19 +56,19 @@ const VitalMonitoringTable: React.FC<{ rows: any[] }> = ({ rows }) => {
               className={idx % 2 === 0 ? "bg-white dark:bg-slate-800" : "bg-slate-50/60 dark:bg-slate-700"}
             >
               <td className="px-4 py-3 text-slate-700 dark:text-slate-300 font-medium">
-                {row.time || "—"}
+                {row.time || "�"}
               </td>
               <td className="px-4 py-3 text-slate-600 dark:text-slate-300">
-                {row.consciousness || "—"}
+                {row.consciousness || "�"}
               </td>
               <td className="px-4 py-3 text-slate-600 dark:text-slate-300">
-                {row.respiration || "—"}
+                {row.respiration || "�"}
               </td>
               <td className="px-4 py-3 text-slate-600 dark:text-slate-300">
-                {row.pulseRate || "—"}
+                {row.pulseRate || "�"}
               </td>
-              <td className="px-4 py-3 text-slate-600 dark:text-slate-300">{row.spo2 || "—"}</td>
-              <td className="px-4 py-3 text-slate-600 dark:text-slate-300">{row.remarks || "—"}</td>
+              <td className="px-4 py-3 text-slate-600 dark:text-slate-300">{row.spo2 || "�"}</td>
+              <td className="px-4 py-3 text-slate-600 dark:text-slate-300">{row.remarks || "�"}</td>
             </tr>
           ))}
         </tbody>
@@ -81,7 +77,7 @@ const VitalMonitoringTable: React.FC<{ rows: any[] }> = ({ rows }) => {
   );
 };
 
-const RecoveryObsTab: React.FC<Props> = ({ detail, uploadPath, onPreview }) => {
+const RecoveryObsTab: React.FC<Props> = ({ detail }) => {
   const monitors = safeParse(detail?.monitors);
   const complications = safeParse(detail?.post_operative_complications);
   const medications = safeParse(detail?.post_operative_medications);
@@ -92,7 +88,7 @@ const RecoveryObsTab: React.FC<Props> = ({ detail, uploadPath, onPreview }) => {
 
   return (
     <View className="space-y-8 p-6">
-      {/* ── General ── */}
+      {/* -- General -- */}
       <View className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <ReadOnlyField
           label="Surgical Procedure"
@@ -104,7 +100,7 @@ const RecoveryObsTab: React.FC<Props> = ({ detail, uploadPath, onPreview }) => {
         />
       </View>
 
-      {/* ── Monitoring & Medications ── */}
+      {/* -- Monitoring & Medications -- */}
       <SectionDivider label="Monitoring & Medications" />
       <View className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         <TagPill label="Monitors" items={monitors} />
@@ -112,11 +108,11 @@ const RecoveryObsTab: React.FC<Props> = ({ detail, uploadPath, onPreview }) => {
         <TagPill label="Complications" items={complications} />
       </View>
 
-      {/* ── Vital Monitoring Table ── */}
+      {/* -- Vital Monitoring Table -- */}
       <SectionDivider label="Vital Monitoring" />
       <VitalMonitoringTable rows={vitalRows} />
 
-      {/* ── Recovery Score (Aldrete) ── */}
+      {/* -- Recovery Score (Aldrete) -- */}
       <SectionDivider label="Recovery Score (Aldrete)" />
       <View className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <ReadOnlyField
@@ -137,7 +133,7 @@ const RecoveryObsTab: React.FC<Props> = ({ detail, uploadPath, onPreview }) => {
         />
       </View>
 
-      {/* ── Transfer / Discharge ── */}
+      {/* -- Transfer / Discharge -- */}
       <SectionDivider label="Transfer / Discharge" />
       <View className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         <ReadOnlyField
@@ -166,7 +162,7 @@ const RecoveryObsTab: React.FC<Props> = ({ detail, uploadPath, onPreview }) => {
         />
       </View>
 
-      {/* ── Summary ── */}
+      {/* -- Summary -- */}
       {detail?.summary && (
         <>
           <SectionDivider label="Summary" />
@@ -174,22 +170,11 @@ const RecoveryObsTab: React.FC<Props> = ({ detail, uploadPath, onPreview }) => {
         </>
       )}
 
-      {/* ── Post-Operative Instructions ── */}
+      {/* -- Post-Operative Instructions -- */}
       <SectionDivider label="Post-Operative Instructions" />
       <ReadOnlyField
         label="Instructions"
         value={detail?.post_operative_instructions}
-      />
-
-      {/* ── Uploaded Documents ── */}
-      <TabUploadSection
-        docs={[
-          {
-            label: "Recovery Room Form",
-            path: uploadPath || detail?.upload_pdf_path,
-          },
-        ]}
-        onPreview={onPreview}
       />
     </View>
   );

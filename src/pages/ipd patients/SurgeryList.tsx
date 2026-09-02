@@ -281,7 +281,10 @@ const SurgeryList: React.FC = () => {
                     SURGERY_PROCEDURE_URL +
                     `/${data.id}/view`,
                 ),
-              onEdit: () => handleOpenEdit(data),
+              onEdit: () =>
+                navigate(
+                  `${IPD_PATIENTS_URL}${IPD_PATIENTS_DETAILS_URL}${SURGERY_PROCEDURE_URL}/${data.id}`,
+                ),
               onDelete: () => setDeleteId(data.id),
             }),
           ])}

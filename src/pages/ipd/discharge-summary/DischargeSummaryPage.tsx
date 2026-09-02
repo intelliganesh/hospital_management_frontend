@@ -8,6 +8,7 @@ import Text from "@/components/text";
 import Button from "@/components/button";
 import Input from "@/components/input";
 import Textarea from "@/components/Textarea";
+import Upload from "@/components/Upload";
 import FormSection from "../pac/components/FormSection";
 import useForm from "@/utils/custom-hooks/use-form";
 import dayjs from "dayjs";
@@ -22,6 +23,7 @@ import {
   AlertTriangle,
   FlaskConical,
   SendIcon,
+  Upload as UploadIcon,
 } from "lucide-react";
 import { useDischargeSummary } from "@/actions/calls/ipd/dischargeSummary";
 import { useSelector } from "react-redux";
@@ -29,6 +31,24 @@ import { RootState } from "@/actions/store";
 import { toast } from "@/utils/custom-hooks/use-toast";
 import BasicDetails from "./BasicDetails";
 import { DischargeSummaryForm } from "./types";
+import MedicinesSection from "@/components/MedicinesSection";
+import CombinationMedicineSection from "@/components/CombinationMedicineSection";
+import TransferList from "@/components/TransferList";
+import { useMedicine } from "@/actions/calls/medicine";
+import { useTest } from "@/actions/calls/test";
+import { useDiet } from "@/actions/calls/diet";
+import { imageUpload } from "@/actions/calls/uesImage";
+
+const parseSelectedItems = (value: any) => {
+  if (!value) return [];
+  if (Array.isArray(value)) return value;
+
+  try {
+    return JSON.parse(value);
+  } catch {
+    return [];
+  }
+};
 
 /**
  * Discharge Summary Page - Single form for creating discharge summaries
@@ -44,7 +64,39 @@ const DischargeSummaryPage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const { dischargeSummaryDetail, updateDischargeSummary } = useDischargeSummary();
   const { fetchAndDownloadPdf, isLoading: isPdfDownloading } = useDownloadIpdPdf();
+  const { medicineDropdownHandler } = useMedicine();
+  const { testDropdownHandler } = useTest();
+  const { dietDropdownHandler } = useDiet();
   const dischargeSummaryData = useSelector((state: RootState) => state.dischargeSummary.dischargeSummaryDetailData) as Partial<DischargeSummaryForm>
+  const testDropdownData = useSelector((state: RootState) => state.test.testDropdownData);
+  const dietDropdownData = useSelector((state: RootState) => state.diet.dietDropdownData);
+  const medicineDropdownData = useSelector(
+    (state: RootState) => state.medicines.medicineDropdownData,
+  )?.map((item: any) => ({
+    id: item?.id,
+    label: item?.medicine_name,
+    value: item?.medicine_name,
+  }));
+  const testOptions = testDropdownData?.map((test: any) => {
+    const cleanedDesc = test?.test_description
+      ? test.test_description.replace(/<[^>]+>/g, "").trim()
+      : "";
+
+    return {
+      id: test?.id,
+      label: test?.test_name,
+      value: test?.id,
+      ...(cleanedDesc ? { description: cleanedDesc } : {}),
+    };
+  });
+  const dietOptions = dietDropdownData?.map((item: any) => ({
+    id: item?.id,
+    label: item?.description
+      ? `${item?.diet_name} (${item?.description})`
+      : item?.diet_name,
+    value: item?.id,
+    ...(item?.description ? { description: item.description } : {}),
+  }));
   const summaryId = dischargeSummaryData?.id as string;
   const mode = searchParams.get("mode") || (summaryId ? "edit" : "add");
   const [, setErrors] = useState<Record<string, string>>({});
@@ -68,6 +120,12 @@ const DischargeSummaryPage: React.FC = () => {
     }
   }, [])
 
+  useEffect(() => {
+    medicineDropdownHandler(() => {}, ["id", "unit_price", "medicine_name"]);
+    testDropdownHandler(() => {});
+    dietDropdownHandler(() => {});
+  }, []);
+
 
   const { values, handleChange, onSetHandler } = useForm<DischargeSummaryForm>(
     dischargeSummaryData
@@ -87,9 +145,46 @@ const DischargeSummaryPage: React.FC = () => {
     const dischargeSummaryFormObj: Partial<DischargeSummaryForm> = {};
 
     try {
+      let medicines = "";
+
       for (let [key, value] of formData.entries()) {
+        if (key !== "combination_medicines" && key.startsWith("combination_")) {
+          continue;
+        }
+
+        if (key === "upload_pdf_path") {
+          continue;
+        }
+
+        if (key === "medicines") {
+          if (medicines) medicines += ",";
+          medicines += value as string;
+        }
+        if (key === "dosage_unit") {
+          medicines += ("#" + value) as string;
+        }
+        if (key === "dosage") {
+          medicines += ("#" + value) as string;
+        }
+        if (key === "timing") {
+          medicines += ("#" + value) as string;
+        }
+        if (key === "take_with") {
+          medicines += ("#" + value) as string;
+        }
+        if (key === "medicine_days") {
+          medicines += ("#" + value) as string;
+        }
+
         dischargeSummaryFormObj[key as keyof DischargeSummaryForm] = value as any;
       }
+
+      dischargeSummaryFormObj.medicines = medicines
+        ? medicines
+            .split(",")
+            .filter((item) => !item.startsWith("#"))
+            .join(",")
+        : "";
 
       setErrors({});
       setIsSubmitting(true);
@@ -104,6 +199,29 @@ const DischargeSummaryPage: React.FC = () => {
               variant: "success",
             });
 
+            if (values?.upload_pdf_path instanceof File && summaryId) {
+              imageUpload(
+                {
+                  id: summaryId,
+                  modal_type: "ipd_discharge_summary",
+                  file_name: "upload_pdf_path",
+                  folder_name: "ipd_discharge_summary",
+                  image: values.upload_pdf_path,
+                },
+                (uploadSuccess: boolean) => {
+                  if (uploadSuccess) {
+                    toast({
+                      title: "Success",
+                      description: "Discharge summary file uploaded successfully",
+                      variant: "success",
+                    });
+                  }
+                  dischargeSummaryDetail(id, () => {});
+                }
+              );
+            } else {
+              dischargeSummaryDetail(id, () => {});
+            }
           } else {
             toast({
               title: "Error",
@@ -318,21 +436,96 @@ const DischargeSummaryPage: React.FC = () => {
             className="bg-white min-h-[100px]"
             placeholder="Enter advice on discharge..."
           />
-          {/* <View className="rounded-lg">
+        </FormSection>
+
+        <FormSection title="Tests, Medicines & Lifestyle" icon={Pill}>
+          <View className="rounded-lg">
             <MedicinesSection
-              medicinesList={[]}
-              medicineData={[]}
-              onSetHandler={() => { }}
+              medicinesList={medicineDropdownData}
+              medicineData={values?.medicines}
+              onSetHandler={onSetHandler}
             />
           </View>
 
           <View className="mt-4 rounded-lg">
             <CombinationMedicineSection
-              medicinesList={[]}
-              combinationMedicineData={[]}
-              onSetHandler={() => { }}
+              medicinesList={medicineDropdownData}
+              combinationMedicineData={values?.combination_medicines}
+              onSetHandler={onSetHandler}
             />
-          </View> */}
+          </View>
+
+          <View className="mt-8">
+            <TransferList
+              name="tests"
+              label="Tests"
+              sourceData={testOptions}
+              selectedItems={parseSelectedItems(values?.tests)}
+              onSelectionChange={(value) => {
+                onSetHandler("tests", value);
+              }}
+              placeholder="Search test..."
+              sourceTitle=""
+              selectedTitle="Selected"
+              height="150px"
+              searchable
+              showCount={false}
+              disabled={isViewMode}
+            />
+          </View>
+
+          <View className="mt-8">
+            <TransferList
+              name="diet_plan"
+              label="Diet Plan"
+              sourceData={dietOptions}
+              selectedItems={parseSelectedItems(values?.diet_plan)}
+              onSelectionChange={(value) => {
+                onSetHandler("diet_plan", value);
+              }}
+              placeholder="Search diet plan..."
+              sourceTitle=""
+              selectedTitle="Selected"
+              height="150px"
+              searchable
+              showCount={false}
+              disabled={isViewMode}
+            />
+          </View>
+        </FormSection>
+
+        <FormSection title="Upload Discharge Summary" icon={UploadIcon}>
+          <Upload
+            label="Upload Filled Discharge Summary"
+            name="upload_pdf_path"
+            multiple={false}
+            maxCount={1}
+            accept=".pdf,.jpg,.png,.jpeg,.webp"
+            browseText="Upload Form"
+            disabled={isViewMode}
+            existingFiles={
+              typeof values?.upload_pdf_path === "string"
+                ? values?.upload_pdf_path
+                : ""
+            }
+            onChange={(fileList: any) => {
+              let file: any = null;
+
+              if (Array.isArray(fileList) && fileList.length > 0) {
+                const item = fileList[0];
+
+                if (item?.file instanceof File) {
+                  file = item.file;
+                } else if (item?.isExisting && item?.url) {
+                  file = item.url;
+                } else if (item instanceof File) {
+                  file = item;
+                }
+              }
+
+              onSetHandler("upload_pdf_path", file);
+            }}
+          />
         </FormSection>
 
         {/* Special Instructions */}

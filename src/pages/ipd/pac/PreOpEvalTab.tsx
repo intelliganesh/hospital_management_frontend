@@ -4,23 +4,19 @@ import ReadOnlyField from "./components/ReadOnlyField";
 import ASAGradingTiles from "./components/ASAGradingTiles";
 import TagPill from "./components/TagPill";
 import SectionDivider from "./components/SectionDivider";
-import TabUploadSection from "./components/TabUploadSection";
 
 interface Props {
   detail: any;
-  uploadPath?: string | null;
-  onPreview: (url: string, title: string) => void;
-  onDownload: () => void;
 }
 
 /**
  * Pre-Op Anaesthesia Evaluation tab.
  * Shows all fields returned by: GET /api/ipd_pre_operative_anaesthesia_evaluation_details/:id
  */
-const PreOpEvalTab: React.FC<Props> = ({ detail, uploadPath, onPreview }) => {
+const PreOpEvalTab: React.FC<Props> = ({ detail }) => {
   return (
     <View className="space-y-8 p-6">
-      {/* ── ASA & Consent ── */}
+      {/* -- ASA & Consent -- */}
       <View className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <ASAGradingTiles value={detail?.asa_grading} />
         {/* <ReadOnlyField
@@ -36,7 +32,7 @@ const PreOpEvalTab: React.FC<Props> = ({ detail, uploadPath, onPreview }) => {
         /> */}
       </View>
 
-      {/* ── Physical Examination ── */}
+      {/* -- Physical Examination -- */}
       <SectionDivider label="Physical Examination" />
       <View className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         <ReadOnlyField label="Mouth Opening" value={detail?.mouth_opening} />
@@ -50,7 +46,7 @@ const PreOpEvalTab: React.FC<Props> = ({ detail, uploadPath, onPreview }) => {
         <ReadOnlyField label="TMD" value={detail?.tmd} />
       </View>
 
-      {/* ── Airway Assessment ── */}
+      {/* -- Airway Assessment -- */}
       {detail?.airway_assessment && (
         <>
           <SectionDivider label="Airway Assessment" />
@@ -61,7 +57,7 @@ const PreOpEvalTab: React.FC<Props> = ({ detail, uploadPath, onPreview }) => {
         </>
       )}
 
-      {/* ── Systems Review ── */}
+      {/* -- Systems Review -- */}
       {(detail?.respiratory_system ||
         detail?.cardio_vascular_system ||
         detail?.cns_musculoskeletal ||
@@ -93,7 +89,7 @@ const PreOpEvalTab: React.FC<Props> = ({ detail, uploadPath, onPreview }) => {
         </>
       )}
 
-      {/* ── Investigations ── */}
+      {/* -- Investigations -- */}
       {(detail?.hb_hct ||
         detail?.tc ||
         detail?.platelets ||
@@ -132,7 +128,7 @@ const PreOpEvalTab: React.FC<Props> = ({ detail, uploadPath, onPreview }) => {
         </>
       )}
 
-      {/* ── Clinical Evaluation ── */}
+      {/* -- Clinical Evaluation -- */}
       {detail?.clinical_evaluation && (
         <>
           <SectionDivider label="Clinical Evaluation" />
@@ -143,7 +139,7 @@ const PreOpEvalTab: React.FC<Props> = ({ detail, uploadPath, onPreview }) => {
         </>
       )}
 
-      {/* ── History ── */}
+      {/* -- History -- */}
       <SectionDivider label="History" />
       <View className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <ReadOnlyField
@@ -157,7 +153,7 @@ const PreOpEvalTab: React.FC<Props> = ({ detail, uploadPath, onPreview }) => {
       </View>
       <TagPill label="Allergies" items={detail?.allergies} />
 
-      {/* ── Pre-Operative Instructions ── */}
+      {/* -- Pre-Operative Instructions -- */}
       {detail?.pre_operative_anaesthesia_instruction && (
         <>
           <SectionDivider label="Pre-Operative Instructions" />
@@ -168,15 +164,9 @@ const PreOpEvalTab: React.FC<Props> = ({ detail, uploadPath, onPreview }) => {
         </>
       )}
 
-      {/* ── Summary ── */}
+      {/* -- Summary -- */}
       <SectionDivider label="Summary" />
       <ReadOnlyField label="Evaluation Summary" value={detail?.summary} />
-
-      {/* ── Uploaded Documents ── */}
-      <TabUploadSection
-        docs={[{ label: "Pre-Op Evaluation Form", path: uploadPath }]}
-        onPreview={onPreview}
-      />
     </View>
   );
 };

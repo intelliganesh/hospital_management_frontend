@@ -2,15 +2,13 @@ import React from "react";
 import View from "@/components/view";
 import ReadOnlyField from "@/pages/ipd/pac/components/ReadOnlyField";
 import SectionDivider from "@/pages/ipd/pac/components/SectionDivider";
-import TabUploadSection from "@/pages/ipd/pac/components/TabUploadSection";
 import dayjs from "dayjs";
 
 interface Props {
   detail: any;
-  onPreview: (url: string, title: string) => void;
 }
 
-const SurgeryReportTab: React.FC<Props> = ({ detail, onPreview }) => {
+const SurgeryReportTab: React.FC<Props> = ({ detail }) => {
   const formatDateTime = (val: string) => {
     return val ? dayjs(val).format("DD MMM YYYY, hh:mm A") : "-";
   };
@@ -53,6 +51,10 @@ const SurgeryReportTab: React.FC<Props> = ({ detail, onPreview }) => {
         <ReadOnlyField label="Surgeon" value={detail?.surgeon} />
         <ReadOnlyField label="Anaesthetist" value={detail?.anaesthetist} />
         <ReadOnlyField
+          label="External Anaesthetist"
+          value={detail?.external_anaesthetist}
+        />
+        <ReadOnlyField
           label="Assistant Surgeon"
           value={detail?.assistant_surgeon}
         />
@@ -80,17 +82,6 @@ const SurgeryReportTab: React.FC<Props> = ({ detail, onPreview }) => {
       {/* Summary */}
       <SectionDivider label="Summary" />
       <ReadOnlyField label="Surgery Summary" value={detail?.summary} />
-
-      {/* Uploaded report */}
-      <TabUploadSection
-        docs={[
-          {
-            label: "Surgery Report PDF / Document",
-            path: detail?.uploaded_report_path,
-          },
-        ]}
-        onPreview={onPreview}
-      />
     </View>
   );
 };

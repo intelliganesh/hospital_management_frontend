@@ -47,4 +47,5 @@ export interface AnaesthesiaState {
   anaesthesiaDetailData: AnaesthesiaDetails | {} | null;
   anaesthesiaListData: AnaesthesiaListResponse | null;
   anaesthesiaDropdownData: AnaesthesiaList[] | [] | null;
+  prefilledUploadedPdfData: any;
 }

@@ -35,4 +35,9 @@ export interface DischargeSummaryForm {
   patient_health_condition_at_discharge?: string;
   special_instruction?: string;
   advice_on_discharge?: string;
+  medicines?: string;
+  combination_medicines?: string | any[];
+  tests?: string | any[];
+  diet_plan?: string | any[];
+  upload_pdf_path?: string | File | null;
 }

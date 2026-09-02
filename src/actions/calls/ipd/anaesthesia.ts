@@ -8,10 +8,12 @@ import {
   ANAESTHESIA_DELETE_URL,
   ADD_ANAESTHESIA_URL,
   UPDATE_ANAESTHESIA_URL,
+  IPD_PREFILLED_UPLOADED_PDF_URL,
 } from "@/utils/urls/backend";
 import {
   anaesthesiaDetailSlice,
   anaesthesiaListSlice,
+  prefilledUploadedPdfSlice,
 } from "@/actions/slices/ipd/anaesthesia/anaesthesia";
 import { LoadingStatus } from "@/interfaces";
 import { handleApiError } from "@/utils/errorHandler";
@@ -157,6 +159,34 @@ export const useAnaesthesia = () => {
     }
   };
 
+  const prefilledUploadedPdfHandler = async (
+    id: string,
+    callback: ApiCallback,
+    data?: any,
+    isLoading?: (status: LoadingStatus) => void,
+  ): Promise<void> => {
+    try {
+      await api.get(
+        `${IPD_PREFILLED_UPLOADED_PDF_URL}/${id}`,
+        (response: AuthPayload, success: boolean, statusCode: number) => {
+          if (success && statusCode === 200) {
+            dispatch(prefilledUploadedPdfSlice(response.data));
+            return callback(true);
+          } else {
+            response && handleApiError(response);
+            return callback(false);
+          }
+        },
+        data,
+        (status) => {
+          isLoading?.(status);
+        },
+      );
+    } catch (error) {
+      error && handleApiError(error);
+      callback(false);
+    }
+  };
   //   const anaesthesiaDropdownHandler = async (
   //     callback: ApiCallback,
   //     // departmentValue?: string
@@ -191,6 +221,7 @@ export const useAnaesthesia = () => {
     anaesthesiaDetailHandler,
     editAnaesthesiaHandler,
     deleteAnaesthesiaHandler,
+    prefilledUploadedPdfHandler,
     // anaesthesiaDropdownHandler,
   };
 };

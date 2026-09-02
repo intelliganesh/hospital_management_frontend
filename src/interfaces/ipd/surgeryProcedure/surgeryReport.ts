@@ -4,6 +4,7 @@ export interface SurgeryReportData {
   surgery_type?: string;
   surgery_date?: string;
   status?: string;
+  doctor_id?: string | number;
   surgeon?: string;
   anaesthetist?: string;
   department?: string;
@@ -16,6 +17,7 @@ export interface SurgeryReportData {
   operative_findings?: string;
   post_operative_instructions?: string;
   summary?: string;
+  external_anaesthetist?: string;
   consent_summary?: string;
   uploaded_consent_path?: File[] | string[] | null | string;
   uploaded_report_path?: File[] | string[] | null | string;
@@ -25,4 +27,5 @@ export interface SurgeryReport {
   surgeryReportDetailData: any;
   surgeryList: SurgeryReportData[] | any;
   surgeryDropdownData: any;
+  prefilledUploadedPdfData: any;
 }

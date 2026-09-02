@@ -6,6 +6,7 @@ import {
   surgeryListSlice,
   surgeryReportDetailSlice,
   surgeryDropdownSlice,
+  prefilledUploadedPdfSlice,
 } from "@/actions/slices/ipd/surgeryProcedure/surgeryReport";
 import {
   IPD_SURGERY_ADD_URL,
@@ -15,6 +16,7 @@ import {
   IPD_SURGERY_LIST_URL,
   UPDATE_SURGERY_CONSENT_FORM_URL,
   SURGERY_DROPDOWN_URL,
+  IPD_PREFILLED_UPLOADED_PDF_URL,
 } from "@/utils/urls/backend";
 import { LoadingStatus } from "@/interfaces";
 import { handleApiError } from "@/utils/errorHandler";
@@ -195,6 +197,35 @@ export const useSurgeryReport = () => {
     }
   };
 
+
+  const prefilledUploadedPdfHandler = async (
+    id: string,
+    callback: ApiCallback,
+    data?: any,
+    isLoading?: (status: LoadingStatus) => void,
+  ): Promise<void> => {
+    try {
+      await api.get(
+        `${IPD_PREFILLED_UPLOADED_PDF_URL}/${id}`,
+        (response: AuthPayload, success: boolean, statusCode: number) => {
+          if (success && statusCode === 200) {
+            dispatch(prefilledUploadedPdfSlice(response.data));
+            return callback(true);
+          } else {
+            response && handleApiError(response);
+            return callback(false);
+          }
+        },
+        data,
+        (status) => {
+          isLoading?.(status);
+        },
+      );
+    } catch (error) {
+      error && handleApiError(error);
+      callback(false);
+    }
+  };
   return {
     addSurgeryReport,
     updateSurgeryReport,
@@ -204,5 +235,6 @@ export const useSurgeryReport = () => {
     cleanUp,
     updateConsentForm,
     surgeryDropdownHandler,
+    prefilledUploadedPdfHandler,
   };
 };
