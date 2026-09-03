@@ -26,4 +26,5 @@ export interface IpdStates {
     ipdPatientList: [];
     ipdPatientDetailData: any;
     ipdPatientStatsData: any;
+    prefilledUploadedPdfData: any;
 }

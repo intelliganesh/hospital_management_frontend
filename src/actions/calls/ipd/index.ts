@@ -9,6 +9,7 @@ import {
    ipdPatientStatsDataSlice,
    ipdEnrolledPatientDetailsSlice,
    ipdEnrollmentDataSlice,
+   ipdPrefilledUploadedPdfSlice,
 } from "../../slices/ipd/ipdEnrollment";
 import {
   IPD_PATIENT_LIST_URL,
@@ -19,6 +20,7 @@ import {
   IPD_PATIENT_STATS_URL,
   IPD_PATIENT_ENROLLMENT_LIST_URL,
   IPD_PATIENT_ENROLLMENT_DETAILS_URL,
+  IPD_PREFILLED_UPLOADED_PDF_URL,
 } from "@/utils/urls/backend";
 import { LoadingStatus } from "@/interfaces";
 import { handleApiError } from "@/utils/errorHandler";
@@ -433,6 +435,34 @@ export const useIpdPatients = () => {
       callback(false, { success: false, error: GENERIC_ERROR_MESSAGE });
     }
   };
+  const prefilledUploadedPdfHandler = async (
+    id: string,
+    callback: ApiCallback,
+    data?: any,
+    isLoading?: (status: LoadingStatus) => void,
+  ): Promise<void> => {
+    try {
+      await api.get(
+        `${IPD_PREFILLED_UPLOADED_PDF_URL}/${id}`,
+        (response: AuthPayload, success: boolean, statusCode: number) => {
+          if (success && statusCode === 200) {
+            dispatch(ipdPrefilledUploadedPdfSlice(response.data));
+            return callback(true, response.data);
+          } else {
+            response && handleApiError(response);
+            callback(false, { success: false });
+          }
+        },
+        data,
+        (status) => {
+          isLoading?.(status);
+        },
+      );
+    } catch (error) {
+      error && handleApiError(error);
+      callback(false, { success: false, error: GENERIC_ERROR_MESSAGE });
+    }
+  };
   const cleanUp = () => {
     api.cleanup();
   };
@@ -447,6 +477,7 @@ export const useIpdPatients = () => {
     ipdPatientEnrollmentHandler,
     editIpdPatientEnrollmentHandler,
     deleteIpdPatientEnrollmentHandler,
+    prefilledUploadedPdfHandler,
   };
 };
 

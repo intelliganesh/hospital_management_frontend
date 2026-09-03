@@ -14,18 +14,31 @@ export const useDownloadIpdPdf = () => {
     type: string,
     callback: ApiCallback,
     surgery_id?: string,
+    payload?: Record<string, string | number | undefined | null>,
   ): Promise<void> => {
     try {
       setIsLoading(true);
       const baseUrl = import.meta.env.VITE_BASE_URL;
       const token = localStorage.getItem("token");
 
+      const queryParams = new URLSearchParams({ type });
+
+      if (surgery_id) {
+        queryParams.append("ipd_surgery_id", surgery_id);
+      }
+
+      Object.entries(payload || {}).forEach(([key, value]) => {
+        if (value !== undefined && value !== null && value !== "") {
+          queryParams.append(key, String(value));
+        }
+      });
+
       const response = await fetch(
-        `${baseUrl}${url}/${id}?type=${type}${surgery_id ? `&ipd_surgery_id=${surgery_id}` : ""}`,
+        `${baseUrl}${url}/${id}?${queryParams.toString()}`,
         {
           method: "GET",
           headers: {
-            Accept: "application/json",
+            Accept: "application/json, application/pdf",
             ...(token ? { Authorization: `Bearer ${token}` } : {}),
           },
         },
@@ -34,6 +47,24 @@ export const useDownloadIpdPdf = () => {
       if (!response.ok) {
         handleApiError(response);
         throw new Error(`Failed to fetch download link: ${response.status}`);
+      }
+
+      const contentType = response.headers.get("content-type") || "";
+
+      if (contentType.includes("application/pdf")) {
+        const blob = await response.blob();
+        const fileUrl = window.URL.createObjectURL(blob);
+        const opened = window.open(fileUrl, "_blank");
+
+        if (!opened) {
+          callback(false, { success: false, error: "Unable to open PDF" });
+          window.URL.revokeObjectURL(fileUrl);
+          return;
+        }
+
+        setTimeout(() => window.URL.revokeObjectURL(fileUrl), 60_000);
+        callback(true);
+        return;
       }
 
       const data = await response.json();

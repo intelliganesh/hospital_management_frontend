@@ -261,8 +261,9 @@ export const DOCTOR_NOTES_EDIT_URL: string = "/doctor-notes/edit";
 export const SURGERY_PROCEDURE_URL: string = "/surgery-procedure";
 export const SURGERY_LIST_URL: string = "/surgery-list";
 
-export const DOWNLOAD_SURGERY_FORM: string = "/download-surgery-form";
+export const DOWNLOAD_SURGERY_FORM: string = "/download-ipd-forms";
 export const DOWNLOAD_SURGERY_REPORTS: string = "/download-surgery-reports";
+export const PREFILLED_UPLOADED_FILES_URL: string = "/prefilled-uploaded-files";
 
 // IPD Billing URLs
 export const IPD_BILLS_URL: string = "/ipd-bills";

@@ -169,6 +169,7 @@ import {
   SURGERY_LIST_URL,
   DOWNLOAD_SURGERY_FORM,
   DOWNLOAD_SURGERY_REPORTS,
+  PREFILLED_UPLOADED_FILES_URL,
   DOCTOR_NOTES_EDIT_URL,
   FISTULA_ENTRY_LIST_URL,
   FISTULA_ENTRY_FORM_URL,
@@ -304,6 +305,7 @@ import PACDetailPage from "./pages/ipd/pac/PACDetailPage";
 import SurgeryList from "./pages/ipd patients/SurgeryList";
 import DownloadSurgeryReports from "./pages/ipd patients/downloads/SurgeryReportsDownload";
 import DownloadSurgeryForm from "./pages/ipd patients/downloads/SurgeryFormDownload";
+import PrefilledUploadedFiles from "./pages/ipd patients/downloads/PrefilledUploadedFiles";
 import DischargeSummaryPage from "./pages/ipd/discharge-summary/DischargeSummaryPage";
 import IpdBillViewPage from "./pages/ipd/billing/IpdBillViewPage";
 import IpdBillDetailsPage from "./pages/ipd/billing/IpdBillDetailsPage";
@@ -2003,6 +2005,19 @@ const WithLogin: React.FC<{}> = () => {
         element={
           <DashboardLayout>
             <DownloadSurgeryReports />
+          </DashboardLayout>
+        }
+      />
+      <Route
+        path={
+          IPD_PATIENTS_URL +
+          IPD_PATIENTS_DETAILS_URL +
+          PREFILLED_UPLOADED_FILES_URL +
+          "/:id"
+        }
+        element={
+          <DashboardLayout>
+            <PrefilledUploadedFiles />
           </DashboardLayout>
         }
       />

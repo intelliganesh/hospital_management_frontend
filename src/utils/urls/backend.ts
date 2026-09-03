@@ -452,6 +452,7 @@ export const PATIENT_PREOPERATIVE_CHECKLIST_DOWNLOAD: string =
 
 export const IPD_GENERATE_PDF_URL: string = "ipd_generate_pdf";
 export const IPD_DOWNLOAD_PDF_URL: string = "ipd_download_pdf";
+export const IPD_DOWNLOAD_EMPTY_PDF_URL: string = "ipd_download_empty_pdf";
 export const IPD_PREFILLED_UPLOADED_PDF_URL: string =
   "/ipd_prefilled_uploaded_pdf";
 

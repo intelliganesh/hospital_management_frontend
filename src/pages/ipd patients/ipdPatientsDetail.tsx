@@ -41,6 +41,7 @@ import {
   SURGERY_LIST_URL,
   DOWNLOAD_SURGERY_FORM,
   DOWNLOAD_SURGERY_REPORTS,
+  PREFILLED_UPLOADED_FILES_URL,
   IPD_BILL_DETAILS_URL,
   USER_TABLE_URL,
   USER_DETAIL_URL,
@@ -196,7 +197,7 @@ const IpdPatientDetailsPage = () => {
       description: "Patient forms, clinical documents and reports",
       actions: [
         {
-          label: "Download Forms",
+          label: "Download Empty Forms",
           icon: DownloadIcon,
           bgGradient:
             "bg-violet-100 text-violet-700 shadow-violet-500/25 hover:bg-violet-200",
@@ -208,6 +209,13 @@ const IpdPatientDetailsPage = () => {
           bgGradient:
             "bg-blue-100 text-blue-700 shadow-blue-500/25 hover:bg-blue-200",
           url: `${IPD_PATIENTS_URL}${IPD_PATIENTS_DETAILS_URL}${DOWNLOAD_SURGERY_REPORTS}/${patientId}`,
+        },
+        {
+          label: "Prefilled Uploaded Files",
+          icon: FileText,
+          bgGradient:
+            "bg-amber-100 text-amber-700 shadow-amber-500/25 hover:bg-amber-200",
+          url: `${IPD_PATIENTS_URL}${IPD_PATIENTS_DETAILS_URL}${PREFILLED_UPLOADED_FILES_URL}/${patientId}`,
         },
       ],
     },

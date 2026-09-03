@@ -8,6 +8,7 @@ const initialState: IpdStates = {
   ipdPatientList: [],
   ipdPatientDetailData: null,
   ipdPatientStatsData: null,
+  prefilledUploadedPdfData: [],
 };
 
 const ipdSlice = createSlice({
@@ -67,6 +68,12 @@ const ipdSlice = createSlice({
     clearIpdPatientStatsDataSlice: (state: IpdStates) => {
       state.ipdPatientStatsData = null;
     },
+    ipdPrefilledUploadedPdfSlice: (state: IpdStates, action: PayloadAction<any>) => {
+      state.prefilledUploadedPdfData = action.payload;
+    },
+    clearIpdPrefilledUploadedPdfSlice: (state: IpdStates) => {
+      state.prefilledUploadedPdfData = [];
+    },
 
     // deletePatientSuccess: (state, action: PayloadAction<string>) => {
     //   state.patientListData = state.patientListData.filter(
@@ -91,6 +98,8 @@ export const {
   clearIpdPatientListSlice,
   clearIpdPatientDetailDataSlice,
   clearIpdPatientStatsDataSlice,
+  ipdPrefilledUploadedPdfSlice,
+  clearIpdPrefilledUploadedPdfSlice,
   // deletePatientSuccess,
 } = ipdSlice.actions;
 
