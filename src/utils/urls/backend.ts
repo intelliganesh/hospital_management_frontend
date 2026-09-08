@@ -290,6 +290,20 @@ export const SERVICE_COST_DELETE_URL: string = "/service_cost_delete";
 export const SERVICE_COST_DETAILS_URL: string = "/service_cost_details";
 export const SERVICE_COST_DROPDOWN_URL: string = "/service_cost_dropdown_list";
 
+// billing service category
+export const BILLING_SERVICE_CATEGORY_LIST_URL: string =
+  "/billing_service_category_list";
+export const BILLING_SERVICE_CATEGORY_DETAILS_URL: string =
+  "/billing_service_category_details";
+export const BILLING_SERVICE_CATEGORY_ADD_URL: string =
+  "/billing_service_category_add";
+export const BILLING_SERVICE_CATEGORY_UPDATE_URL: string =
+  "/billing_service_category_update";
+export const BILLING_SERVICE_CATEGORY_DELETE_URL: string =
+  "/billing_service_category_delete";
+export const BILLING_SERVICE_CATEGORY_DROPDOWN_URL: string =
+  "/billing_service_category_dropdown_list";
+
 // dietician
 export const DIET_LIST_URL: string = "/diet_plan_list";
 export const DIET_ADD_URL: string = "/diet_plan_add";
@@ -337,6 +351,8 @@ export const CONSULTATION_REPORT_LIST_URL: string =
   "/reports/consultation_list";
 export const CONSULTATION_REPORT_LIST_DOWNLOAD_URL: string =
   "reports/consultation_download";
+export const IPD_REPORT_URL: string = "/reports/ipd_list";
+export const IPD_REPORT_DOWNLOAD_URL: string = "reports/ipd_download";
 
 //DRE
 export const DRE_LIST_URL: string = "/dre_list";

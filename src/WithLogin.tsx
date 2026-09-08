@@ -98,6 +98,9 @@ import {
   SERVICE_COST_FORM_URL,
   SERVICE_COST_EDIT_URL,
   SERVICE_COST_DETAILS_URL,
+  BILLING_SERVICE_CATEGORY_TABLE_URL,
+  BILLING_SERVICE_CATEGORY_FORM_URL,
+  BILLING_SERVICE_CATEGORY_EDIT_URL,
   AMOUNT_TYPE_EDIT_URL,
   AMOUNT_TYPE_TABLE_URL,
   AMOUNT_TYPE_FORM_URL,
@@ -125,6 +128,7 @@ import {
   REPORT_INVOICE,
   REPORT_FISTULA,
   REPORT_CONSULTATION,
+  REPORT_IPD,
   REPORT,
   DRE_TABLE_URL,
   // DRE_DETAILS_URL,
@@ -252,6 +256,8 @@ import AmountTypeDetailsPage from "./pages/amount types/AmountTypeDetailsPage";
 import ServiceCostsPage from "./pages/serviceCosts/ServiceCostsPage";
 import ServiceCostForm from "./pages/forms/serviceCostForm/serviceCostForm";
 import ServiceCostDetail from "./pages/serviceCosts/ServiceCostDetail";
+import BillingServiceCategoryPage from "./pages/billingServiceCategory/BillingServiceCategoryPage";
+import BillingServiceCategoryForm from "./pages/forms/billingServiceCategoryForm/BillingServiceCategoryForm";
 import ComorbiditiesPage from "./pages/comorbidities/ComorbiditiesPage";
 import ComorbidityForm from "./pages/forms/comorbidities/Comorbidities";
 import ComorbidityDetail from "./pages/comorbidities/ComorbiditiesDetail";
@@ -270,6 +276,7 @@ import DietDetailsPage from "./pages/diet/DietDetailsPage";
 import Invoice from "./pages/reports/invoice";
 import FistulaReport from "./pages/reports/fistula";
 import ConsultationReport from "./pages/reports/consultation";
+import IpdReport from "./pages/reports/ipd";
 import DreForm from "./pages/forms/dre/DreForm";
 import ProctoscopyForm from "./pages/forms/proctoscopy/ProctoscopyForm";
 import DrePage from "./pages/dre/DrePage";
@@ -627,6 +634,14 @@ const WithLogin: React.FC<{}> = () => {
         element={
           <DashboardLayout>
             <ConsultationReport />
+          </DashboardLayout>
+        }
+      />
+      <Route
+        path={REPORT_IPD}
+        element={
+          <DashboardLayout>
+            <IpdReport />
           </DashboardLayout>
         }
       />
@@ -1508,6 +1523,36 @@ const WithLogin: React.FC<{}> = () => {
         element={
           <DashboardLayout>
             <ServiceCostDetail />
+          </DashboardLayout>
+        }
+      />
+      <Route
+        path={BILLING_SERVICE_CATEGORY_TABLE_URL}
+        element={
+          <DashboardLayout>
+            <BillingServiceCategoryPage />
+          </DashboardLayout>
+        }
+      />
+      <Route
+        path={
+          BILLING_SERVICE_CATEGORY_TABLE_URL + BILLING_SERVICE_CATEGORY_FORM_URL
+        }
+        element={
+          <DashboardLayout>
+            <BillingServiceCategoryForm />
+          </DashboardLayout>
+        }
+      />
+      <Route
+        path={
+          BILLING_SERVICE_CATEGORY_TABLE_URL +
+          BILLING_SERVICE_CATEGORY_EDIT_URL +
+          "/:id"
+        }
+        element={
+          <DashboardLayout>
+            <BillingServiceCategoryForm formType="edit" />
           </DashboardLayout>
         }
       />

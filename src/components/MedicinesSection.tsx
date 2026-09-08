@@ -50,11 +50,6 @@ const MedicinesSection: React.FC<MedicinesSectionProps> = ({
   const dispatch = useDispatch();
   // const { onSetHandler } = useForm<Consultation | null>(null);
 
-  useEffect(() => {
-    if (medicines.length === 0) {
-      updateMedicine("1", "dosage_unit", "Tablet");
-    }
-  }, []);
 
   useEffect(() => {
     const medicineString =
@@ -96,21 +91,6 @@ const MedicinesSection: React.FC<MedicinesSectionProps> = ({
         medicine_days: "14",
       };
       setMedicines([defaultMed]);
-
-      // keep parent form in sync
-      onSetHandler(
-        "medicines",
-        [
-          [
-            defaultMed.medicines,
-            defaultMed.dosage_unit,
-            defaultMed.dosage,
-            defaultMed.timing,
-            defaultMed.take_with,
-            defaultMed.medicine_days,
-          ].join("#"),
-        ].join(","),
-      );
     }
   }, [medicineData]);
 

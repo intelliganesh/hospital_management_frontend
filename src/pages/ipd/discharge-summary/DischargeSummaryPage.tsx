@@ -131,6 +131,18 @@ const DischargeSummaryPage: React.FC = () => {
     dischargeSummaryData
   );
 
+  const summaryType =
+    values?.summary_type ||
+    (dischargeSummaryData as any)?.summary_type ||
+    "surgical";
+  const normalizedSummaryType = summaryType?.toString().toLowerCase();
+  const isNonSurgicalDischargeSummary = [
+    "non-surgical",
+    "non surgical",
+    "nonsurgical",
+    "non_surgical",
+  ].includes(normalizedSummaryType);
+  const isSurgicalDischargeSummary = !isNonSurgicalDischargeSummary;
   // Initialize with default values
   useEffect(() => {
     if (!summaryId) {
@@ -366,6 +378,18 @@ const DischargeSummaryPage: React.FC = () => {
           />
         </FormSection>
 
+        {isNonSurgicalDischargeSummary && (
+          <FormSection title="Menstrual/Obstetric History" icon={FileText}>
+            <Textarea
+              name="menstrual_history"
+              value={values?.menstrual_history || ""}
+              onChange={handleChange}
+              disabled={isViewMode}
+              className="bg-white min-h-[100px]"
+              placeholder="Enter menstrual or obstetric history..."
+            />
+          </FormSection>
+        )}
         <FormSection title="Investigations" icon={FlaskConical}>
           <Textarea
             name="investigations"
@@ -378,40 +402,58 @@ const DischargeSummaryPage: React.FC = () => {
         </FormSection>
 
         {/* Surgical Details Section */}
-        <FormSection title="Operation Done" icon={Syringe}>
-          <Textarea
-            name="operation_done"
-            value={values?.operation_done || ""}
-            onChange={handleChange}
-            disabled={isViewMode}
-            className="bg-white min-h-[120px]"
-            placeholder="Enter surgical procedures performed (e.g., Ksharakarma, Agnikarma, Chedana)..."
-          />
-        </FormSection>
+        {isSurgicalDischargeSummary && (
+          <>
+            <FormSection title="Operation Done" icon={Syringe}>
+              <Textarea
+                name="operation_done"
+                value={values?.operation_done || ""}
+                onChange={handleChange}
+                disabled={isViewMode}
+                className="bg-white min-h-[120px]"
+                placeholder="Enter surgical procedures performed (e.g., Ksharakarma, Agnikarma, Chedana)..."
+              />
+            </FormSection>
 
-        <FormSection title="Findings And Procedure" icon={FileText}>
-          <Textarea
-            name="findings_and_procedure"
-            value={values?.findings_and_procedure || ""}
-            onChange={handleChange}
-            disabled={isViewMode}
-            className="bg-white min-h-[120px]"
-            placeholder="Enter detailed surgical findings and procedure description..."
-          />
-        </FormSection>
+            <FormSection title="Findings And Procedure" icon={FileText}>
+              <Textarea
+                name="findings_and_procedure"
+                value={values?.findings_and_procedure || ""}
+                onChange={handleChange}
+                disabled={isViewMode}
+                className="bg-white min-h-[120px]"
+                placeholder="Enter detailed surgical findings and procedure description..."
+              />
+            </FormSection>
+          </>
+        )}
 
         {/* Discharge Information Section */}
-        <FormSection title="Course In Hospital" icon={Activity}>
-          <Textarea
-            name="course_in_hospital"
-            value={values?.course_in_hospital || ""}
-            onChange={handleChange}
-            disabled={isViewMode}
-            className="bg-white min-h-[120px]"
-            placeholder="Enter the treatment timeline and course during hospitalization..."
-          />
-        </FormSection>
+        {isSurgicalDischargeSummary && (
+          <FormSection title="Course In Hospital" icon={Activity}>
+            <Textarea
+              name="course_in_hospital"
+              value={values?.course_in_hospital || ""}
+              onChange={handleChange}
+              disabled={isViewMode}
+              className="bg-white min-h-[120px]"
+              placeholder="Enter the treatment timeline and course during hospitalization..."
+            />
+          </FormSection>
+        )}
 
+        {isNonSurgicalDischargeSummary && (
+          <FormSection title="Summary of Treatment" icon={FileText}>
+            <Textarea
+              name="summary_of_treatment"
+              value={values?.summary_of_treatment || ""}
+              onChange={handleChange}
+              disabled={isViewMode}
+              className="bg-white min-h-[120px]"
+              placeholder="Enter summary of treatment..."
+            />
+          </FormSection>
+        )}
         <FormSection
           title="Patient's Health Condition at Discharge"
           icon={AlertTriangle}

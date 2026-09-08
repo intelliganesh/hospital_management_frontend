@@ -39,31 +39,21 @@ import Input from "@/components/input";
 import { Separator } from "@/components/ui/separator";
 import SingleSelector from "@/components/SingleSelector";
 import { useIpdBilling } from "@/actions/calls/ipd/billing";
+import { useBillingServiceCategory } from "@/actions/calls/billingServiceCategory";
 
-const chargeCategories = [
-  { name: "Registration" },
-  { name: "Ward" },
-  { name: "Nursing" },
-  { name: "OT" },
-  { name: "Anaesthetist" },
-  { name: "Professional" },
-  { name: "Pharmacy" },
-  { name: "Lab" },
-];
+const getBillingCategoryName = (category: any) =>
+  category?.category_name ||
+  category?.service_category ||
+  category?.name ||
+  category?.label ||
+  category?.value ||
+  "";
 
-const chargeCategoryOptions = chargeCategories.map((category) => ({
-  label: category.name,
-  value: category.name,
-}));
-
-const defaultChargeCategory = chargeCategories[0]?.name || "";
-
-const getChargeCategoryName = (category: string) =>
-  chargeCategories.find(
-    (option) => option.name.toLowerCase() === category?.toLowerCase(),
-  )?.name ||
-  category ||
-  defaultChargeCategory;
+const normalizeBillingCategoryDropdown = (data: any) => {
+  if (Array.isArray(data)) return data;
+  if (Array.isArray(data?.data)) return data.data;
+  return [];
+};
 
 const IpdBillDetailsPage: React.FC = () => {
   const navigate = useNavigate();
@@ -79,14 +69,20 @@ const IpdBillDetailsPage: React.FC = () => {
     IpdFinalBillingDischarge,
     cleanUp,
   } = useIpdBilling();
+  const {
+    billingServiceCategoryDropdownHandler,
+    cleanUp: billingServiceCategoryCleanUp,
+  } = useBillingServiceCategory();
   const { fetchAndDownloadPdf, isLoading: isPdfDownloading } =
     useDownloadIpdPdf();
   useEffect(() => {
     if (id) {
       getIpdBillingDetails(id, () => {});
     }
+    billingServiceCategoryDropdownHandler(() => {});
     return () => {
       cleanUp();
+      billingServiceCategoryCleanUp();
       //  dispatch(clearIpdBillingDetailSlice());
     };
   }, []);
@@ -150,7 +146,7 @@ const IpdBillDetailsPage: React.FC = () => {
     notes: "",
   });
   const [chargeForm, setChargeForm] = React.useState({
-    category: defaultChargeCategory,
+    category: "",
     description: "",
     rate: 0,
     tax: 0,
@@ -167,6 +163,50 @@ const IpdBillDetailsPage: React.FC = () => {
 
   const ipdBillingPaymentDetailData = useSelector(
     (state: any) => state?.ipdBilling?.ipdBillingPaymentDetailData || [],
+  );
+  const billingServiceCategoryDropdownData = useSelector(
+    (state: any) =>
+      state?.billingServiceCategory?.billingServiceCategoryDropdownData,
+  );
+  const chargeCategoryOptions = React.useMemo(() => {
+    const categoryMap = new Map<string, { label: string; value: string }>();
+    normalizeBillingCategoryDropdown(billingServiceCategoryDropdownData).forEach(
+      (category: any) => {
+        const categoryName = getBillingCategoryName(category);
+        if (categoryName) {
+          categoryMap.set(categoryName.toLowerCase(), {
+            label: categoryName,
+            value: categoryName,
+          });
+        }
+      },
+    );
+    return Array.from(categoryMap.values());
+  }, [billingServiceCategoryDropdownData]);
+  const defaultChargeCategory = chargeCategoryOptions[0]?.value || "";
+  const chargeCategoryOptionsWithCurrent = React.useMemo(() => {
+    if (
+      !chargeForm.category ||
+      chargeCategoryOptions.some(
+        (option) =>
+          option.value.toLowerCase() === chargeForm.category.toLowerCase(),
+      )
+    ) {
+      return chargeCategoryOptions;
+    }
+    return [
+      ...chargeCategoryOptions,
+      { label: chargeForm.category, value: chargeForm.category },
+    ];
+  }, [chargeCategoryOptions, chargeForm.category]);
+  const getChargeCategoryName = React.useCallback(
+    (category: string) =>
+      chargeCategoryOptions.find(
+        (option) => option.value.toLowerCase() === category?.toLowerCase(),
+      )?.value ||
+      category ||
+      defaultChargeCategory,
+    [chargeCategoryOptions, defaultChargeCategory],
   );
   const balanceAmount =
     Number(ipdBillingDetailsData?.summary?.balance_amount) || 0;
@@ -910,7 +950,7 @@ const IpdBillDetailsPage: React.FC = () => {
             <View className="space-y-2">
               <SingleSelector
                 label="Category"
-                options={chargeCategoryOptions}
+                options={chargeCategoryOptionsWithCurrent}
                 value={chargeForm.category}
                 onChange={(value) =>
                   setChargeForm({ ...chargeForm, category: value })

@@ -15,10 +15,13 @@ export interface DischargeSummaryIpdDetails {
   admission_date_time?: string;
   status?: string;
   patient_address?: string;
+  surgical_type?: string;
+  surgery_type?: string;
 }
 
 export interface DischargeSummaryForm {
   id?: string;
+  summary_type?: string;
   ipd?: DischargeSummaryIpdDetails;
   discharge_date?: string;
   discharge_time?: string;
@@ -28,10 +31,13 @@ export interface DischargeSummaryForm {
   case_history_and_complaints?: string;
   general_examination?: string;
   systemic_examination?: string;
+  menstrual_history?: string;
+  menstrual_obstetric_history?: string;
   investigations?: string;
   operation_done?: string;
   findings_and_procedure?: string;
   course_in_hospital?: string;
+  summary_of_treatment?: string;
   patient_health_condition_at_discharge?: string;
   special_instruction?: string;
   advice_on_discharge?: string;

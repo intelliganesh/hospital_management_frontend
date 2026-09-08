@@ -175,6 +175,14 @@ export const SERVICE_COST_FORM_URL: string = "/service-cost-form";
 export const SERVICE_COST_EDIT_URL: string = "/service-cost-edit";
 export const SERVICE_COST_DETAILS_URL: string = "/service-cost-details";
 
+// billing service category
+export const BILLING_SERVICE_CATEGORY_TABLE_URL: string =
+  "/billing-service-category-list";
+export const BILLING_SERVICE_CATEGORY_FORM_URL: string =
+  "/billing-service-category-form";
+export const BILLING_SERVICE_CATEGORY_EDIT_URL: string =
+  "/billing-service-category-edit";
+
 //comorbidity
 export const COMORBIDITIES_TABLE_URL: string = "/comorbidities-list";
 export const COMORBIDITIES_FORM_URL: string = "/comorbidities-form";
@@ -210,6 +218,7 @@ export const REPORT_INVOICE: string = "/report-invoice";
 export const REPORT_EXPENSES: string = "/report-expenses";
 export const REPORT_FISTULA: string = "/report-fistula";
 export const REPORT_CONSULTATION: string = "/report-consultation";
+export const REPORT_IPD: string = "/report-ipd";
 
 // dre
 export const DRE_TABLE_URL: string = "/dre-list";

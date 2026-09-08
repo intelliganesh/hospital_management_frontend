@@ -25,7 +25,6 @@ import * as yup from "yup";
 import ActionMenu from "@/components/editDeleteAction";
 
 const surgeryValidationSchema = yup.object().shape({
-  surgery_type: yup.string().required("Surgery Type is required"),
   surgery_name: yup.string().required("Surgery Name is required"),
   surgery_date: yup.string().required("Surgery Date is required"),
   doctor_id: yup.string().required("Doctor is required"),
@@ -132,7 +131,7 @@ const SurgeryList: React.FC = () => {
 
       const payload = {
         ipd_id: patientId,
-        surgery_type: values.surgery_type,
+        surgery_type: values.surgery_type || "Surgical",
         surgery_name: values.surgery_name,
         doctor_id: values.doctor_id,
         surgeon: values.surgeon,
@@ -263,7 +262,6 @@ const SurgeryList: React.FC = () => {
             { label: "Date", key: "date" },
             { label: "Doctor", key: "doctor" },
             { label: "Surgery", key: "name" },
-            { label: "Type", key: "type" },
             { label: "Status", key: "status" },
             "Action",
           ]}
@@ -271,7 +269,6 @@ const SurgeryList: React.FC = () => {
             data.surgery_date,
             data.surgeon,
             data.surgery_name,
-            data.surgery_type,
             data.status,
             ActionMenu({
               onView: () =>
@@ -310,22 +307,6 @@ const SurgeryList: React.FC = () => {
           )}
 
           <View className="grid grid-cols-2 gap-4">
-            <View>
-              <SingleSelector
-                id="surgery_type"
-                label="Surgery Type"
-                name="surgery_type"
-                required={true}
-                value={values?.surgery_type || "Surgical"}
-                onChange={(value) => onSetHandler("surgery_type", value)}
-                options={[
-                  { label: "Surgical", value: "Surgical" },
-                  { label: "Non-Surgical", value: "Non-Surgical" },
-                ]}
-                error={errors?.surgery_type}
-              />
-            </View>
-
             <View>
               <SingleSelector
                 id="doctor_id"

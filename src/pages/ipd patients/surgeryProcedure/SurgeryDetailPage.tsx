@@ -358,10 +358,6 @@ const SurgeryDetailPage: React.FC = () => {
                   value={surgeryReportData?.surgery_name}
                 />
                 <ReadOnlyField
-                  label="Surgery Type"
-                  value={surgeryReportData?.surgery_type}
-                />
-                <ReadOnlyField
                   label="Surgery Time"
                   value={formattedSurgeryTime}
                 />

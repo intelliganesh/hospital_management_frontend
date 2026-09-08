@@ -29,6 +29,7 @@ import onExamination from "./slices/onExamination";
 import comorbidities from "./slices/comorbidities";
 import amountTypeReducer from "./slices/amountType";
 import serviceCostReducer from "./slices/serviceCost";
+import billingServiceCategoryReducer from "./slices/billingServiceCategory";
 import dietReducer from "./slices/diet";
 import dynamicFieldSections from "./slices/consultation/dynamicFieldSections";
 import diagnosis from "./slices/diagnosis";
@@ -39,6 +40,7 @@ import expenseReport from "./slices/expenseReport";
 import invoiceReport from "./slices/invoiceReport";
 import fistulaReport from "./slices/fistulaReport";
 import consultationReport from "./slices/consultationReportSlice";
+import ipdReport from "./slices/ipdReport";
 import dreReducer from "./slices/dre";
 import proctoscopyReducer from "./slices/proctoscopy";
 import fistulaReducer from "./slices/fistula";
@@ -78,6 +80,7 @@ const rootReducer = combineReducers({
   invoiceReport,
   fistulaReport,
   consultationReport,
+  ipdReport,
   medicineCategory,
   medicineCategoryMapping,
   referedByDoc,
@@ -109,6 +112,7 @@ const rootReducer = combineReducers({
   chiefComplaint: chiefComplaintReducer,
   amountType: amountTypeReducer,
   serviceCost: serviceCostReducer,
+  billingServiceCategory: billingServiceCategoryReducer,
   diet: dietReducer,
   dre: dreReducer,
   proctoscopy: proctoscopyReducer,

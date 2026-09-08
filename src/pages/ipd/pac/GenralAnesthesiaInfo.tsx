@@ -85,7 +85,6 @@ const GenralAnesthesiaInfo: React.FC<Props> = ({ anaesthesiaDetail }) => {
               value={anaesthesiaDetail?.diagnosis}
             />
             <ReadOnlyField label="Surgery" value={surgery?.surgery_name} />
-            <ReadOnlyField label="Surgery Type" value={surgery?.surgery_type} />
             <ReadOnlyField
               label="Surgery Date"
               value={

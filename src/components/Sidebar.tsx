@@ -53,6 +53,7 @@ import {
   ON_EXAMINATION_TABLE_URL,
   AMOUNT_TYPE_TABLE_URL,
   SERVICE_COST_TABLE_URL,
+  BILLING_SERVICE_CATEGORY_TABLE_URL,
   COMORBIDITIES_TABLE_URL,
   DIET_TABLE_URL,
   // DIAGNOSIS_TABLE_URL,
@@ -66,6 +67,7 @@ import {
   MANAGEMENT_TABLE_URL,
   REPORT_FISTULA,
   REPORT_CONSULTATION,
+  REPORT_IPD,
   REFERRED_BY_TABLE_URL,
   IPD_ENROLLMENTS_URL,
   WARD_TABLE_URL,
@@ -285,6 +287,13 @@ export const sidebarItems = [
           label="Consultation Report"
           requiredPermission={PERMISSIONS.VIEW_CONSULTATION_REPORT}
         />
+        <SidebarDropdownItem
+          to={`${REPORT_IPD}?currentPage=1&from_date=${dayjs().format(
+            "YYYY-MM-DD"
+          )}&to_date=${dayjs().format("YYYY-MM-DD")}`}
+          label="IPD Report"
+          requiredPermission={PERMISSIONS.VIEW_REPORTS}
+        />
       </SidebarDropdown>
     ),
     // href: REPORT_EXPENSES + "?currentPage=1",
@@ -418,6 +427,10 @@ export const sidebarItems = [
         <SidebarDropdownItem
           to={`${SERVICE_COST_TABLE_URL}?currentPage=1`}
           label="Service Costs"
+        />
+        <SidebarDropdownItem
+          to={`${BILLING_SERVICE_CATEGORY_TABLE_URL}?currentPage=1`}
+          label="Billing Service Categories"
         />
         <SidebarDropdownItem
           to={`${DIET_TABLE_URL}?currentPage=1`}

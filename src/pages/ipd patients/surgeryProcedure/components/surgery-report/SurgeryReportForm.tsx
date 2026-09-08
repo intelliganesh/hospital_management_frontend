@@ -160,15 +160,6 @@ const SurgeryReportForm: React.FC<Props> = ({ readOnly = false }) => {
             placeholder="e.g., Appendectomy"
           />
           <Input
-            id="surgery_type"
-            name="surgery_type"
-            label="Surgery Type"
-            value={values?.surgery_type || ""}
-            onChange={handleChange}
-            disabled={readOnly}
-            placeholder="e.g., General Surgery"
-          />
-          <Input
             id="surgery_date"
             name="surgery_date"
             label="Surgery Date"
