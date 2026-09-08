@@ -280,6 +280,12 @@ ${appointment.meeting_link}
     );
   };
 
+  const refreshAppointmentDetail = () => {
+    if (id) {
+      onlineAppointmentDetailHandler(id, () => {}, []);
+    }
+  };
+
   const handleDownloadInvoice = (id: string | undefined) => {
     if (id) {
       setIsLoading(true);
@@ -735,11 +741,13 @@ ${appointment.meeting_link}
       <SendPaymentModal
         isOpen={isSendPaymentOpen}
         onClose={() => setIsSendPaymentOpen(false)}
+        onSuccess={refreshAppointmentDetail}
         appointment={appointment}
       />
       <VerifyPaymentModal
         isOpen={isVerifyPaymentOpen}
         onClose={() => setIsVerifyPaymentOpen(false)}
+        onSuccess={refreshAppointmentDetail}
         appointment={appointment}
       />
     </View>

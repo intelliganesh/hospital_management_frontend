@@ -24,12 +24,14 @@ interface SendPaymentModalProps {
   isOpen: boolean;
   onClose: () => void;
   appointment: OnlineAppointment | null;
+  onSuccess?: () => void;
 }
 
-const SendPaymentModal: React.FC<SendPaymentModalProps> = ({
+export const SendPaymentModal: React.FC<SendPaymentModalProps> = ({
   isOpen,
   onClose,
   appointment,
+  onSuccess,
 }) => {
   const { sendPaymentLink } = useOnlineAppointments();
   const { bankDetailsDropdownHandler } = useBankDetails();
@@ -234,11 +236,16 @@ const SendPaymentModal: React.FC<SendPaymentModalProps> = ({
     await sendPaymentLink(
       appointment.id,
       formData.amount,
-      formData.paymentMethod === "BANK" ? "Bank Transfer" : "link",
+      formData.paymentMethod === "BANK"
+        ? "Bank Transfer"
+        : formData.paymentMethod === "UPI_QR"
+          ? "qr_code"
+          : "link",
       formData.paymentMethod === "BANK" ? formData.bankAccountId : undefined,
       paymentInfoVal,
       (success) => {
         if (success) {
+          onSuccess?.();
           const message = getWhatsAppSendMessage();
           openWhatsApp(appointment.phone, message);
           onClose();

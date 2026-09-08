@@ -22,6 +22,7 @@ import {
   Wallet,
   Proportions,
   NotebookText,
+  CalendarRange,
   // CalendarRange,
 } from "lucide-react";
 import {
@@ -68,6 +69,7 @@ import {
   REFERRED_BY_TABLE_URL,
   FISTULA_ENTRY_LIST_URL,
   BANK_DETAILS_TABLE_URL,
+  ONLINE_APPOINTMENT_TABLE_URL,
   // ONLINE_APPOINTMENT_TABLE_URL,
 } from "@/utils/urls/frontend";
 import { useSelector } from "react-redux";
@@ -174,12 +176,12 @@ export const sidebarItems = [
       )}&to_date=${dayjs().format("YYYY-MM-DD")}`,
     requiredPermission: PERMISSIONS.VIEW_APPOINTMENTS,
   },
-  // {
-  //   icon: <CalendarRange size={20} />,
-  //   label: "Online Appointments",
-  //   href: ONLINE_APPOINTMENT_TABLE_URL + "?currentPage=1",
-  //   requiredPermission: PERMISSIONS.VIEW_ONLINE_APPOINTMENTS,
-  // },
+  {
+    icon: <CalendarRange size={20} />,
+    label: "Online Appointments",
+    href: ONLINE_APPOINTMENT_TABLE_URL + "?currentPage=1",
+    requiredPermission: PERMISSIONS.VIEW_ONLINE_APPOINTMENTS,
+  },
   {
     icon: <ClipboardList size={20} />,
     label: "Consultations",
