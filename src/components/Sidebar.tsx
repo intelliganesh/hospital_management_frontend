@@ -23,6 +23,7 @@ import {
   Proportions,
   NotebookText,
   CalendarRange,
+  // CalendarRange,
 } from "lucide-react";
 import {
   SETTINGS_URL,
@@ -69,6 +70,7 @@ import {
   FISTULA_ENTRY_LIST_URL,
   BANK_DETAILS_TABLE_URL,
   ONLINE_APPOINTMENT_TABLE_URL,
+  // ONLINE_APPOINTMENT_TABLE_URL,
 } from "@/utils/urls/frontend";
 import { useSelector } from "react-redux";
 // import { ExaminationsPage } from "@/pages/examinations/ExaminationsPage";
@@ -79,7 +81,7 @@ import {
 import dayjs from "dayjs";
 import { PERMISSIONS } from "@/rolesRoute";
 import { usePermissions } from "@/utils/custom-hooks/use-permissions";
-
+ 
 interface SidebarItemProps {
   href?: string;
   label?: string;
@@ -89,7 +91,6 @@ interface SidebarItemProps {
   children?: React.ReactNode;
   onSelect?: () => void;
 }
-
 const SidebarItem: React.FC<SidebarItemProps> = ({
   icon,
   label,

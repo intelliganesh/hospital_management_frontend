@@ -176,7 +176,7 @@ export const useOnlineAppointments = () => {
   const sendPaymentLink = async (
     id: string,
     amount: string,
-    paymentType: "link" | "Bank Transfer",
+    paymentType: "link" | "qr_code" | "Bank Transfer",
     bankAccountId?: string,
     razorpayLink?: string,
     callback?: ApiCallback,
@@ -211,7 +211,7 @@ export const useOnlineAppointments = () => {
   const confirmPayment = async (
     id: string,
     amount: string,
-    paymentType: "link" | "Bank Transfer",
+    paymentType: "link" | "qr_code" | "Bank Transfer",
     transactionId: string,
     paymentDate: string,
     // meetingLink: string,
@@ -250,7 +250,7 @@ export const useOnlineAppointments = () => {
   const rejectPayment = async (
     id: string,
     amount: string,
-    paymentType: "link" | "Bank Transfer",
+    paymentType: "link" | "qr_code" | "Bank Transfer",
     callback?: ApiCallback,
   ): Promise<void> => {
     try {

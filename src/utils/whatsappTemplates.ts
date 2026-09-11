@@ -82,15 +82,20 @@ export const getPaymentRejectedMessage = (name: string, id: string) => {
  * ✅ Has guard to block sensitive data from entering the URL
  */
 export const openWhatsApp = (phone: string, message: string) => {
-  const cleanPhone = phone.replace(/\D/g, "");
+  const trimmedPhone = phone.trim();
+  const cleanPhone = trimmedPhone.replace(/\D/g, "");
 
   const encodedMessage = encodeURIComponent(message);
-  const cleanPhone12 = cleanPhone.startsWith("91")
+  const whatsappPhone = trimmedPhone.startsWith("+")
     ? cleanPhone
-    : `91${cleanPhone}`;
+    : cleanPhone.startsWith("00")
+      ? cleanPhone.slice(2)
+      : cleanPhone.length === 10
+        ? `91${cleanPhone}`
+        : cleanPhone;
 
   // ✅ Use api.whatsapp.com instead of wa.me for better new number handling
-  const whatsappUrl = `https://api.whatsapp.com/send/?phone=${cleanPhone12}&text=${encodedMessage}&type=phone_number&app_absent=0`;
+  const whatsappUrl = `https://api.whatsapp.com/send/?phone=${whatsappPhone}&text=${encodedMessage}&type=phone_number&app_absent=0`;
 
   // ✅ Use window.location.href instead of window.open to avoid popup block
   window.open(whatsappUrl, "_blank", "noopener,noreferrer");

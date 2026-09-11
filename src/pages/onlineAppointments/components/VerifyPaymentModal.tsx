@@ -31,16 +31,30 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/actions/store";
 import { toast } from "@/utils/custom-hooks/use-toast";
 
+
+const getPaymentPayloadType = (paymentType?: string | null) => {
+  if (paymentType === "Bank Transfer") return "Bank Transfer";
+  if (paymentType === "qr_code") return "qr_code";
+  return "link";
+};
+
+const getPaymentDisplayLabel = (paymentType?: string | null) => {
+  if (paymentType === "Bank Transfer") return "Bank Transfer";
+  if (paymentType === "qr_code") return "UPI";
+  return "Razorpay Link";
+};
 interface VerifyPaymentModalProps {
   isOpen: boolean;
   onClose: () => void;
   appointment: OnlineAppointment | null;
+  onSuccess?: () => void;
 }
 
 const VerifyPaymentModal: React.FC<VerifyPaymentModalProps> = ({
   isOpen,
   onClose,
   appointment,
+  onSuccess,
 }) => {
   const {
     confirmPayment,
@@ -108,7 +122,7 @@ const VerifyPaymentModal: React.FC<VerifyPaymentModalProps> = ({
       setIsVerified(false);
       setVerifiedAppointment(null);
     }
-  }, [isOpen, appointment]);
+  }, [isOpen, appointment?.id]);
 
   const getMeetingLinkFromResponse = (data: any) => {
     if (!data) return "";
@@ -215,13 +229,14 @@ const VerifyPaymentModal: React.FC<VerifyPaymentModalProps> = ({
     await confirmPayment(
       appointment.id,
       appointment.amount || "0",
-      appointment.payment_type === "Bank Transfer" ? "Bank Transfer" : "link",
+      getPaymentPayloadType(appointment.payment_type),
       transactionId,
       paymentDate,
       // meetingLink,
       visitType,
       async (success: any, data?: any) => {
         if (success) {
+          onSuccess?.();
           setVerifiedAppointment({
             ...appointment,
             ...(data as Partial<OnlineAppointment>),
@@ -293,9 +308,10 @@ const VerifyPaymentModal: React.FC<VerifyPaymentModalProps> = ({
     await rejectPayment(
       appointment.id,
       appointment.amount || "0",
-      appointment.payment_type === "Bank Transfer" ? "Bank Transfer" : "link",
+      getPaymentPayloadType(appointment.payment_type),
       (success) => {
         if (success) {
+          onSuccess?.();
           const message = getPaymentRejectedMessage(
             appointment.name,
             appointment.id,
@@ -387,9 +403,7 @@ const VerifyPaymentModal: React.FC<VerifyPaymentModalProps> = ({
               />
               <Text className="text-[10px] uppercase font-semibold text-muted-foreground tracking-tight">
                 via{" "}
-                {appointment?.payment_type === "Bank Transfer"
-                  ? "Bank Transfer"
-                  : "UPI / Razorpay Link"}
+                {getPaymentDisplayLabel(appointment?.payment_type)}
               </Text>
             </View>
           </View>

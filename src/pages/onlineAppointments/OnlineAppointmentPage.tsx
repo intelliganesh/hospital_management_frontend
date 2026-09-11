@@ -523,19 +523,15 @@ const OnlineAppointmentPage: React.FC = () => {
 
       <SendPaymentModal
         isOpen={isSendPaymentOpen}
-        onClose={() => {
-          setIsSendPaymentOpen(false);
-          refreshList();
-        }}
+        onClose={() => setIsSendPaymentOpen(false)}
+        onSuccess={refreshList}
         appointment={selectedAppointment}
       />
 
       <VerifyPaymentModal
         isOpen={isVerifyPaymentOpen}
-        onClose={() => {
-          setIsVerifyPaymentOpen(false);
-          refreshList();
-        }}
+        onClose={() => setIsVerifyPaymentOpen(false)}
+        onSuccess={refreshList}
         appointment={selectedAppointment}
       />
     </View>
