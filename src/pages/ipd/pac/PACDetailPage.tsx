@@ -5,7 +5,7 @@ import Text from "@/components/text";
 import Button from "@/components/button";
 import { Card } from "@/components/ui/card";
 import TabView from "@/components/Tabs";
-import { FileDown, Edit, ArrowLeft, FileText } from "lucide-react";
+import { FileDown, Edit, ArrowLeft, FileText, Loader2 } from "lucide-react";
 import { useDownloadIpdPdf } from "@/actions/calls/ipd/downloadIpdPdf";
 import { IPD_DOWNLOAD_PDF_URL, IPD_GENERATE_PDF_URL } from "@/utils/urls/backend";
 import BouncingLoader from "@/components/BouncingLoader";
@@ -304,7 +304,7 @@ const PACDetailPage: React.FC = () => {
                     disabled={isPdfDownloading}
                   >
                     {isPdfDownloading ? (
-                      <BouncingLoader className="h-3.5 w-3.5 shrink-0" isLoading={true} />
+                      <Loader2 size={13} className="shrink-0 animate-spin" />
                     ) : (
                       <FileDown size={13} className="shrink-0" />
                     )}

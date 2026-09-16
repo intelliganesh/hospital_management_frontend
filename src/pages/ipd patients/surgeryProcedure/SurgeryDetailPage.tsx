@@ -10,6 +10,7 @@ import {
   Edit,
   ArrowLeft,
   FileText,
+  Loader2,
 } from "lucide-react";
 import { useDownloadIpdPdf } from "@/actions/calls/ipd/downloadIpdPdf";
 import {
@@ -398,7 +399,7 @@ const SurgeryDetailPage: React.FC = () => {
                     disabled={isPdfDownloading}
                   >
                     {isPdfDownloading ? (
-                      <BouncingLoader className="h-3.5 w-3.5 shrink-0" isLoading={true} />
+                      <Loader2 size={13} className="shrink-0 animate-spin" />
                     ) : (
                       <FileDown size={13} className="shrink-0" />
                     )}

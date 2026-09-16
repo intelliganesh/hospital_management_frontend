@@ -1,7 +1,6 @@
 import View from "@/components/view";
 import Text from "@/components/text";
 import { Card } from "@/components/ui/card";
-import BouncingLoader from "@/components/BouncingLoader";
 import { useDownloadIpdPdf } from "@/actions/calls/ipd/downloadIpdPdf";
 import { useNavigate, useParams } from "react-router-dom";
 import { IPD_DOWNLOAD_EMPTY_PDF_URL } from "@/utils/urls/backend";
@@ -14,6 +13,7 @@ import {
   HeartPulse,
   Receipt,
   Stethoscope,
+  Loader2,
 } from "lucide-react";
 
 const DownloadSurgeryForm = () => {
@@ -145,7 +145,7 @@ const DownloadSurgeryForm = () => {
           </Text>
         </div>
         {isLoading ? (
-          <BouncingLoader className="h-4 w-4 shrink-0" isLoading={true} />
+          <Loader2 size={16} className="shrink-0 animate-spin text-slate-400" />
         ) : (
           <Download size={16} className="shrink-0 text-slate-400" />
         )}
