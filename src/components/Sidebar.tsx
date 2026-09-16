@@ -23,7 +23,7 @@ import {
   Proportions,
   NotebookText,
   CalendarRange,
-  // CalendarRange,
+  Hospital,
 } from "lucide-react";
 import {
   SETTINGS_URL,
@@ -53,6 +53,7 @@ import {
   ON_EXAMINATION_TABLE_URL,
   AMOUNT_TYPE_TABLE_URL,
   SERVICE_COST_TABLE_URL,
+  BILLING_SERVICE_CATEGORY_TABLE_URL,
   COMORBIDITIES_TABLE_URL,
   DIET_TABLE_URL,
   // DIAGNOSIS_TABLE_URL,
@@ -66,9 +67,16 @@ import {
   MANAGEMENT_TABLE_URL,
   REPORT_FISTULA,
   REPORT_CONSULTATION,
+  REPORT_IPD,
   REFERRED_BY_TABLE_URL,
+  IPD_ENROLLMENTS_URL,
+  WARD_TABLE_URL,
+  IPD_PATIENTS_URL,
   FISTULA_ENTRY_LIST_URL,
+  IPD_BILLS_URL,
   BANK_DETAILS_TABLE_URL,
+  ROOMS_TABLE_URL,
+  BED_TABLE_URL,
   ONLINE_APPOINTMENT_TABLE_URL,
   // ONLINE_APPOINTMENT_TABLE_URL,
 } from "@/utils/urls/frontend";
@@ -193,7 +201,32 @@ export const sidebarItems = [
     //     "YYYY-MM-DD"
     //   )}&to_date=${dayjs().format("YYYY-MM-DD")}`,
   },
-  // ipd
+  // IPD
+  {
+    icon: <Hospital size={20} />,
+    label: "IPD",
+    requiredPermission: PERMISSIONS.VIEW_IPD,
+    children: (
+      <SidebarDropdown
+        title="IPD"
+        icon={<Hospital size={20} />}
+        variant="secondary"
+      >
+        <SidebarDropdownItem
+          to={`${IPD_ENROLLMENTS_URL}?currentPage=1`}
+          label="IPD Enrollments"
+        />
+        <SidebarDropdownItem
+          to={`${IPD_PATIENTS_URL}?currentPage=1`}
+          label="IPD Patients"
+        />
+        <SidebarDropdownItem
+          to={`${IPD_BILLS_URL}?currentPage=1`}
+          label="IPD Bills"
+        />
+      </SidebarDropdown>
+    ),
+  },
   {
     icon: <FileText size={20} />,
     label: "Bills",
@@ -254,6 +287,13 @@ export const sidebarItems = [
           label="Consultation Report"
           requiredPermission={PERMISSIONS.VIEW_CONSULTATION_REPORT}
         />
+        <SidebarDropdownItem
+          to={`${REPORT_IPD}?currentPage=1&from_date=${dayjs().format(
+            "YYYY-MM-DD"
+          )}&to_date=${dayjs().format("YYYY-MM-DD")}`}
+          label="IPD Report"
+          requiredPermission={PERMISSIONS.VIEW_REPORTS}
+        />
       </SidebarDropdown>
     ),
     // href: REPORT_EXPENSES + "?currentPage=1",
@@ -283,13 +323,21 @@ export const sidebarItems = [
           label="Departments"
         />
         <SidebarDropdownItem
+          to={`${WARD_TABLE_URL}?currentPage=1`}
+          label="Wards"
+        />
+        <SidebarDropdownItem
           to={`${BANK_DETAILS_TABLE_URL}?currentPage=1`}
           label="Bank Details"
         />
-        {/* <SidebarDropdownItem
+        <SidebarDropdownItem
           to={`${ROOMS_TABLE_URL}?currentPage=1`}
           label="Rooms"
-        /> */}
+        />
+        <SidebarDropdownItem
+          to={`${BED_TABLE_URL}?currentPage=1`}
+          label="Beds"
+        />
         <SidebarDropdownItem
           to={`${FISTULA_TABLE_URL}?currentPage=1`}
           label="Fistula"
@@ -379,6 +427,10 @@ export const sidebarItems = [
         <SidebarDropdownItem
           to={`${SERVICE_COST_TABLE_URL}?currentPage=1`}
           label="Service Costs"
+        />
+        <SidebarDropdownItem
+          to={`${BILLING_SERVICE_CATEGORY_TABLE_URL}?currentPage=1`}
+          label="Billing Service Categories"
         />
         <SidebarDropdownItem
           to={`${DIET_TABLE_URL}?currentPage=1`}

@@ -146,12 +146,12 @@ export const usePatient = () => {
       await api.put(
         EDIT_PATIENT_URL + "/" + id,
         (response: AuthPayload, success: boolean, statusCode: number) => {
-          if (success && statusCode === 200) {
+          if (success && (statusCode === 200 || statusCode === 204)) {
             return callback(true, {
               success: true,
               data: response?.data,
             });
-          } else if (success && statusCode !== 204) {
+          } else {
             response && handleApiError(response);
             return callback(false, { success: false });
           }

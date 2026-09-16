@@ -36,19 +36,17 @@ const RoomsPage: React.FC<{}> = () => {
   const roomsData = useSelector((state: RootState) => state?.room?.rooms);
 
   useEffect(() => {
-    if (searchParams?.has("currentPage")) {
-      getRoomList(
-        searchParams?.get("currentPage") ?? 1,
-        () => {},
-        searchParams.get("search") ?? null,
-        searchParams.get("sort_by") ?? null,
-        searchParams.get("sort_order") ?? null,
-        [],
-        (status) => {
-          setIsLoading(status === "pending" ? true : status === "failed" ? true : status === "success" && false);
-        }
-      );
-    }
+    getRoomList(
+      searchParams?.get("currentPage") ?? 1,
+      () => {},
+      searchParams.get("search") ?? null,
+      searchParams.get("sort_by") ?? null,
+      searchParams.get("sort_order") ?? null,
+      [],
+      (status) => {
+        setIsLoading(status === "pending" ? true : status === "failed" ? true : status === "success" && false);
+      }
+    );
     return () => {
       cleanUp();
     };
@@ -81,16 +79,14 @@ const RoomsPage: React.FC<{}> = () => {
   const sortOptions: SortOption[] = [
     { label: "Name (A-Z)", value: "name", order: "asc" },
     { label: "Name (Z-A)", value: "name", order: "desc" },
-    { label: "Type (A-Z)", value: "type", order: "asc" },
-    { label: "Type (Z-A)", value: "type", order: "desc" },
-    { label: "Ward Name (A-Z)", value: "ward_name", order: "asc" },
-    { label: "Ward Name (Z-A)", value: "ward_name", order: "desc" },
-    { label: "Ward Type (A-Z)", value: "ward_type", order: "asc" },
-    { label: "Ward Type (Z-A)", value: "ward_type", order: "desc" },
-    { label: "Capacity (A-Z)", value: "capacity", order: "asc" },
-    { label: "Capacity (Z-A)", value: "capacity", order: "desc" },
-    // { label: "Location (A-Z)", value: "location_asc" },
-    // { label: "Location (Z-A)", value: "location_desc" },
+    { label: "Room Type (A-Z)", value: "room_type", order: "asc" },
+    { label: "Room Type (Z-A)", value: "room_type", order: "desc" },
+    { label: "Room Number (A-Z)", value: "room_number", order: "asc" },
+    { label: "Room Number (Z-A)", value: "room_number", order: "desc" },
+    { label: "Ward (A-Z)", value: "ward_id", order: "asc" },
+    { label: "Ward (Z-A)", value: "ward_id", order: "desc" },
+    { label: "Bed Count (A-Z)", value: "bed_count", order: "asc" },
+    { label: "Bed Count (Z-A)", value: "bed_count", order: "desc" },
     { label: "Floor (A-Z)", value: "floor", order: "asc" },
     { label: "Floor (Z-A)", value: "floor", order: "desc" },
     { label: "Status (A-Z)", value: "status", order: "asc" },
@@ -193,10 +189,10 @@ const RoomsPage: React.FC<{}> = () => {
         <DynamicTable
           tableHeaders={[
             "Name",
-            "Type",
-            "Ward Name",
-            "Ward Type",
-            "Capacity",
+            "Room Type",
+            "Room Number",
+            "Ward",
+            "Bed Count",
             "Floor",
             "Status",
             "Action",
@@ -207,10 +203,10 @@ const RoomsPage: React.FC<{}> = () => {
                 {room.name}
               </Text>
             </Link>,
-            room.type,
-            room.ward_name,
-            room.ward_type,
-            room.capacity,
+            room.room_type || "N/A",
+            room.room_number || "N/A",
+            room.ward?.name || room.ward_name || room.ward_id || "N/A",
+            room.bed_count || "N/A",
             room.floor,
             <Text
               as="span"

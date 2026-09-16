@@ -1,11 +1,15 @@
 import { GenericStatus } from "@/interfaces";
-import { RoomLocation } from "@/interfaces/master/rooms";
+import { RoomTypes } from "@/interfaces/master/rooms";
 
 export const roomTypeOptions = [
-  RoomLocation.EAST,
-  RoomLocation.WEST,
-  RoomLocation.NORTH,
-  RoomLocation.SOUTH,
+  RoomTypes.GENERAL,
+  RoomTypes.ICU,
+  RoomTypes.PRIVATE,
+  RoomTypes.SEMI_PRIVATE,
+  RoomTypes.DELUXE,
+  RoomTypes.SUITE,
+  RoomTypes.NICU,
+  RoomTypes.ISOLATION,
 ].map((value) => ({
   value,
   label: value.replace(/_/g, " "),

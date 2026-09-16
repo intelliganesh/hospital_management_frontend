@@ -12,5 +12,6 @@ export interface FormTypeProps {
   formType?: "add" | "edit";
   errorsDepartmentType?: string;
   onModalSuccess?: () => void;
+  patientId?: string;
   iAmIn?: string;
 }

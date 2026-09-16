@@ -29,6 +29,7 @@ import onExamination from "./slices/onExamination";
 import comorbidities from "./slices/comorbidities";
 import amountTypeReducer from "./slices/amountType";
 import serviceCostReducer from "./slices/serviceCost";
+import billingServiceCategoryReducer from "./slices/billingServiceCategory";
 import dietReducer from "./slices/diet";
 import dynamicFieldSections from "./slices/consultation/dynamicFieldSections";
 import diagnosis from "./slices/diagnosis";
@@ -39,14 +40,30 @@ import expenseReport from "./slices/expenseReport";
 import invoiceReport from "./slices/invoiceReport";
 import fistulaReport from "./slices/fistulaReport";
 import consultationReport from "./slices/consultationReportSlice";
+import ipdReport from "./slices/ipdReport";
 import dreReducer from "./slices/dre";
 import proctoscopyReducer from "./slices/proctoscopy";
 import fistulaReducer from "./slices/fistula";
 import management from "./slices/management";
 import postSurgery from "./slices/postSurgery";
 import referedByDoc from "./slices/referedByDoc";
+import ipd from "./slices/ipd/ipdEnrollment";
+import wards from "./slices/wards";
+import rooms from "./slices/rooms";
+import beds from "./slices/beds";
+import preliminaryNotes from "./slices/ipd/preliminaryNotes";
+import nurseNotes from "./slices/ipd/nurseNotes";
+import doctorNotes from "./slices/ipd/doctorNotes";
+import anaesthesia from "./slices/ipd/anaesthesia/anaesthesia";
+import surgeryReport from "./slices/ipd/surgeryProcedure/surgeryReport";
+import preOperativeChecklist from "./slices/ipd/surgeryProcedure/preOperativeChecklist";
+import preOpAnaesthesiaEval from "./slices/ipd/anaesthesia/pre-opAnaesthesiaEvaluation";
+import departmentOfAnaesthesia from "./slices/ipd/anaesthesia/departmentOfAnaesthesia";
+import anaesthesiaRecoveryObservation from "./slices/ipd/anaesthesia/anaesthesiaRecoveryObservation";
 import bankDetailsReducer from "./slices/bankDetails";
 import onlineAppointments from "./slices/onlineAppointments";
+import dischargeSummary from "./slices/dischargeSummary";
+import ipdBilling from "./slices/ipd/billing";
 
 const rootReducer = combineReducers({
   authentication,
@@ -63,6 +80,7 @@ const rootReducer = combineReducers({
   invoiceReport,
   fistulaReport,
   consultationReport,
+  ipdReport,
   medicineCategory,
   medicineCategoryMapping,
   referedByDoc,
@@ -77,6 +95,8 @@ const rootReducer = combineReducers({
   expenses,
   expenseReport,
   management,
+  preliminaryNotes,
+  dischargeSummary,
   room: roomReducer,
   systemSettings: systemSettingsReducer,
   users: userReducer,
@@ -92,12 +112,26 @@ const rootReducer = combineReducers({
   chiefComplaint: chiefComplaintReducer,
   amountType: amountTypeReducer,
   serviceCost: serviceCostReducer,
+  billingServiceCategory: billingServiceCategoryReducer,
   diet: dietReducer,
   dre: dreReducer,
   proctoscopy: proctoscopyReducer,
   fistula: fistulaReducer,
+  ipd,
+  wards,
+  beds,
+  rooms,
+  nurseNotes,
+  doctorNotes,
+  anaesthesia,
+  surgeryReport,
+  preOperativeChecklist,
+  preOpAnaesthesiaEval,
+  departmentOfAnaesthesia,
+  anaesthesiaRecoveryObservation,
   bankDetails: bankDetailsReducer,
   onlineAppointments,
+  ipdBilling,
 });
 
 export const store = configureStore({

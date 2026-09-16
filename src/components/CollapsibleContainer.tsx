@@ -153,9 +153,9 @@ const CollapsibleContainer: React.FC<CollapsibleContainerProps> = ({
           </View>
           <View className="text-primary hover:text-primary-600 transition-colors duration-200">
             {isOpen ? (
-              <ChevronUp className="w-5 h-5 text-white" />
+              <ChevronUp className="w-5 h-5 dark:text-white" />
             ) : (
-              <ChevronDown className="w-5 h-5 text-white" />
+              <ChevronDown className="w-5 h-5 dark:text-white" />
             )}
           </View>
         </View>

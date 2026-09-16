@@ -11,14 +11,20 @@ import { toast } from "@/utils/custom-hooks/use-toast";
 import { FormTypeProps } from "@/interfaces/dashboard";
 import { useDispatch } from "react-redux";
 import { clearRoomByIdSuccess } from "@/actions/slices/room";
+import { useWards } from "@/actions/calls/wards";
 
 const RoomsForm: React.FC<FormTypeProps> = ({ formType = "add" }) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { addRoom, getRoomById, updateRoom } = useRoom();
+  const { wardDropdownHandler } = useWards();
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    wardDropdownHandler(() => {});
+  }, []);
 
   useEffect(() => {
     if (formType === "edit" && id) {
@@ -38,6 +44,8 @@ const RoomsForm: React.FC<FormTypeProps> = ({ formType = "add" }) => {
       for (let [key, value] of formData.entries()) {
         roomFormObj[key as keyof Rooms] = value as any;
       }
+      roomFormObj.ward_id = Number(roomFormObj.ward_id);
+      roomFormObj.bed_count = Number(roomFormObj.bed_count);
       await validationForm.validate(roomFormObj, { abortEarly: false });
       setErrors({});
       setIsSubmitting(true);
@@ -113,11 +121,11 @@ const RoomsForm: React.FC<FormTypeProps> = ({ formType = "add" }) => {
         <form onSubmit={handleSubmit}>
           <SectionOne
             errorsName={errors.name}
-            errorsType={errors.type}
-            errorsWardName={errors.ward_name}
-            errorsWardType={errors.ward_type}
-            errorsCapacity={errors.capacity}
-            errorsLocation={errors.location}
+            errorsRoomType={errors.room_type}
+            errorsWardId={errors.ward_id}
+            errorsRoomNumber={errors.room_number}
+            errorsBedCount={errors.bed_count}
+            errorsDescription={errors.description}
             errorsStatus={errors.status}
             errorsFloor={errors.floor}
           />

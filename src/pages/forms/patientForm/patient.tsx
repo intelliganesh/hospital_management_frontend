@@ -26,8 +26,12 @@ import Modal from "@/components/Modal";
 
 const PatientAdmissionForm: React.FC<FormTypeProps> = ({
   formType = "add",
+  onModalSuccess,
+  patientId,
+  iAmIn = "patient",
 }) => {
   const { id } = useParams();
+  const activePatientId = patientId || id;
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const token = useSelector((state: any) => state.authentication.tokenStatus);
@@ -57,9 +61,9 @@ const PatientAdmissionForm: React.FC<FormTypeProps> = ({
   }, [formType, dispatch]);
 
   useEffect(() => {
-    if (formType === "edit" && id) {
+    if (formType === "edit" && activePatientId) {
       patientDetailHandler(
-        id,
+        activePatientId,
         () => {},
         [],
         (status: LoadingStatus) => {
@@ -75,9 +79,11 @@ const PatientAdmissionForm: React.FC<FormTypeProps> = ({
     }
     return () => {
       cleanUp();
-      dispatch(clearPatientDetailsSlice());
+      if (iAmIn === "patient") {
+        dispatch(clearPatientDetailsSlice());
+      }
     };
-  }, [id, formType]);
+  }, [activePatientId, formType]);
 
   // useEffect(() => {
   //   return () => {
@@ -123,7 +129,7 @@ const PatientAdmissionForm: React.FC<FormTypeProps> = ({
     });
 
   const proceedUpdate = (applyForAll: boolean) => {
-    if (!pendingFormObj || !id) return;
+    if (!pendingFormObj || !activePatientId) return;
 
     const payload = {
       ...pendingFormObj,
@@ -133,7 +139,7 @@ const PatientAdmissionForm: React.FC<FormTypeProps> = ({
     setShowUpdateModal(false);
     setIsSubmitting(true);
 
-    editPatientHandler(id, payload, async (success: boolean, response: any) => {
+    editPatientHandler(activePatientId, payload, async (success: boolean, response: any) => {
       setIsSubmitting(false);
 
       if (success) {
@@ -189,17 +195,21 @@ const PatientAdmissionForm: React.FC<FormTypeProps> = ({
           });
         }
 
-        navigate(-1);
+        if (onModalSuccess) {
+          onModalSuccess();
+        } else {
+          navigate(-1);
+        }
       }
     });
   };
 
   const proceedDirectUpdate = (payload: Partial<PatientInterface>) => {
-  if (!id) return;
+  if (!activePatientId) return;
 
   setIsSubmitting(true);
 
-  editPatientHandler(id, payload, async (success: boolean) => {
+  editPatientHandler(activePatientId, payload, async (success: boolean) => {
     setIsSubmitting(false);
 
     if (success) {
@@ -209,7 +219,11 @@ const PatientAdmissionForm: React.FC<FormTypeProps> = ({
         variant: "success",
       });
 
-      navigate(-1);
+      if (onModalSuccess) {
+        onModalSuccess();
+      } else {
+        navigate(-1);
+      }
     }
   });
 };
@@ -392,7 +406,7 @@ const PatientAdmissionForm: React.FC<FormTypeProps> = ({
             }
           }
         );
-      } else if (id) {
+      } else if (activePatientId) {
         // Edit existing patient
         // editPatientHandler(
         //   id,
@@ -499,6 +513,13 @@ const PatientAdmissionForm: React.FC<FormTypeProps> = ({
           // 🚀 Direct submit (no popup)
           proceedDirectUpdate(patientFormObj);
         }
+      } else {
+        setIsSubmitting(false);
+        toast({
+          title: "Error!",
+          description: "Patient ID is missing. Please reopen the edit form.",
+          variant: "destructive",
+        });
       }
     } catch (err: any) {
       setIsSubmitting(false);
@@ -552,13 +573,15 @@ const PatientAdmissionForm: React.FC<FormTypeProps> = ({
                 Fill in the Patient details
               </Text>
             </View>
-            <Button
-              onPress={() => navigate(-1)}
-              variant="outline"
-              className="flex items-center gap-2"
-            >
-              Back
-            </Button>
+            {!onModalSuccess && (
+              <Button
+                onPress={() => navigate(-1)}
+                variant="outline"
+                className="flex items-center gap-2"
+              >
+                Back
+              </Button>
+            )}
           </View>
 
           <form onSubmit={handleSubmit} className="space-y-8">

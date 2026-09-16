@@ -249,6 +249,9 @@ const SystemSettingsPage = () => {
             errorsVoucherPrefix={errors.voucher_prefix}
             errorsVoucherStartNumber={errors.voucher_start_number}
             errorsVoucherStatus={errors.voucher_status}
+            errorsWardPrefix={errors.ward_prefix}
+            errorsRoomPrefix={errors.room_prefix}
+            errorsBedPrefix={errors.bed_prefix}
           />
 
           {/* Theme Settings */}

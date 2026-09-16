@@ -19,8 +19,8 @@ const sizeClasses: CSSProps = {
   // medium: "h-10 text-sm px-3 py-2",
   // large: "h-12 text-base px-4 py-3",
   small: "h-9 text-sm px-3 py-2",
-  medium: "h-10 text-sm px-3 py-2.5",
-  large: "h-12 text-base px-4 py-3",
+  medium: "h-10 text-sm px-4 py-2.5",
+  large: "h-12 text-base px-5 py-3",
 };
 
 const setVariantHandler: VariantProps = {
