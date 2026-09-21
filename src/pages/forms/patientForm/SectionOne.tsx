@@ -70,6 +70,26 @@ const SectionOne: React.FC<SectionOneProps> = ({
     (state: any) => state.referedByDoc.referedByDropdownData
   );
 
+  const splitPhoneNumber = (phone?: string | null) => {
+    const phoneValue = String(phone || "").trim();
+    const [code, ...numberParts] = phoneValue.split(/\s+/);
+
+    if (!phoneValue) {
+      return { code: "", number: "" };
+    }
+
+    if (phoneValue.startsWith("+") && numberParts.length) {
+      return { code, number: numberParts.join(" ") };
+    }
+
+    return { code: "", number: phoneValue };
+  };
+
+  const patientPhone = splitPhoneNumber(patientDetail?.phone_no);
+  const attendantPhone = splitPhoneNumber(
+    patientDetail?.attendant_with_patient_phone_no
+  );
+
   const patientDetailData = {
     ...patientDetail,
     id_edited: patientDetail?.id_number_masked ? false : true,
@@ -77,18 +97,11 @@ const SectionOne: React.FC<SectionOneProps> = ({
       ? false
       : true,
 
-    countryContactCode:
-      patientDetail?.phone_no?.split(" ").length > 1
-        ? patientDetail?.phone_no?.split(" ")[0]
-        : "",
-    phone_no: patientDetail?.phone_no?.split(" ")[1],
+    countryContactCode: patientPhone.code,
+    phone_no: patientPhone.number,
 
-    attendantCountryContactCode:
-      patientDetail?.attendant_with_patient_phone_no?.split(" ").length > 1
-        ? patientDetail?.attendant_with_patient_phone_no?.split(" ")[0]
-        : "",
-    attendant_with_patient_phone_no:
-      patientDetail?.attendant_with_patient_phone_no?.split(" ")[1],
+    attendantCountryContactCode: attendantPhone.code,
+    attendant_with_patient_phone_no: attendantPhone.number,
   };
   const { cleanUp } = usePatient();
   const { userAge, calculateAge } = useAgeCalculate();
@@ -351,7 +364,7 @@ const SectionOne: React.FC<SectionOneProps> = ({
             <View className="w-[30%]">
               <SingleSelector
                 name="attendantCountryContactCode"
-                value={values?.countryContactCode || "+91"}
+                value={values?.attendantCountryContactCode || "+91"}
                 options={countryCodeOptions}
                 label="Attendant Phone"
                 onChange={(value) =>

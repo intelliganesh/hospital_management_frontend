@@ -426,11 +426,11 @@ const ConsultationPage: React.FC<{}> = () => {
                   "/" +
                   data.id
                 }
-                className="font-medium text-text-DEFAULT hover:text-secondary hover:underline"
+                className={`font-medium hover:underline ${Number(data?.orphan_patient) === 1 ? "text-orange-500 hover:text-orange-600 dark:text-orange-400 dark:hover:text-orange-300" : "text-text-DEFAULT hover:text-secondary"}`}
               >
                 {data?.patient_number || "N/A"}
               </Link>
-              <Text className="text-sm font-normal">
+              <Text className={`text-sm font-normal ${Number(data?.orphan_patient) === 1 ? "text-orange-500 dark:text-orange-400" : ""}`}>
                 {data?.patient_name || "N/A"}
               </Text>
             </View>,
@@ -568,6 +568,17 @@ const ConsultationPage: React.FC<{}> = () => {
                   </View>,
                   <View className="w-full my-4">
                     <Input name="referred_by_name" placeholder="Referred By" />
+                  </View>,
+                  <View className="w-full my-4">
+                    <label className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-200">
+                      <input
+                        type="checkbox"
+                        name="orphan_patient"
+                        value="1"
+                        className="h-4 w-4 rounded border-slate-300 text-primary focus:ring-primary"
+                      />
+                      Orphan Patient
+                    </label>
                   </View>,
                   <View className="w-full my-4">
                     <SingleSelector

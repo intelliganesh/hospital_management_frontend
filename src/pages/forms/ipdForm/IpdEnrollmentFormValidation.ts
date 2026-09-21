@@ -43,6 +43,9 @@ export const patientDetailsStepSchema = Yup.object().shape({
     patient_gender: Yup.string().when("$formType", (formType: any, schema: any) => {
         return formType[0] === "addPatientWithEnrollment" ? schema.required("Gender is required") : schema.optional();
     }),
+    patient_phone: Yup.string().when("$formType", (formType: any, schema: any) => {
+        return formType[0] === "addPatientWithEnrollment" ? schema.required("Patient Phone is required") : schema.optional();
+    }),
     patient_attendant_name: Yup.string().when("$formType", (formType: any, schema: any) => {
         return formType[0] === "addPatientWithEnrollment" ? schema.required("Attendant Name is required") : schema.optional();
     }),

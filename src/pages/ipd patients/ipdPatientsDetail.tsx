@@ -101,6 +101,11 @@ const IpdPatientDetailsPage = () => {
     (state: RootState) => state.ipd.ipdPatientDetailData,
   );
 
+  const normalizedIpdType = String(ipdPatientDetailData?.ipd_type || "")
+    .toLowerCase()
+    .replace(/[\s-]+/g, "_");
+  const isSurgicalIpd = normalizedIpdType === "surgical";
+
   useEffect(() => {
     if (patientId) {
       ipdPatientDetailHandler(
@@ -153,6 +158,7 @@ const IpdPatientDetailsPage = () => {
       ],
     },
     {
+      surgicalOnly: true,
       title: "Clearances & Consents",
       description: "Legal and procedural documentation",
       actions: [
@@ -692,11 +698,11 @@ const IpdPatientDetailsPage = () => {
           </Card>
         </View>
 
-        <SurgeryList />
+        <SurgeryList showAddButton={isSurgicalIpd} />
 
         {/* Quick Actions Groups */}
         <View className="space-y-12">
-          {actionGroups.map((group, groupIndex) => (
+          {actionGroups.filter((group) => !group.surgicalOnly || isSurgicalIpd).map((group, groupIndex) => (
             <View key={groupIndex} className="space-y-4 mt-12">
               <View>
                 <Text as="h2" className="text-xl font-semibold mb-1">
@@ -710,7 +716,7 @@ const IpdPatientDetailsPage = () => {
               <View className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {group.actions.map((action, index) => {
                   const Icon = action.icon;
-                  if (action.onClick) {
+                  if ("onClick" in action && action.onClick) {
                     return (
                       <button
                         key={index}
@@ -726,6 +732,9 @@ const IpdPatientDetailsPage = () => {
                       </button>
                     );
                   }
+
+                  if (!("url" in action) || !action.url) return null;
+
                   return (
                     <Link
                       key={index}

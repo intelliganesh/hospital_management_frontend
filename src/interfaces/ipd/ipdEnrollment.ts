@@ -16,6 +16,7 @@ export interface NewIPDPatientWithEnrollment extends IpdEnrollment {
     patient_first_name: string;
     patient_last_name: string;
     patient_gender: string;
+    patient_phone: string;
     patient_attendant_name: string;
     patient_attendant_phone: string;
 }

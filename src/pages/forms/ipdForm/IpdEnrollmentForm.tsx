@@ -175,6 +175,7 @@ const IpdEnrollmentForm: React.FC<IpdEnrollmentFormProps> = ({
       patient_first_name: "",
       patient_last_name: "",
       patient_gender: "",
+      patient_phone: "",
       patient_attendant_name: "",
       patient_attendant_phone: "",
       ...commonValues,
@@ -229,6 +230,7 @@ const IpdEnrollmentForm: React.FC<IpdEnrollmentFormProps> = ({
         delete formData.patient_id;
         delete formData.consultation_id;
         delete formData.patient_attendant_name;
+        delete formData.patient_phone;
         delete formData.patient_attendant_phone;
         delete formData.patient_first_name;
         delete formData.patient_last_name;
@@ -542,7 +544,19 @@ const IpdEnrollmentForm: React.FC<IpdEnrollmentFormProps> = ({
             </View>
           </View>
 
-          <View className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+          <View className="grid grid-cols-1 md:grid-cols-3 gap-x-8 gap-y-4">
+           <View>
+              <Input
+                id="patient_phone"
+                label="Patient Phone No"
+                name="patient_phone"
+                value={values?.patient_phone || ""}
+                placeholder="Enter Patient Phone No"
+                onChange={(e) => onSetHandler("patient_phone", e.target.value)}
+                error={patientDetailsStepErrors?.patient_phone}
+                required={true}
+              />
+            </View>
             <View>
               <Input
                 id="patient_attendant_name"
@@ -576,6 +590,7 @@ const IpdEnrollmentForm: React.FC<IpdEnrollmentFormProps> = ({
           patient_first_name: values.patient_first_name,
           patient_last_name: values.patient_last_name,
           patient_gender: values.patient_gender,
+          patient_phone: values.patient_phone,
           patient_attendant_name: values.patient_attendant_name,
           patient_attendant_phone: values.patient_attendant_phone,
         },

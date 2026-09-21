@@ -53,6 +53,11 @@ const SectionOne: React.FC<Props> = ({ errorsPatientId, mainOnSetHandler }) => {
 
   const patients = useSelector((state: RootState) => state.opd.patientList);
 
+  const getPatientPhoneLabel = (phone?: string | null) => {
+    const phoneValue = String(phone || "").trim();
+    return phoneValue && phoneValue !== "+91" ? `(${phoneValue})` : "";
+  };
+
   const patientObj = patients?.map((patient: any) => ({
     id: patient.id,
     label:
@@ -61,7 +66,8 @@ const SectionOne: React.FC<Props> = ({ errorsPatientId, mainOnSetHandler }) => {
       patient.first_name +
       " " +
       patient.last_name +
-      ")",
+      ")" +
+      getPatientPhoneLabel(patient.phone_no),
     value: patient.id,
   }));
 

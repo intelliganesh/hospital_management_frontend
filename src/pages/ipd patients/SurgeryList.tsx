@@ -30,7 +30,11 @@ const surgeryValidationSchema = yup.object().shape({
   doctor_id: yup.string().required("Doctor is required"),
 });
 
-const SurgeryList: React.FC = () => {
+interface SurgeryListProps {
+  showAddButton?: boolean;
+}
+
+const SurgeryList: React.FC<SurgeryListProps> = ({ showAddButton = true }) => {
   const navigate = useNavigate();
   const { id: patientId } = useParams();
 
@@ -237,14 +241,16 @@ const SurgeryList: React.FC = () => {
           </Text>
         </View>
        <View className="flex gap-2">
-        <Button
-          variant="primary"
-          className="flex items-center gap-2 px-6 py-3"
-          onPress={handleOpenAdd}
-        >
-          <PlusCircle className="h-5 w-5" />
-          Add Surgery
-        </Button>
+        {showAddButton && (
+          <Button
+            variant="primary"
+            className="flex items-center gap-2 px-6 py-3"
+            onPress={handleOpenAdd}
+          >
+            <PlusCircle className="h-5 w-5" />
+            Add Surgery
+          </Button>
+        )}
         <Button
           variant="outline"
           className="flex items-center gap-2 px-6 py-3"
