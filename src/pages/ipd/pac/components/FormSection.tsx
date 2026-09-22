@@ -23,7 +23,7 @@ const FormSection: React.FC<FormSectionProps> = ({
   titleFontWeight = "font-bold",
 }) => (
   <Card
-    className={`p-0 overflow-hidden border border-slate-200 dark:border-slate-700 shadow-sm mb-6 bg-white dark:bg-slate-900 ${className}`}
+    className={`p-0 overflow-visible border border-slate-200 dark:border-slate-700 shadow-sm mb-6 bg-white dark:bg-slate-900 ${className}`}
   >
     <View className="p-3 bg-slate-50 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 flex items-center gap-2">
       <View className="p-1.5 bg-primary-100 dark:bg-primary-900/30 rounded-md">
@@ -42,3 +42,4 @@ const FormSection: React.FC<FormSectionProps> = ({
 );
 
 export default FormSection;
+

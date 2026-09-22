@@ -51,6 +51,15 @@ const SectionOne: React.FC<SectionOneProps> = ({
   );
 
   useEffect(() => {
+    const bedDetail = bedData as any;
+    const editWardId = bedDetail?.ward?.id || bedDetail?.room?.ward_id;
+
+    if (editWardId) {
+      setWardId(Number(editWardId));
+    }
+  }, [bedData]);
+
+  useEffect(() => {
     if (wardId) {
       roomDropdownHandler(wardId, () => {});
     }
@@ -80,8 +89,8 @@ const SectionOne: React.FC<SectionOneProps> = ({
             error={errorsBedType}
             value={values?.bed_type || BedType.SINGLE}
             options={bedTypeOptions}
-            onChange={(e) => {
-              onSetHandler("bed_type", e.currentTarget.value);
+            onChange={(value) => {
+              onSetHandler("bed_type", value);
             }}
             placeholder="Select Bed Type"
           />
@@ -109,7 +118,8 @@ const SectionOne: React.FC<SectionOneProps> = ({
             value={wardId || ""}
             options={wardObj}
             onChange={(value) => {
-              setWardId(value);
+              setWardId(Number(value));
+              onSetHandler("room_id", "");
             }}
             placeholder="Select Ward"
           />
@@ -123,8 +133,8 @@ const SectionOne: React.FC<SectionOneProps> = ({
             error={errorsRoomId}
             value={values?.room_id || ""}
             options={roomObj}
-            onChange={(e) => {
-              onSetHandler("room_id", e.currentTarget.value);
+            onChange={(value) => {
+              onSetHandler("room_id", value);
             }}
             placeholder="Select Room"
           />
@@ -149,8 +159,8 @@ const SectionOne: React.FC<SectionOneProps> = ({
             error={errorsStatus}
             value={values?.status || GenericStatus.ROOM_AVAILABLE}
             options={bedStatusOptions}
-            onChange={(e) => {
-              onSetHandler("status", e.currentTarget.value);
+            onChange={(value) => {
+              onSetHandler("status", value);
             }}
             placeholder="Select Status"
           />
@@ -171,3 +181,5 @@ const SectionOne: React.FC<SectionOneProps> = ({
   );
 };
 export default SectionOne;
+
+

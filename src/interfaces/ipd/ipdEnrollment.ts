@@ -24,7 +24,7 @@ export interface NewIPDPatientWithEnrollment extends IpdEnrollment {
 export interface IpdStates {
     ipdEnrollmentData: any;
     ipdEnrolledPatientDetails: any;
-    ipdPatientList: [];
+    ipdPatientList: any;
     ipdPatientDetailData: any;
     ipdPatientStatsData: any;
     prefilledUploadedPdfData: any;

@@ -20,6 +20,7 @@ import {
   FileText,
   Plus,
   X,
+  Upload as UploadIcon,
 } from "lucide-react";
 import useForm from "@/utils/custom-hooks/use-form";
 import Upload from "@/components/Upload";
@@ -264,9 +265,8 @@ const DeptAnaesthesiaForm: React.FC = () => {
     <>
       {/* Upload filled form */}
       <form onSubmit={handleSubmit}>
-        <View className="flex justify-center mt-8">
-          <View className="p-8 bg-slate-50 dark:bg-slate-800 rounded-lg border border-primary border-dashed border-border dark:border-border !w-4/5 ">
-            <Upload
+        <FormSection title="Upload Department of Anaesthesia Form" icon={UploadIcon}>
+          <Upload
               label="Upload Filled Department of Anaesthesia Form"
               name="upload_pdf_path"
               multiple={false}
@@ -295,10 +295,8 @@ const DeptAnaesthesiaForm: React.FC = () => {
 
                 onSetHandler("upload_pdf_path", file);
               }}
-            />
-          </View>
-        </View>
-        <View className="my-6 border-t border-slate-200" />
+          />
+        </FormSection>
 
         <CollapsibleContainer
           title="Anaesthesia Fields"
@@ -1600,3 +1598,5 @@ const DeptAnaesthesiaForm: React.FC = () => {
 };
 
 export default DeptAnaesthesiaForm;
+
+

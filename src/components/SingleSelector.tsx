@@ -320,7 +320,7 @@ const SingleSelector: React.FC<SingleSelectorProps> = ({
         </label>
       )}
 
-      <View className={`${label ? "mt-2" : "mt-0"} relative ${fullWidth ? "w-full" : ""}`}>
+      <View className={`${label ? "mt-2" : "mt-0"} relative ${isOpen ? "z-[9999]" : "z-0"} ${fullWidth ? "w-full" : ""}`}>
         <View ref={dropdownRef}>
           {leftIcon && (
             <View className="absolute left-4 top-1/2 transform -translate-y-1/2 pointer-events-none text-muted-foreground z-10">
@@ -427,7 +427,7 @@ const SingleSelector: React.FC<SingleSelectorProps> = ({
           {/* Dropdown Menu */}
           {isOpen && (
             <View 
-              className="absolute top-full left-0 right-0 mt-2 bg-background backdrop-blur-lg border border-border dark:border-border rounded-2xl shadow-2xl z-50 max-h-80 overflow-hidden"
+              className="absolute top-full left-0 right-0 mt-2 bg-background backdrop-blur-lg border border-border dark:border-border rounded-2xl shadow-2xl z-[9999] max-h-80 overflow-hidden"
               role="listbox"
               aria-label="Options"
             >
@@ -583,3 +583,4 @@ const SingleSelector: React.FC<SingleSelectorProps> = ({
 };
 
 export default SingleSelector;
+

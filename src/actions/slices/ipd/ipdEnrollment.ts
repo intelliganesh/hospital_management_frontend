@@ -31,9 +31,25 @@ const ipdSlice = createSlice({
 
     ipdPatientListSlice: (
       state: IpdStates,
-      action: PayloadAction<AuthPayload>
+      action: PayloadAction<any>
     ) => {
-      state.ipdPatientList = action.payload?.data;
+      const payload = action.payload?.pagination
+        ? action.payload
+        : action.payload?.data?.pagination
+          ? action.payload.data
+          : action.payload;
+      const pagination = payload?.pagination;
+
+      state.ipdPatientList = pagination
+        ? {
+            ...payload,
+            data: payload?.data || [],
+            current_page: pagination.current_page,
+            last_page: pagination.total_pages,
+            total: pagination.total,
+            per_page: pagination.per_page,
+          }
+        : payload;
     },
 
     ipdPatientDetailDataSlice: (

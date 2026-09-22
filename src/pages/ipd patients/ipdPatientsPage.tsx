@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Users, UserCheck, UserX } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import ActionMenu from "@/components/editDeleteAction";
-import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   IPD_PATIENTS_URL,
   IPD_PATIENTS_DETAILS_URL,
@@ -34,37 +34,61 @@ const IpdPatientsPage: React.FC<{}> = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const dispatch = useDispatch();
-  const location = useLocation();
 
   const { ipdPatientListHandler, cleanUp } = useIpdPatients();
 
   const ipdEnrollmedPatients = useSelector(
     (state: RootState) => state.ipd.ipdPatientList,
   );
-  const ipdpatientallData = useSelector(
-    (state: RootState) => state.ipd.ipdEnrollmentData,
-  );
+  const ipdPatientRows = Array.isArray(ipdEnrollmedPatients)
+    ? ipdEnrollmedPatients
+    : ipdEnrollmedPatients?.data || [];
+
+  const ipdPatientPagination = Array.isArray(ipdEnrollmedPatients)
+    ? { current_page: 1, last_page: 1 }
+    : {
+        current_page:
+          ipdEnrollmedPatients?.current_page ||
+          ipdEnrollmedPatients?.pagination?.current_page ||
+          1,
+        last_page:
+          ipdEnrollmedPatients?.last_page ||
+          ipdEnrollmedPatients?.pagination?.total_pages ||
+          1,
+      };
+
+  const getIpdStatusClassName = (status?: string) => {
+    const normalizedStatus = String(status || "").toLowerCase();
+
+    if (normalizedStatus === "discharged") {
+      return "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300";
+    }
+
+    if (normalizedStatus === "admitted") {
+      return "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300";
+    }
+
+    return "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300";
+  };
 
   useEffect(() => {
-    if (location.state?.refresh || searchParams.has("currentPage")) {
-      ipdPatientListHandler(
+    ipdPatientListHandler(
         searchParams?.get("currentPage") ?? 1,
         () => {},
         searchParams.get("search") ?? null,
         searchParams.get("sort_by") ?? null,
         searchParams.get("sort_order") ?? null,
         [],
-        (status: string) => {
-          setIsLoading(
+      (status: string) => {
+        setIsLoading(
             status === "pending"
               ? true
               : status === "failed"
                 ? true
                 : status === "success" && false,
-          );
-        },
-      );
-    }
+        );
+      },
+    );
     return () => {
       cleanUp();
       dispatch(clearIpdPatientListSlice());
@@ -116,7 +140,7 @@ const IpdPatientsPage: React.FC<{}> = () => {
         <InfoCard
           label="Total IPD Patients"
           //   value={patientStats?.total_patients || 0}
-          value="0"
+          value={ipdEnrollmedPatients?.total_ipd || 0}
           valueStyle="!text-blue-600 dark:!text-blue-400 !text-2xl"
           icon={<Users size={20} />}
           iconStyle="!bg-gradient-to-br !from-blue-100 !via-blue-200 !to-blue-300 dark:!from-blue-800/40 dark:!via-blue-700/40 dark:!to-blue-600/40 !text-blue-600 dark:!text-blue-400 !shadow-lg !shadow-blue-500/25 dark:!shadow-blue-400/20"
@@ -126,7 +150,7 @@ const IpdPatientsPage: React.FC<{}> = () => {
         <InfoCard
           label="Active IPD Patients"
           //   value={patientStats?.active_patients || 0}
-          value={0}
+          value={ipdEnrollmedPatients?.active_ipd || 0}
           valueStyle="!text-emerald-600 dark:!text-emerald-400 !text-2xl"
           icon={<UserCheck size={20} />}
           iconStyle="!bg-gradient-to-br !from-emerald-100 !via-emerald-200 !to-emerald-300 dark:!from-emerald-800/40 dark:!via-emerald-700/40 dark:!to-emerald-600/40 !text-emerald-600 dark:!text-emerald-400 !shadow-lg !shadow-emerald-500/25 dark:!shadow-emerald-400/20"
@@ -135,7 +159,7 @@ const IpdPatientsPage: React.FC<{}> = () => {
 
         <InfoCard
           label="Discharged Patients"
-          value={0}
+          value={ipdEnrollmedPatients?.discharged || ipdEnrollmedPatients?.discharged_count || 0}
           //   value={(paginateObj?.patient?.total || 0) - (paginateObj?.active_patient || 0)}
           valueStyle="!text-orange-600 dark:!text-orange-400"
           icon={<UserX size={20} />}
@@ -157,8 +181,8 @@ const IpdPatientsPage: React.FC<{}> = () => {
             "Actions",
           ]}
           tableData={
-            ipdEnrollmedPatients.length > 0
-              ? ipdEnrollmedPatients?.map((ipdPatient: any) => [
+            ipdPatientRows.length > 0
+              ? ipdPatientRows?.map((ipdPatient: any) => [
                   ipdPatient?.ipd_number,
                   ipdPatient?.admission_date_time
                     ? dayjs(ipdPatient?.admission_date_time).format(
@@ -204,7 +228,7 @@ const IpdPatientsPage: React.FC<{}> = () => {
                     (ipdPatient?.bed_number || "N/A"),
                   <Text
                     as="span"
-                    className="inline-flex px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-700"
+                    className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getIpdStatusClassName(ipdPatient?.status)}`}
                   >
                     {ipdPatient?.status}
                   </Text>,
@@ -323,8 +347,8 @@ const IpdPatientsPage: React.FC<{}> = () => {
           footer={{
             pagination: (
               <PaginationComponent
-                current_page={ipdpatientallData?.current_page}
-                last_page={ipdpatientallData?.last_page}
+                current_page={ipdPatientPagination.current_page}
+                last_page={ipdPatientPagination.last_page}
                 getPageNumberHandler={(page: number) => {
                   setSearchParams(
                     {
@@ -344,3 +368,4 @@ const IpdPatientsPage: React.FC<{}> = () => {
 };
 
 export default IpdPatientsPage;
+

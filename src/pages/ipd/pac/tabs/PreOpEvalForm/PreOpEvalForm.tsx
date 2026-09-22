@@ -12,6 +12,7 @@ import {
   AlertTriangle,
   Wind,
   Clipboard,
+  Upload as UploadIcon,
   // FlaskConical,
   // Stethoscope,
   // User,
@@ -542,9 +543,8 @@ const PreOpEvalForm: React.FC<Props> = ({ readOnly }) => {
         {/* end CollapsibleContainer */}
         {/* </CollapsibleContainer> */}
         {/* Upload filled form */}
-        <View className="flex justify-center mt-8">
-          <View className="p-8 bg-slate-50 dark:bg-slate-800 rounded-lg border border-primary border-dashed border-border dark:border-border !w-4/5 ">
-            <Upload
+        <FormSection title="Upload Pre-Op Evaluation Form" icon={UploadIcon}>
+          <Upload
               label="Upload Filled Pre-Op Evaluation Form"
               name="upload_pdf_path"
               multiple={false}
@@ -573,10 +573,9 @@ const PreOpEvalForm: React.FC<Props> = ({ readOnly }) => {
 
                 onSetHandler("upload_pdf_path", file);
               }}
-            />
-          </View>
-        </View>
-        <View className="my-6 border-t border-slate-200 dark:border-slate-700" />
+            disabled={readOnly}
+          />
+        </FormSection>
         <Card className="p-4 mt-4 space-y-4">
           <Textarea
             label="Summary"
@@ -600,3 +599,5 @@ const PreOpEvalForm: React.FC<Props> = ({ readOnly }) => {
 };
 
 export default PreOpEvalForm;
+
+

@@ -2,8 +2,7 @@ import dayjs from "dayjs";
 import Filter from "@/pages/filter";
 import Text from "@/components/text";
 import View from "@/components/view";
-import Input from "@/components/input";
-import Select from "@/components/Select";
+import SingleSelector from "@/components/SingleSelector";
 import Button from "@/components/button";
 import { RootState } from "@/actions/store";
 import { Card } from "@/components/ui/card";
@@ -19,6 +18,10 @@ import PaginationComponent from "@/components/Pagination";
 import DateRangePicker from "@/components/DateRangePicker";
 import { clearList } from "@/actions/slices/ipdReport";
 import { useIpdReport } from "@/actions/calls/reports/ipdReport";
+import { useOpd } from "@/actions/calls/opd";
+import { useWards } from "@/actions/calls/wards";
+import { useRoom } from "@/actions/calls/rooms";
+import { useBeds } from "@/actions/calls/beds";
 import { IPD_REPORT_DOWNLOAD_URL } from "@/utils/urls/backend";
 import { handleApiError } from "@/utils/errorHandler";
 import {
@@ -38,7 +41,9 @@ const normalizeRows = (reportData: any) => {
 };
 
 const getPagination = (reportData: any) => {
-  return reportData?.table || reportData?.data || reportData || {};
+  if (reportData?.table) return reportData.table;
+  if (reportData?.data && !Array.isArray(reportData.data)) return reportData.data;
+  return reportData || {};
 };
 
 const sanitizeFilters = (filters?: Record<string, any> | null) => {
@@ -71,20 +76,69 @@ const formatSummaryType = (value?: string | null) => {
     .join(" ");
 };
 
+const toOptions = (
+  list: any[] | null | undefined,
+  getLabel: (item: any) => string,
+  getValue: (item: any) => string | number | undefined,
+) =>
+  (list || [])
+    .map((item) => ({
+      label: getLabel(item),
+      value: getValue(item),
+    }))
+    .filter((item) => item.value !== undefined && item.value !== null && item.value !== "");
+
 const IpdReport: React.FC = () => {
   const dispatch = useDispatch();
   const [loadingStatus, setIsLoading] = useState<boolean>(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const [filterData, setFilterData] = useState<null | { multiple_filter: Record<string, any> }>(null);
+  const [selectedWardId, setSelectedWardId] = useState<string>("");
+  const [selectedRoomId, setSelectedRoomId] = useState<string>("");
 
   const ipdReportList = useSelector(
     (state: RootState) => state.ipdReport.ipdReportList,
   );
 
   const { cleanUp, getListApi } = useIpdReport();
+  const { PuaListHandler } = useOpd();
+  const { wardDropdownHandler } = useWards();
+  const { roomDropdownHandler } = useRoom();
+  const { bedDropdownHandler } = useBeds();
 
   const reportRows = useMemo(() => normalizeRows(ipdReportList), [ipdReportList]);
   const pagination = useMemo(() => getPagination(ipdReportList), [ipdReportList]);
+
+  const doctorOptions = toOptions(
+    useSelector((state: RootState) => state.opd.userList)?.filter(
+      (doctor: any) => doctor.role === "Doctor",
+    ),
+    (doctor) => doctor.name,
+    (doctor) => doctor.id,
+  );
+  const patientOptions = toOptions(
+    useSelector((state: RootState) => state.opd.patientList),
+    (patient) =>
+      `${patient.patient_number || ""}(${[patient.first_name, patient.last_name]
+        .filter(Boolean)
+        .join(" ")})`,
+    (patient) => patient.id,
+  );
+  const wardOptions = toOptions(
+    useSelector((state: RootState) => state.wards.wardDropdownData),
+    (ward) => ward.name || ward.ward_number || "Ward",
+    (ward) => ward.id,
+  );
+  const roomOptions = toOptions(
+    useSelector((state: RootState) => state.rooms.roomDropdownData),
+    (room) => room.name || room.room_number || "Room",
+    (room) => room.id,
+  );
+  const bedOptions = toOptions(
+    useSelector((state: RootState) => state.beds.bedDropdownData),
+    (bed) => bed.bed_number || bed.name || "Bed",
+    (bed) => bed.id,
+  );
 
   const sortOptions: any[] = [
     { label: "Admission Date (Oldest)", value: "admission_date_time", order: "asc" },
@@ -104,6 +158,24 @@ const IpdReport: React.FC = () => {
   ];
 
   const [activeSort, setActiveSort] = useState<any | null>(sortOptions[1]);
+
+  useEffect(() => {
+    PuaListHandler(() => {});
+    wardDropdownHandler(() => {});
+  }, []);
+
+  useEffect(() => {
+    if (!selectedWardId) return;
+
+    roomDropdownHandler(Number(selectedWardId), () => {});
+    setSelectedRoomId("");
+  }, [selectedWardId]);
+
+  useEffect(() => {
+    if (!selectedRoomId) return;
+
+    bedDropdownHandler(Number(selectedRoomId), () => {});
+  }, [selectedRoomId]);
 
   useEffect(() => {
     getListApi(
@@ -191,8 +263,8 @@ const IpdReport: React.FC = () => {
     formatPhone(item?.patient_phone),
     formatValue(item?.patient_age),
     formatValue(item?.patient_email),
-    formatValue(item?.patient_attendant_name),
-    formatPhone(item?.patient_attendant_phone),
+    // formatValue(item?.patient_attendant_name),
+    // formatPhone(item?.patient_attendant_phone),
     formatValue(item?.doctor_name),
     formatPhone(item?.doctor_phone),
     formatValue(item?.doctor_email),
@@ -205,7 +277,7 @@ const IpdReport: React.FC = () => {
     formatValue(item?.status),
     formatDateTime(item?.admission_date_time),
     formatDateTime(item?.discharge_date_time),
-    formatValue(item?.patient_address),
+    // formatValue(item?.patient_address),
   ]);
 
   return (
@@ -254,8 +326,8 @@ const IpdReport: React.FC = () => {
             "Patient Phone",
             "Age",
             "Patient Email",
-            "Attendant Name",
-            "Attendant Phone",
+            // "Attendant Name",
+            // "Attendant Phone",
             "Doctor Name",
             "Doctor Phone",
             "Doctor Email",
@@ -268,7 +340,7 @@ const IpdReport: React.FC = () => {
             "Status",
             "Admission Date & Time",
             "Discharge Date & Time",
-            "Address",
+            // "Address",
           ]}
           tableData={tableRows}
           isLoading={loadingStatus}
@@ -288,31 +360,81 @@ const IpdReport: React.FC = () => {
             filter: (
               <Filter
                 title="IPD Report Filter"
-                onResetFilter={() => setFilterData(null)}
+                onResetFilter={() => {
+                  setFilterData(null);
+                  setSelectedWardId("");
+                  setSelectedRoomId("");
+                }}
                 onFilterApiCall={(data) => {
                   setFilterData({ multiple_filter: sanitizeFilters(data) });
+                  setSearchParams(
+                    {
+                      ...Object.fromEntries(searchParams),
+                      currentPage: "1",
+                    },
+                    { replace: true },
+                  );
                 }}
                 inputFields={[
                   <View className="w-full my-4" key="doctor-id">
-                    <Input name="doctor_id" label="Doctor ID" placeholder="Enter doctor ID" />
+                    <SingleSelector
+                      name="doctor_id"
+                      label="Doctor"
+                      placeholder="Select doctor"
+                      options={doctorOptions}
+                    />
                   </View>,
                   <View className="w-full my-4" key="patient-id">
-                    <Input name="patient_id" label="Patient ID" placeholder="Enter patient ID" />
+                    <SingleSelector
+                      name="patient_id"
+                      label="Patient"
+                      placeholder="Select patient"
+                      options={patientOptions}
+                    />
                   </View>,
                   <View className="w-full my-4" key="status">
-                    <Input name="status" label="Status" placeholder="Enter IPD status" />
+                    <SingleSelector
+                      name="status"
+                      label="Status"
+                      placeholder="Select IPD status"
+                      options={[
+                        { label: "Admitted", value: "Admitted" },
+                        { label: "Discharged", value: "Discharged" },
+                      ]}
+                    />
                   </View>,
                   <View className="w-full my-4" key="ward-id">
-                    <Input name="ward_id" label="Ward ID" placeholder="Enter ward ID" />
+                    <SingleSelector
+                      name="ward_id"
+                      label="Ward"
+                      placeholder="Select ward"
+                      value={selectedWardId}
+                      onChange={(value) => setSelectedWardId(String(value || ""))}
+                      options={wardOptions}
+                    />
                   </View>,
                   <View className="w-full my-4" key="room-id">
-                    <Input name="room_id" label="Room ID" placeholder="Enter room ID" />
+                    <SingleSelector
+                      name="room_id"
+                      label="Room"
+                      placeholder="Select room"
+                      value={selectedRoomId}
+                      onChange={(value) => setSelectedRoomId(String(value || ""))}
+                      options={roomOptions}
+                      disabled={!selectedWardId}
+                    />
                   </View>,
                   <View className="w-full my-4" key="bed-id">
-                    <Input name="bed_id" label="Bed ID" placeholder="Enter bed ID" />
+                    <SingleSelector
+                      name="bed_id"
+                      label="Bed"
+                      placeholder="Select bed"
+                      options={bedOptions}
+                      disabled={!selectedRoomId}
+                    />
                   </View>,
                   <View className="w-full my-4" key="summary-type">
-                    <Select
+                    <SingleSelector
                       name="summary_type"
                       label="Summary Type"
                       placeholder="Select summary type"
@@ -359,3 +481,4 @@ const IpdReport: React.FC = () => {
 };
 
 export default IpdReport;
+

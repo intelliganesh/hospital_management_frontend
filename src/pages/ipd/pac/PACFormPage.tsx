@@ -146,7 +146,7 @@ const PACFormPage: React.FC = () => {
           </Text>
           <Text as="p" className="text-slate-600 dark:text-slate-400 text-sm">
             {pacId
-              ? `PAC #${pacId}`
+              ? ``
               : "Create a new Pre-Anaesthesia Assessment"}
           </Text>
         </View>

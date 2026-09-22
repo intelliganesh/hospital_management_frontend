@@ -82,13 +82,6 @@ const IpdBillsPage: React.FC = () => {
     searchParams.get("sort_order"),
     searchParams?.get("currentPage"),
   ]);
-  // Mock Stats
-  const stats = {
-    totalBills: 124,
-    runningBills: 45,
-    totalBilled: "₹4,52,000",
-    pendingCollection: "₹1,25,000",
-  };
 
   return (
     <View className="space-y-6">
@@ -126,28 +119,28 @@ const IpdBillsPage: React.FC = () => {
       <View className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <InfoCard
           label="Total Bills"
-          value={stats.totalBills}
+          value={billData?.analytics?.total_bills}
           icon={<FileText size={20} />}
           iconStyle={giveGradient("blue")}
           valueStyle="!text-blue-600 dark:!text-blue-400 !text-2xl"
         />
         <InfoCard
           label="Running Bills"
-          value={stats.runningBills}
+          value={billData?.analytics?.running_bills}
           icon={<Activity size={20} />}
           iconStyle={giveGradient("yellow")}
           valueStyle="!text-yellow-600 !text-2xl !text-yellow-400"
         />
         <InfoCard
           label="Total Billed"
-          value={stats.totalBilled}
+          value={billData?.analytics?.total_billed}
           icon={<CreditCard size={20} />}
           iconStyle={giveGradient("emerald")}
           valueStyle="!text-emerald-600 !text-2xl !text-emerald-400"
         />
         <InfoCard
           label="Pending Collection"
-          value={stats.pendingCollection}
+          value={billData?.analytics?.pending_collection}
           icon={<Clock size={20} />}
           iconStyle={giveGradient("rose")}
           valueStyle="!text-rose-600 !text-2xl !text-rose-400"

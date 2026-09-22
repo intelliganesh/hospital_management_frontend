@@ -16,6 +16,7 @@ import {
   AlertTriangle,
   ClipboardList,
   ArrowRight,
+  Upload as UploadIcon,
 } from "lucide-react";
 import useForm from "@/utils/custom-hooks/use-form";
 import Upload from "@/components/Upload";
@@ -288,9 +289,8 @@ const RecoveryObsForm: React.FC = () => {
     <>
       {/* Upload filled form */}
       <form onSubmit={handleSubmit}>
-        <View className="flex justify-center mt-8">
-          <View className="p-8 bg-slate-50 dark:bg-slate-800 rounded-lg border border-primary border-dashed border-border dark:border-border !w-4/5 ">
-            <Upload
+        <FormSection title="Upload Recovery Observation Form" icon={UploadIcon}>
+          <Upload
               label="Upload Filled Recovery Observation Form"
               name="upload_pdf_path"
               multiple={false}
@@ -319,10 +319,8 @@ const RecoveryObsForm: React.FC = () => {
 
                 onSetHandler("upload_pdf_path", file);
               }}
-            />
-          </View>
-        </View>
-        <View className="my-6 border-t border-slate-200 dark:border-slate-700" />
+          />
+        </FormSection>
 
         <CollapsibleContainer
           title="Recovery Room Fields"
@@ -727,3 +725,5 @@ const RecoveryObsForm: React.FC = () => {
 };
 
 export default RecoveryObsForm;
+
+
