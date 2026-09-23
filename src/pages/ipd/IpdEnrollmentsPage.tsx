@@ -5,9 +5,11 @@ import { Card } from "@/components/ui/card";
 import { Plus, Hospital, UserPlus, MoveLeft } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import SearchBar from "@/components/ui/search-bar";
+import DateRangePicker from "@/components/DateRangePicker";
+import Filter from "../filter";
 import ActionMenu from "@/components/editDeleteAction";
 import PaginationComponent from "@/components/Pagination";
-import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   DATE_FORMAT,
   IPD_ENROLLMENT_FORM_URL,
@@ -42,11 +44,11 @@ const IpdEnrollmentsPage: React.FC = () => {
   const [deleteId, setDeleteId] = useState<null | string>("");
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [selectedPatient, setSelectedPatient] = useState(null)
+  const [selectedPatient, setSelectedPatient] = useState(null);
+  const [filterData, setFilterData] = useState<null | { multiple_filter: Record<string, any> }>(null);
 
   const [showEnrollmentModel, setShowEnrollmentModel] = useState(false);
   const [showEnrollmentForm, setShowEnrollmentForm] = useState(false);
-  const location = useLocation();
   const dispatch = useDispatch();
   const { PuaListHandler } = useOpd();
 
@@ -55,14 +57,17 @@ const IpdEnrollmentsPage: React.FC = () => {
   const ipdEnrollmentData = useSelector((state: RootState) => state.ipd.ipdEnrollmentData);
 
   useEffect(() => {
-    if (location.state?.refresh || searchParams.has("currentPage")) {
-      ipdEnrollmentPatientListHandler(
+    ipdEnrollmentPatientListHandler(
         searchParams?.get("currentPage") ?? 1,
         () => { },
         searchParams.get("search") ?? null,
         searchParams.get("sort_by") ?? null,
         searchParams.get("sort_order") ?? null,
-        [],
+        {
+          from_date: searchParams.get("from_date") ?? null,
+          to_date: searchParams.get("to_date") ?? null,
+          ...(filterData || {}),
+        },
         (status) => {
           setIsLoading(
             status === "pending"
@@ -72,8 +77,7 @@ const IpdEnrollmentsPage: React.FC = () => {
                 : status === "success" && false
           );
         }
-      );
-    }
+    );
     return () => {
       cleanUp();
       dispatch(clearIpdEnrollmentSlice());
@@ -83,13 +87,19 @@ const IpdEnrollmentsPage: React.FC = () => {
     searchParams.get("search"),
     searchParams.get("sort_by"),
     searchParams.get("sort_order"),
+    searchParams.get("from_date"),
+    searchParams.get("to_date"),
+    filterData,
   ]);
 
   useEffect(() => {
     PuaListHandler(() => { });
   }, []);
 
-  const patients = useSelector((state: RootState) => state.opd.patientList)?.map((patient: any) => ({
+  const patientList = useSelector((state: RootState) => state.opd.patientList);
+  const doctorsList = useSelector((state: RootState) => state.opd.userList);
+
+  const patients = patientList?.map((patient: any) => ({
     // id: patient.id,
     label:
       patient.patient_number +
@@ -103,6 +113,31 @@ const IpdEnrollmentsPage: React.FC = () => {
     phone_no: patient.phone_no,
   }));
 
+
+  const patientNameOptions = patientList?.map((patient: any) => ({
+    label:
+      patient.patient_number +
+      "(" +
+      patient.first_name +
+      " " +
+      patient.last_name +
+      ")",
+    value: [patient.first_name, patient.last_name].filter(Boolean).join(" "),
+  }));
+
+  const doctorNameOptions = doctorsList
+    ?.filter((doctor: any) => doctor.role === "Doctor")
+    ?.map((doctor: any) => ({
+      label: doctor.name,
+      value: doctor.name,
+    }));
+
+  const statusOptions = [
+    { label: "Admitted", value: "Admitted" },
+    { label: "Discharged", value: "Discharged" },
+    { label: "Active", value: "Active" },
+    { label: "Inactive", value: "Inactive" },
+  ];
   const modalCloseHandler = () => {
     setDeleteId("");
   };
@@ -228,7 +263,7 @@ const IpdEnrollmentsPage: React.FC = () => {
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
-        <View className="flex justify-between items-center gap-4">
+        <View className="flex flex-col lg:flex-row lg:justify-between lg:items-end gap-4">
           <View>
             <Text
               as="h1"
@@ -241,6 +276,13 @@ const IpdEnrollmentsPage: React.FC = () => {
               Manage in-patient department enrollments
             </Text>
           </View>
+          <View className="flex flex-col sm:flex-row sm:items-end gap-4">
+            <View>
+              <Text as="label" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+                Select Date Range
+              </Text>
+              <DateRangePicker placeholder="Choose your dates" />
+            </View>
           <Button
             variant="primary"
             className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 shadow-lg hover:shadow-xl transition-all duration-200"
@@ -249,6 +291,7 @@ const IpdEnrollmentsPage: React.FC = () => {
             <Plus size={20} />
             Enroll IPD Patient
           </Button>
+          </View>
         </View>
       </View>
 
@@ -417,7 +460,45 @@ const IpdEnrollmentsPage: React.FC = () => {
                 className="shadow-sm dark:shadow-none"
               />
             ),
-            // sort: (
+            filter: (
+              <Filter
+                title="IPD Enrollment Filter"
+                onResetFilter={() => setFilterData(null)}
+                onFilterApiCall={(data) => {
+                  setFilterData({ multiple_filter: data });
+                  setSearchParams(
+                    {
+                      ...Object.fromEntries(searchParams),
+                      currentPage: "1",
+                    },
+                    { replace: true },
+                  );
+                }}
+                inputFields={[
+                  <View className="w-full my-4" key="patient-name">
+                    <SingleSelector
+                      name="patient_name"
+                      placeholder="Patient Name"
+                      options={patientNameOptions}
+                    />
+                  </View>,
+                  <View className="w-full my-4" key="doctor-name">
+                    <SingleSelector
+                      name="doctor_name"
+                      placeholder="Doctor Name"
+                      options={doctorNameOptions}
+                    />
+                  </View>,
+                  <View className="w-full my-4" key="status">
+                    <SingleSelector
+                      name="status"
+                      placeholder="Status"
+                      options={statusOptions}
+                    />
+                  </View>,
+                ]}
+              />
+            ),            // sort: (
             //   <DataSort
             //     sortOptions={sortOptions}
             //     onSort={(option) =>
@@ -473,3 +554,6 @@ const IpdEnrollmentsPage: React.FC = () => {
 };
 
 export default IpdEnrollmentsPage;
+
+
+

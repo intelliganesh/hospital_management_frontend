@@ -12,9 +12,17 @@ interface TabViewProps {
   tabs: Tab[];
   defaultValue?: string;
   className?: string;
+  replaceOnChange?: boolean;
+  resetPageOnChange?: boolean;
 }
 
-const TabView: React.FC<TabViewProps> = ({ tabs, defaultValue, className }) => {
+const TabView: React.FC<TabViewProps> = ({
+  tabs,
+  defaultValue,
+  className,
+  replaceOnChange = false,
+  resetPageOnChange = true,
+}) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const activeTab = searchParams.get("tab") || defaultValue || tabs[0]?.value;
 
@@ -39,12 +47,14 @@ const TabView: React.FC<TabViewProps> = ({ tabs, defaultValue, className }) => {
                   if (activeTab === tab.value) return;
                   const nextParams = new URLSearchParams(searchParams);
                   nextParams.set("tab", tab.value);
-                  if (tab.value === "system-settings") {
-                    nextParams.delete("currentPage");
-                  } else {
-                    nextParams.set("currentPage", "1");
+                  if (resetPageOnChange) {
+                    if (tab.value === "system-settings") {
+                      nextParams.delete("currentPage");
+                    } else {
+                      nextParams.set("currentPage", "1");
+                    }
                   }
-                  setSearchParams(nextParams);
+                  setSearchParams(nextParams, { replace: replaceOnChange });
                 }}
                 className={`relative px-6 py-3 text-sm font-medium transition-all duration-200 focus:outline-none rounded-t-lg whitespace-nowrap ${
                   isActive
@@ -76,3 +86,4 @@ const TabView: React.FC<TabViewProps> = ({ tabs, defaultValue, className }) => {
 };
 
 export default TabView;
+

@@ -6,6 +6,9 @@ import { FileText, Activity, CreditCard, Clock, Eye } from "lucide-react";
 import InfoCard from "@/components/ui/infoCard";
 import DynamicTable from "@/components/ui/DynamicTable";
 import SearchBar from "@/components/ui/search-bar";
+import DateRangePicker from "@/components/DateRangePicker";
+import Filter from "@/pages/filter";
+import SingleSelector from "@/components/SingleSelector";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   Breadcrumb,
@@ -23,6 +26,8 @@ import { giveGradient } from "@/utils/bgGradientProvider";
 import dayjs from "dayjs";
 import { useIpdBilling } from "@/actions/calls/ipd/billing";
 import { useSelector } from "react-redux";
+import { RootState } from "@/actions/store";
+import { useOpd } from "@/actions/calls/opd";
 import { IPD_GENERATE_PDF_URL } from "@/utils/urls/backend";
 import { useDownloadIpdPdf } from "@/actions/calls/ipd/downloadIpdPdf";
 import BouncingLoader from "@/components/BouncingLoader";
@@ -32,6 +37,7 @@ const IpdBillsPage: React.FC = () => {
   const navigate = useNavigate();
   const { getIpdBillingList, cleanUp } = useIpdBilling();
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [filterData, setFilterData] = useState<null | { multiple_filter: Record<string, any> }>(null);
   const [downloadingBillId, setDownloadingBillId] = useState<string | null>(
     null,
   );
@@ -39,8 +45,28 @@ const IpdBillsPage: React.FC = () => {
   const billData = useSelector(
     (state: any) => state.ipdBilling.ipdBillingListData,
   );
+  const patientList = useSelector((state: RootState) => state.opd.patientList);
+  const { PuaListHandler } = useOpd();
   const { fetchAndDownloadPdf, isLoading: isPdfDownloading } =
     useDownloadIpdPdf();
+  const patientNameOptions = patientList?.map((patient: any) => ({
+    label:
+      patient.patient_number +
+      "(" +
+      patient.first_name +
+      " " +
+      patient.last_name +
+      ")",
+    value: [patient.first_name, patient.last_name].filter(Boolean).join(" "),
+  }));
+
+  const statusOptions = [
+    { label: "Paid", value: "Paid" },
+    { label: "Unpaid", value: "Unpaid" },
+    { label: "Partial", value: "Partial" },
+    { label: "Pending", value: "Pending" },
+    { label: "Completed", value: "Completed" },
+  ];
   const handleGeneratePdf = async (ipdId?: string) => {
     if (ipdId) {
       setDownloadingBillId(ipdId);
@@ -54,14 +80,21 @@ const IpdBillsPage: React.FC = () => {
     }
   };
   useEffect(() => {
-    if (searchParams?.has("currentPage")) {
-      getIpdBillingList(
+    PuaListHandler(() => {});
+  }, []);
+
+  useEffect(() => {
+    getIpdBillingList(
         searchParams?.get("currentPage") ?? 1,
         () => {},
         searchParams.get("search") ?? null,
         searchParams.get("sort_by") ?? null,
         searchParams.get("sort_order") ?? null,
-        [],
+        {
+          from_date: searchParams.get("from_date") ?? null,
+          to_date: searchParams.get("to_date") ?? null,
+          ...(filterData || {}),
+        },
         (status) => {
           setIsLoading(
             status === "pending"
@@ -71,8 +104,7 @@ const IpdBillsPage: React.FC = () => {
                 : status === "success" && false,
           );
         },
-      );
-    }
+    );
     return () => {
       cleanUp();
     };
@@ -81,6 +113,9 @@ const IpdBillsPage: React.FC = () => {
     searchParams.get("sort_by"),
     searchParams.get("sort_order"),
     searchParams?.get("currentPage"),
+    searchParams.get("from_date"),
+    searchParams.get("to_date"),
+    filterData,
   ]);
 
   return (
@@ -99,7 +134,7 @@ const IpdBillsPage: React.FC = () => {
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
-        <View className="flex justify-between items-center">
+        <View className="flex flex-col lg:flex-row lg:justify-between lg:items-end gap-4">
           <View>
             <Text
               as="h1"
@@ -111,6 +146,12 @@ const IpdBillsPage: React.FC = () => {
             <Text as="p" className="text-slate-500 dark:text-slate-400 text-sm">
               Manage and track all in-patient billing records
             </Text>
+          </View>
+          <View>
+            <Text as="label" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+              Select Date Range
+            </Text>
+            <DateRangePicker placeholder="Choose your dates" />
           </View>
         </View>
       </View>
@@ -151,14 +192,14 @@ const IpdBillsPage: React.FC = () => {
       <Card className="overflow-hidden border-0 shadow-medium bg-white dark:bg-slate-800">
         <DynamicTable
           tableHeaders={[
-            "Bill No",
-            "Patient Details",
-            "Admission",
-            "Discharge",
-            "Total",
-            "Paid",
-            "Balance",
-            "Status",
+            { label: "Bill No", key: "invoice_number" },
+            { label: "Patient Details", key: "patient_name" },
+            { label: "Admission", key: "admission_date_time" },
+            { label: "Discharge", key: "discharge_date" },
+            { label: "Total", key: "total_amount" },
+            { label: "Paid", key: "receipt_total" },
+            { label: "Balance", key: "balanced_amount" },
+            { label: "Status", key: "billing_status" },
             "Actions",
           ]}
           tableData={billData?.data?.map((bill: any) => [
@@ -225,6 +266,18 @@ const IpdBillsPage: React.FC = () => {
               </Button>
             </View>,
           ])}
+          sortBy={searchParams.get("sort_by") || undefined}
+          sortOrder={(searchParams.get("sort_order") as "asc" | "desc") || undefined}
+          onSort={(key, order) => {
+            setSearchParams(
+              {
+                ...Object.fromEntries([...searchParams]),
+                sort_by: key,
+                sort_order: order,
+              },
+              { replace: true },
+            );
+          }}
           header={{
             search: (
               <SearchBar
@@ -242,8 +295,39 @@ const IpdBillsPage: React.FC = () => {
                 className="w-full max-w-sm"
               />
             ),
-          }}
-          footer={{
+            filter: (
+              <Filter
+                title="IPD Bill Filter"
+                onResetFilter={() => setFilterData(null)}
+                onFilterApiCall={(data) => {
+                  setFilterData({ multiple_filter: data });
+                  setSearchParams(
+                    {
+                      ...Object.fromEntries(searchParams),
+                      currentPage: "1",
+                    },
+                    { replace: true },
+                  );
+                }}
+                inputFields={[
+                  <View className="w-full my-4" key="patient-name">
+                    <SingleSelector
+                      name="patient_name"
+                      placeholder="Patient Name"
+                      options={patientNameOptions}
+                    />
+                  </View>,
+                  <View className="w-full my-4" key="status">
+                    <SingleSelector
+                      name="status"
+                      placeholder="Status"
+                      options={statusOptions}
+                    />
+                  </View>,
+                ]}
+              />
+            ),
+          }}          footer={{
             pagination: (
               <PaginationComponent
                 current_page={billData?.current_page}
@@ -267,3 +351,6 @@ const IpdBillsPage: React.FC = () => {
 };
 
 export default IpdBillsPage;
+
+
+

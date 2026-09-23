@@ -22,6 +22,35 @@ import { handleApiError } from "@/utils/errorHandler";
 
 const api = new LaunchApi();
 
+const appendParam = (params: URLSearchParams, key: string, value?: any) => {
+  if (value !== undefined && value !== null && value !== "") {
+    params.append(key, String(value));
+  }
+};
+
+const buildListQuery = (
+  page: number | string,
+  search?: string | null,
+  sort_by?: string | null,
+  sort_order?: string | null,
+  data?: any,
+) => {
+  const params = new URLSearchParams();
+  appendParam(params, "page", page);
+  appendParam(params, "search", search);
+  appendParam(params, "sort_by", sort_by);
+  appendParam(params, "sort_order", sort_order);
+  appendParam(params, "from_date", data?.from_date);
+  appendParam(params, "to_date", data?.to_date);
+
+  const multipleFilter = data?.multiple_filter || {};
+  Object.entries(multipleFilter).forEach(([key, value]) => {
+    appendParam(params, `multiple_filter[${key}]`, value);
+  });
+
+  return params.toString();
+};
+
 export const useIpdBilling = () => {
   const dispatch = useDispatch();
 
@@ -37,8 +66,7 @@ export const useIpdBilling = () => {
   ): Promise<void> => {
     try {
       await api.get(
-        `${IPD_BILLING_LIST_URL}?page=${page}${search ? "&search=" + search : ""}${sort_by ? "&sort_by=" + sort_by : ""
-        }${sort_order ? "&sort_order=" + sort_order : ""}`,
+        `${IPD_BILLING_LIST_URL}?${buildListQuery(page, search, sort_by, sort_order, data)}`,
         (response: AuthPayload, success: boolean, statusCode: number) => {
           if (success && statusCode === 200) {
             dispatch(ipdBillingListSlice(response?.data || []));
@@ -263,3 +291,4 @@ export const useIpdBilling = () => {
     cleanUp,
   };
 };
+

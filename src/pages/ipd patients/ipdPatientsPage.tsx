@@ -19,6 +19,9 @@ import { RootState } from "@/actions/store";
 import { clearIpdPatientListSlice } from "@/actions/slices/ipd/ipdEnrollment";
 import dayjs from "dayjs";
 import SearchBar from "@/components/ui/search-bar";
+import DateRangePicker from "@/components/DateRangePicker";
+import Filter from "../filter";
+import SingleSelector from "@/components/SingleSelector";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -28,18 +31,30 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import PaginationComponent from "@/components/Pagination";
+import { useOpd } from "@/actions/calls/opd";
+import { useWards } from "@/actions/calls/wards";
+import { useRoom } from "@/actions/calls/rooms";
 
 const IpdPatientsPage: React.FC<{}> = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const [filterData, setFilterData] = useState<null | { multiple_filter: Record<string, any> }>(null);
+  const [selectedWardId, setSelectedWardId] = useState<string>("");
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const dispatch = useDispatch();
 
   const { ipdPatientListHandler, cleanUp } = useIpdPatients();
+  const { PuaListHandler } = useOpd();
+  const { wardDropdownHandler } = useWards();
+  const { roomDropdownHandler } = useRoom();
 
   const ipdEnrollmedPatients = useSelector(
     (state: RootState) => state.ipd.ipdPatientList,
   );
+  const patientList = useSelector((state: RootState) => state.opd.patientList);
+  const wardDropdownData = useSelector((state: RootState) => state.wards.wardDropdownData);
+  const roomDropdownData = useSelector((state: RootState) => state.rooms.roomDropdownData);
+
   const ipdPatientRows = Array.isArray(ipdEnrollmedPatients)
     ? ipdEnrollmedPatients
     : ipdEnrollmedPatients?.data || [];
@@ -70,6 +85,31 @@ const IpdPatientsPage: React.FC<{}> = () => {
 
     return "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300";
   };
+  const patientNameOptions = patientList?.map((patient: any) => ({
+    label:
+      patient.patient_number +
+      "(" +
+      patient.first_name +
+      " " +
+      patient.last_name +
+      ")",
+    value: [patient.first_name, patient.last_name].filter(Boolean).join(" "),
+  }));
+
+  const wardOptions = wardDropdownData?.map((ward: any) => ({
+    label: ward.name || ward.ward_number,
+    value: ward.id,
+  }));
+
+  const roomOptions = roomDropdownData?.map((room: any) => ({
+    label: room.name || room.room_number,
+    value: room.id,
+  }));
+
+  const statusOptions = [
+    { label: "Admitted", value: "Admitted" },
+    { label: "Discharged", value: "Discharged" },
+  ];
 
   useEffect(() => {
     ipdPatientListHandler(
@@ -78,7 +118,11 @@ const IpdPatientsPage: React.FC<{}> = () => {
         searchParams.get("search") ?? null,
         searchParams.get("sort_by") ?? null,
         searchParams.get("sort_order") ?? null,
-        [],
+        {
+          from_date: searchParams.get("from_date") ?? null,
+          to_date: searchParams.get("to_date") ?? null,
+          ...(filterData || {}),
+        },
       (status: string) => {
         setIsLoading(
             status === "pending"
@@ -98,8 +142,22 @@ const IpdPatientsPage: React.FC<{}> = () => {
     searchParams.get("search"),
     searchParams.get("sort_by"),
     searchParams.get("sort_order"),
+    searchParams.get("from_date"),
+    searchParams.get("to_date"),
+    filterData,
   ]);
 
+
+  useEffect(() => {
+    PuaListHandler(() => {});
+    wardDropdownHandler(() => {});
+  }, []);
+
+  useEffect(() => {
+    if (selectedWardId) {
+      roomDropdownHandler(Number(selectedWardId), () => {});
+    }
+  }, [selectedWardId]);
   return (
     <React.Fragment>
       <BouncingLoader isLoading={isLoading} />
@@ -119,7 +177,7 @@ const IpdPatientsPage: React.FC<{}> = () => {
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
-        <View className="flex justify-between items-center gap-4">
+        <View className="flex flex-col lg:flex-row lg:justify-between lg:items-end gap-4">
           <View>
             <Text
               as="h1"
@@ -131,6 +189,12 @@ const IpdPatientsPage: React.FC<{}> = () => {
             <Text as="p" className="text-slate-600 dark:text-slate-400 text-sm">
               View and manage all IPD patient information
             </Text>
+          </View>
+          <View>
+            <Text as="label" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+              Select Date Range
+            </Text>
+            <DateRangePicker placeholder="Choose your dates" />
           </View>
         </View>
       </View>
@@ -272,7 +336,58 @@ const IpdPatientsPage: React.FC<{}> = () => {
                 className="shadow-sm dark:shadow-none"
               />
             ),
-            // sort: (
+            filter: (
+              <Filter
+                title="IPD Patient Filter"
+                onResetFilter={() => {
+                  setFilterData(null);
+                  setSelectedWardId("");
+                }}
+                onFilterApiCall={(data) => {
+                  setFilterData({ multiple_filter: data });
+                  setSearchParams(
+                    {
+                      ...Object.fromEntries(searchParams),
+                      currentPage: "1",
+                    },
+                    { replace: true },
+                  );
+                }}
+                inputFields={[
+                  <View className="w-full my-4" key="patient-name">
+                    <SingleSelector
+                      name="patient_name"
+                      placeholder="Patient Name"
+                      options={patientNameOptions}
+                    />
+                  </View>,
+                  <View className="w-full my-4" key="ward-id">
+                    <SingleSelector
+                      name="ward_id"
+                      placeholder="Ward"
+                      value={selectedWardId}
+                      onChange={(value) => setSelectedWardId(String(value || ""))}
+                      options={wardOptions}
+                    />
+                  </View>,
+                  <View className="w-full my-4" key="room-id">
+                    <SingleSelector
+                      name="room_id"
+                      placeholder="Room"
+                      options={roomOptions}
+                      disabled={!selectedWardId}
+                    />
+                  </View>,
+                  <View className="w-full my-4" key="status">
+                    <SingleSelector
+                      name="status"
+                      placeholder="Status"
+                      options={statusOptions}
+                    />
+                  </View>,
+                ]}
+              />
+            ),            // sort: (
             //   <DataSort
             //     sortOptions={sortOptions}
             //     onSort={(option) =>
@@ -368,4 +483,7 @@ const IpdPatientsPage: React.FC<{}> = () => {
 };
 
 export default IpdPatientsPage;
+
+
+
 

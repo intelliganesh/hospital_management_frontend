@@ -353,7 +353,7 @@ const PACDetailPage: React.FC = () => {
 
       {/* ── Tab Sections ── */}
       <Card className="border-slate-100 shadow-xl shadow-slate-200/30 rounded-2xl bg-white dark:bg-slate-900 overflow-hidden">
-        <TabView tabs={tabs} />
+        <TabView tabs={tabs} replaceOnChange resetPageOnChange={false} />
       </Card>
 
       {/* ── Document Preview Modal ── */}
@@ -402,3 +402,4 @@ const PACDetailPage: React.FC = () => {
 };
 
 export default PACDetailPage;
+
