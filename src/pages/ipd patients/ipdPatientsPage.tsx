@@ -39,6 +39,7 @@ const IpdPatientsPage: React.FC<{}> = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [filterData, setFilterData] = useState<null | { multiple_filter: Record<string, any> }>(null);
   const [selectedWardId, setSelectedWardId] = useState<string>("");
+  const [selectedRoomId, setSelectedRoomId] = useState<string>("");
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const dispatch = useDispatch();
@@ -98,12 +99,12 @@ const IpdPatientsPage: React.FC<{}> = () => {
 
   const wardOptions = wardDropdownData?.map((ward: any) => ({
     label: ward.name || ward.ward_number,
-    value: ward.id,
+    value: String(ward.id),
   }));
 
   const roomOptions = roomDropdownData?.map((room: any) => ({
     label: room.name || room.room_number,
-    value: room.id,
+    value: String(room.id),
   }));
 
   const statusOptions = [
@@ -154,6 +155,7 @@ const IpdPatientsPage: React.FC<{}> = () => {
   }, []);
 
   useEffect(() => {
+    setSelectedRoomId("");
     if (selectedWardId) {
       roomDropdownHandler(Number(selectedWardId), () => {});
     }
@@ -342,6 +344,7 @@ const IpdPatientsPage: React.FC<{}> = () => {
                 onResetFilter={() => {
                   setFilterData(null);
                   setSelectedWardId("");
+                  setSelectedRoomId("");
                 }}
                 onFilterApiCall={(data) => {
                   setFilterData({ multiple_filter: data });
@@ -374,6 +377,8 @@ const IpdPatientsPage: React.FC<{}> = () => {
                     <SingleSelector
                       name="room_id"
                       placeholder="Room"
+                      value={selectedRoomId}
+                      onChange={(value) => setSelectedRoomId(String(value || ""))}
                       options={roomOptions}
                       disabled={!selectedWardId}
                     />
@@ -483,7 +488,3 @@ const IpdPatientsPage: React.FC<{}> = () => {
 };
 
 export default IpdPatientsPage;
-
-
-
-

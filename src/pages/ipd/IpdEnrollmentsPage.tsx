@@ -17,7 +17,6 @@ import {
 } from "@/utils/urls/frontend";
 import DynamicTable from "@/components/ui/DynamicTable";
 import Text from "@/components/text";
-import getStatusColorScheme from "@/utils/statusColorSchemaDecider";
 import SingleSelector from "@/components/SingleSelector";
 import { useIpdPatients } from "@/actions/calls/ipd";
 import { useDispatch, useSelector } from "react-redux";
@@ -131,13 +130,6 @@ const IpdEnrollmentsPage: React.FC = () => {
       label: doctor.name,
       value: doctor.name,
     }));
-
-  const statusOptions = [
-    { label: "Admitted", value: "Admitted" },
-    { label: "Discharged", value: "Discharged" },
-    { label: "Active", value: "Active" },
-    { label: "Inactive", value: "Inactive" },
-  ];
   const modalCloseHandler = () => {
     setDeleteId("");
   };
@@ -202,6 +194,7 @@ const IpdEnrollmentsPage: React.FC = () => {
             setShowEnrollmentForm(false)
           }}
           closeOnOutsideClick={false}
+          contentOverflowVisible
           size={showEnrollmentForm ? "full" : "lg"}
         >
           {
@@ -324,7 +317,6 @@ const IpdEnrollmentsPage: React.FC = () => {
             { label: "Doctor", key: "doctor_name" },
             { label: "Department", key: "department_type" },
             { label: "Appointment On", key: "appointment_date" },
-            { label: "Status", key: "status" },
             { label: "Created At", key: "created_at" },
             "Actions",
           ]}
@@ -391,13 +383,6 @@ const IpdEnrollmentsPage: React.FC = () => {
                 ).format(TIME_FORMAT)}
               </Text>
             </View>,
-            <Text
-              as="span"
-              className={`inline-flex px-2 py-1 text-xs font-medium rounded-full `}
-              style={getStatusColorScheme(patient?.status)}
-            >
-              {patient.status}
-            </Text>,
             <View>
               <Text className="text-sm font-normal">
                 {dayjs(
@@ -487,13 +472,6 @@ const IpdEnrollmentsPage: React.FC = () => {
                       name="doctor_name"
                       placeholder="Doctor Name"
                       options={doctorNameOptions}
-                    />
-                  </View>,
-                  <View className="w-full my-4" key="status">
-                    <SingleSelector
-                      name="status"
-                      placeholder="Status"
-                      options={statusOptions}
                     />
                   </View>,
                 ]}

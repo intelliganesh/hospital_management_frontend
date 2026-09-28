@@ -23,7 +23,7 @@ import {
   Proportions,
   NotebookText,
   CalendarRange,
-  Hospital,
+  // Hospital,
 } from "lucide-react";
 import {
   SETTINGS_URL,
@@ -69,11 +69,11 @@ import {
   REPORT_CONSULTATION,
   REPORT_IPD,
   REFERRED_BY_TABLE_URL,
-  IPD_ENROLLMENTS_URL,
+  // IPD_ENROLLMENTS_URL,
   WARD_TABLE_URL,
-  IPD_PATIENTS_URL,
+  // IPD_PATIENTS_URL,
   FISTULA_ENTRY_LIST_URL,
-  IPD_BILLS_URL,
+  // IPD_BILLS_URL,
   BANK_DETAILS_TABLE_URL,
   ROOMS_TABLE_URL,
   BED_TABLE_URL,
@@ -202,31 +202,31 @@ export const sidebarItems = [
     //   )}&to_date=${dayjs().format("YYYY-MM-DD")}`,
   },
   // IPD
-  {
-    icon: <Hospital size={20} />,
-    label: "IPD",
-    requiredPermission: PERMISSIONS.VIEW_IPD,
-    children: (
-      <SidebarDropdown
-        title="IPD"
-        icon={<Hospital size={20} />}
-        variant="secondary"
-      >
-        <SidebarDropdownItem
-          to={`${IPD_ENROLLMENTS_URL}?currentPage=1`}
-          label="IPD Enrollments"
-        />
-        <SidebarDropdownItem
-          to={`${IPD_PATIENTS_URL}?currentPage=1`}
-          label="IPD Patients"
-        />
-        <SidebarDropdownItem
-          to={`${IPD_BILLS_URL}?currentPage=1`}
-          label="IPD Bills"
-        />
-      </SidebarDropdown>
-    ),
-  },
+  // {
+  //   icon: <Hospital size={20} />,
+  //   label: "IPD",
+  //   requiredPermission: PERMISSIONS.VIEW_IPD,
+  //   children: (
+  //     <SidebarDropdown
+  //       title="IPD"
+  //       icon={<Hospital size={20} />}
+  //       variant="secondary"
+  //     >
+  //       <SidebarDropdownItem
+  //         to={`${IPD_ENROLLMENTS_URL}?currentPage=1`}
+  //         label="IPD Enrollments"
+  //       />
+  //       <SidebarDropdownItem
+  //         to={`${IPD_PATIENTS_URL}?currentPage=1`}
+  //         label="IPD Patients"
+  //       />
+  //       <SidebarDropdownItem
+  //         to={`${IPD_BILLS_URL}?currentPage=1`}
+  //         label="IPD Bills"
+  //       />
+  //     </SidebarDropdown>
+  //   ),
+  // },
   {
     icon: <FileText size={20} />,
     label: "Bills",

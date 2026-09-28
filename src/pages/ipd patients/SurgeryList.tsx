@@ -300,6 +300,7 @@ const SurgeryList: React.FC<SurgeryListProps> = ({ showAddButton = true }) => {
           onClose={closeSurgeryModal}
           closeOnOutsideClick={false}
           size="xl"
+          contentOverflowVisible
         >
           {errors?.general && (
             <View className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
@@ -377,3 +378,4 @@ const SurgeryList: React.FC<SurgeryListProps> = ({ showAddButton = true }) => {
 };
 
 export default SurgeryList;
+

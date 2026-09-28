@@ -61,10 +61,7 @@ const IpdBillsPage: React.FC = () => {
   }));
 
   const statusOptions = [
-    { label: "Paid", value: "Paid" },
-    { label: "Unpaid", value: "Unpaid" },
-    { label: "Partial", value: "Partial" },
-    { label: "Pending", value: "Pending" },
+    { label: "Running", value: "Running" },
     { label: "Completed", value: "Completed" },
   ];
   const handleGeneratePdf = async (ipdId?: string) => {

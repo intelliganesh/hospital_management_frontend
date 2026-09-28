@@ -1507,21 +1507,38 @@ const ConsultationDetails = () => {
             </View>
           </View> */}
 
+            {consultationData?.consultations?.advice && (
+              <View>
+                <Text as="h3" className="text-lg font-semibold mb-1">
+                  Treatment Given
+                </Text>
+                <View
+                  className="text-sm border rounded-md p-3 bg-neutral-100 dark:bg-background dark:border-border"
+                  dangerouslySetInnerHTML={{
+                    __html: consultationData.consultations.advice,
+                  }}
+                />
+              </View>
+            )}
             {/* Treatment plan  */}
             <View>
-              <Text as="h3" className="text-lg font-semibold mb-1">
-                Treatment Plan
-              </Text>
-              <View
-                className="text-sm border rounded-md p-3 bg-neutral-100 dark:bg-background dark:border-border"
-                dangerouslySetInnerHTML={{
-                  __html:
-                    consultationData?.proctologyOrNonProctology
-                      ?.treatment_plan || "N/A",
-                }}
-              >
-                {/* {consultationData?.proctologyOrNonProctology?.treatment_plan || "N/A"} */}
-              </View>
+              {consultationData?.proctologyOrNonProctology?.treatment_plan && (
+                <>
+                  <Text as="h3" className="text-lg font-semibold mb-1">
+                    Treatment Plan
+                  </Text>
+                  <View
+                    className="text-sm border rounded-md p-3 bg-neutral-100 dark:bg-background dark:border-border"
+                    dangerouslySetInnerHTML={{
+                      __html:
+                        consultationData.proctologyOrNonProctology
+                          .treatment_plan,
+                    }}
+                  >
+                    {/* {consultationData?.proctologyOrNonProctology?.treatment_plan || "N/A"} */}
+                  </View>
+                </>
+              )}
 
               {/* Diet Plan  */}
               <View className="mt-6">
