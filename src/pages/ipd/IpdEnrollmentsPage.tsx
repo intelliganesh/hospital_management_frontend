@@ -16,6 +16,7 @@ import {
   TIME_FORMAT,
 } from "@/utils/urls/frontend";
 import DynamicTable from "@/components/ui/DynamicTable";
+import DataSort, { SortOption } from "@/components/SortData";
 import Text from "@/components/text";
 import getStatusColorScheme from "@/utils/statusColorSchemaDecider";
 import SingleSelector from "@/components/SingleSelector";
@@ -37,6 +38,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { handleSortChange } from "@/utils/helperFunctions";
 
 const IpdEnrollmentsPage: React.FC = () => {
   const navigate = useNavigate();
@@ -138,6 +140,27 @@ const IpdEnrollmentsPage: React.FC = () => {
     { label: "Active", value: "Active" },
     { label: "Inactive", value: "Inactive" },
   ];
+
+  const sortOptions: SortOption[] = [
+    { label: "Appointment Number (A-Z)", value: "appointment_number", order: "asc" },
+    { label: "Appointment Number (Z-A)", value: "appointment_number", order: "desc" },
+    { label: "Patient Name (A-Z)", value: "patient_name", order: "asc" },
+    { label: "Patient Name (Z-A)", value: "patient_name", order: "desc" },
+    { label: "Doctor Name (A-Z)", value: "doctor_name", order: "asc" },
+    { label: "Doctor Name (Z-A)", value: "doctor_name", order: "desc" },
+    { label: "Department (A-Z)", value: "department_type", order: "asc" },
+    { label: "Department (Z-A)", value: "department_type", order: "desc" },
+    { label: "Appointment Date (Oldest)", value: "appointment_date", order: "asc" },
+    { label: "Appointment Date (Newest)", value: "appointment_date", order: "desc" },
+    { label: "Status (A-Z)", value: "status", order: "asc" },
+    { label: "Status (Z-A)", value: "status", order: "desc" },
+    { label: "Created Date (Oldest)", value: "created_at", order: "asc" },
+    { label: "Created Date (Newest)", value: "created_at", order: "desc" },
+  ];
+
+  const [activeSort, setActiveSort] = useState<SortOption | null>(
+    null,
+  );
   const modalCloseHandler = () => {
     setDeleteId("");
   };
@@ -319,13 +342,13 @@ const IpdEnrollmentsPage: React.FC = () => {
       <Card className="overflow-hidden border-0 shadow-medium bg-white dark:bg-slate-800">
         <DynamicTable
           tableHeaders={[
-            { label: "Appt No", key: "appointment_number" },
-            { label: "Patient", key: "patient_name" },
-            { label: "Doctor", key: "doctor_name" },
-            { label: "Department", key: "department_type" },
-            { label: "Appointment On", key: "appointment_date" },
-            { label: "Status", key: "status" },
-            { label: "Created At", key: "created_at" },
+            "Appt No",
+            "Patient",
+            "Doctor",
+            "Department",
+            "Appointment On",
+            "Status",
+            "Created At",
             "Actions",
           ]}
           tableData={ipdEnrollmentData?.data?.map((patient: any) => [
@@ -435,15 +458,6 @@ const IpdEnrollmentsPage: React.FC = () => {
               />
             </View>,
           ]) || []}
-          sortBy={searchParams.get("sort_by") || undefined}
-          sortOrder={searchParams.get("sort_order") as "asc" | "desc" || undefined}
-          onSort={(key, order) => {
-            setSearchParams({
-              ...Object.fromEntries([...searchParams]),
-              sort_by: key,
-              sort_order: order,
-            });
-          }}
           header={{
             search: (
               <SearchBar
@@ -498,20 +512,21 @@ const IpdEnrollmentsPage: React.FC = () => {
                   </View>,
                 ]}
               />
-            ),            // sort: (
-            //   <DataSort
-            //     sortOptions={sortOptions}
-            //     onSort={(option) =>
-            //       handleSortChange(
-            //         option,
-            //         setActiveSort,
-            //         setSearchParams,
-            //         searchParams
-            //       )
-            //     }
-            //     activeSort={activeSort ?? undefined}
-            //   />
-            // ),
+            ),
+            sort: (
+              <DataSort
+                sortOptions={sortOptions}
+                onSort={(option) =>
+                  handleSortChange(
+                    option,
+                    setActiveSort,
+                    setSearchParams,
+                    searchParams,
+                  )
+                }
+                activeSort={activeSort ?? undefined}
+              />
+            ),
             // filter: (
             //   <Filter
             //     onResetFilter={() => {}}

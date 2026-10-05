@@ -265,10 +265,10 @@ const SurgeryList: React.FC<SurgeryListProps> = ({ showAddButton = true }) => {
       <Card className="overflow-hidden border-0 shadow-medium bg-white dark:bg-slate-800">
         <DynamicTable
           tableHeaders={[
-            { label: "Date", key: "date" },
-            { label: "Doctor", key: "doctor" },
-            { label: "Surgery", key: "name" },
-            { label: "Status", key: "status" },
+            "Date",
+            "Doctor",
+            "Surgery",
+            "Status",
             "Action",
           ]}
           tableData={surgeryData?.data?.map((data: any) => [

@@ -451,12 +451,12 @@ const IpdBillDetailsPage: React.FC = () => {
       {ipdBillingPaymentDetailData.length > 0 ? (
         <DynamicTable
           tableHeaders={[
-            { label: "Date", key: "date" },
-            { label: "Transaction ID", key: "transaction_id" },
-            { label: "Payment Mode", key: "payment_type" },
-            { label: "Status", key: "status" },
-            { label: "Notes", key: "notes" },
-            { label: "Amount", key: "amount" },
+            "Date",
+            "Transaction ID",
+            "Payment Mode",
+            "Status",
+            "Notes",
+            "Amount",
           ]}
           tableData={ipdBillingPaymentDetailData.map(
             (payment: any, pIndex: number) => [

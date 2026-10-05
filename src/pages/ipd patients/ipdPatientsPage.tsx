@@ -10,6 +10,7 @@ import {
   IPD_ENROLLMENT_FORM_EDIT_URL,
 } from "@/utils/urls/frontend";
 import DynamicTable from "@/components/ui/DynamicTable";
+import DataSort, { SortOption } from "@/components/SortData";
 import Text from "@/components/text";
 import BouncingLoader from "@/components/BouncingLoader";
 import InfoCard from "@/components/ui/infoCard";
@@ -34,10 +35,13 @@ import PaginationComponent from "@/components/Pagination";
 import { useOpd } from "@/actions/calls/opd";
 import { useWards } from "@/actions/calls/wards";
 import { useRoom } from "@/actions/calls/rooms";
+import { handleSortChange } from "@/utils/helperFunctions";
 
 const IpdPatientsPage: React.FC<{}> = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const [filterData, setFilterData] = useState<null | { multiple_filter: Record<string, any> }>(null);
+  const [filterData, setFilterData] = useState<null | {
+    multiple_filter: Record<string, any>;
+  }>(null);
   const [selectedWardId, setSelectedWardId] = useState<string>("");
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -52,8 +56,12 @@ const IpdPatientsPage: React.FC<{}> = () => {
     (state: RootState) => state.ipd.ipdPatientList,
   );
   const patientList = useSelector((state: RootState) => state.opd.patientList);
-  const wardDropdownData = useSelector((state: RootState) => state.wards.wardDropdownData);
-  const roomDropdownData = useSelector((state: RootState) => state.rooms.roomDropdownData);
+  const wardDropdownData = useSelector(
+    (state: RootState) => state.wards.wardDropdownData,
+  );
+  const roomDropdownData = useSelector(
+    (state: RootState) => state.rooms.roomDropdownData,
+  );
 
   const ipdPatientRows = Array.isArray(ipdEnrollmedPatients)
     ? ipdEnrollmedPatients
@@ -111,25 +119,48 @@ const IpdPatientsPage: React.FC<{}> = () => {
     { label: "Discharged", value: "Discharged" },
   ];
 
+  const sortOptions: SortOption[] = [
+    { label: "IPD Number (A-Z)", value: "ipd_number", order: "asc" },
+    { label: "IPD Number (Z-A)", value: "ipd_number", order: "desc" },
+    { label: "Admission Date (Oldest)", value: "admission_date", order: "asc" },
+    {
+      label: "Admission Date (Newest)",
+      value: "admission_date",
+      order: "desc",
+    },
+    { label: "Patient Name (A-Z)", value: "patient_name", order: "asc" },
+    { label: "Patient Name (Z-A)", value: "patient_name", order: "desc" },
+    { label: "Phone (A-Z)", value: "phone_number", order: "asc" },
+    { label: "Phone (Z-A)", value: "phone_number", order: "desc" },
+    { label: "Ward (A-Z)", value: "ward_id", order: "asc" },
+    { label: "Ward (Z-A)", value: "ward_id", order: "desc" },
+    { label: "Room/Bed (A-Z)", value: "room_id", order: "asc" },
+    { label: "Room/Bed (Z-A)", value: "room_id", order: "desc" },
+    { label: "Status (A-Z)", value: "status", order: "asc" },
+    { label: "Status (Z-A)", value: "status", order: "desc" },
+  ];
+
+  const [activeSort, setActiveSort] = useState<SortOption | null>(null);
+
   useEffect(() => {
     ipdPatientListHandler(
-        searchParams?.get("currentPage") ?? 1,
-        () => {},
-        searchParams.get("search") ?? null,
-        searchParams.get("sort_by") ?? null,
-        searchParams.get("sort_order") ?? null,
-        {
-          from_date: searchParams.get("from_date") ?? null,
-          to_date: searchParams.get("to_date") ?? null,
-          ...(filterData || {}),
-        },
+      searchParams?.get("currentPage") ?? 1,
+      () => {},
+      searchParams.get("search") ?? null,
+      searchParams.get("sort_by") ?? null,
+      searchParams.get("sort_order") ?? null,
+      {
+        from_date: searchParams.get("from_date") ?? null,
+        to_date: searchParams.get("to_date") ?? null,
+        ...(filterData || {}),
+      },
       (status: string) => {
         setIsLoading(
-            status === "pending"
+          status === "pending"
+            ? true
+            : status === "failed"
               ? true
-              : status === "failed"
-                ? true
-                : status === "success" && false,
+              : status === "success" && false,
         );
       },
     );
@@ -146,7 +177,6 @@ const IpdPatientsPage: React.FC<{}> = () => {
     searchParams.get("to_date"),
     filterData,
   ]);
-
 
   useEffect(() => {
     PuaListHandler(() => {});
@@ -191,7 +221,10 @@ const IpdPatientsPage: React.FC<{}> = () => {
             </Text>
           </View>
           <View>
-            <Text as="label" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+            <Text
+              as="label"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2"
+            >
               Select Date Range
             </Text>
             <DateRangePicker placeholder="Choose your dates" />
@@ -223,9 +256,13 @@ const IpdPatientsPage: React.FC<{}> = () => {
 
         <InfoCard
           label="Discharged Patients"
-          value={ipdEnrollmedPatients?.discharged || ipdEnrollmedPatients?.discharged_count || 0}
+          value={
+            ipdEnrollmedPatients?.discharged ||
+            ipdEnrollmedPatients?.discharged_count ||
+            0
+          }
           //   value={(paginateObj?.patient?.total || 0) - (paginateObj?.active_patient || 0)}
-          valueStyle="!text-orange-600 dark:!text-orange-400"
+          valueStyle="!text-orange-600 dark:!text-orange-400 !text-2xl"
           icon={<UserX size={20} />}
           iconStyle="!bg-gradient-to-br !from-orange-100 !via-orange-200 !to-orange-300 dark:!from-orange-800/40 dark:!via-orange-700/40 dark:!to-orange-600/40 !text-orange-600 dark:!text-orange-400 !shadow-lg !shadow-orange-500/25 dark:!shadow-orange-400/20"
           className="hover:scale-[1.02] transition-transform duration-200"
@@ -235,13 +272,13 @@ const IpdPatientsPage: React.FC<{}> = () => {
       <Card className="overflow-hidden border-0 shadow-medium bg-white dark:bg-slate-800">
         <DynamicTable
           tableHeaders={[
-            { label: "IPD Number", key: "ipd_number" },
-            { label: "Admission Date", key: "admission_date" },
-            { label: "Patient Name", key: "patient_name" },
-            { label: "Phone", key: "phone_number" },
-            { label: "Ward", key: "ward_id" },
-            { label: "Room/Bed", key: "room_id" },
-            { label: "Status", key: "status" },
+            "IPD Number",
+            "Admission Date",
+            "Patient Name",
+            "Phone",
+            "Ward",
+            "Room/Bed",
+            "Status",
             "Actions",
           ]}
           tableData={
@@ -312,17 +349,6 @@ const IpdPatientsPage: React.FC<{}> = () => {
                 ])
               : []
           }
-          sortBy={searchParams.get("sort_by") || undefined}
-          sortOrder={
-            (searchParams.get("sort_order") as "asc" | "desc") || undefined
-          }
-          onSort={(key, order) => {
-            setSearchParams({
-              ...Object.fromEntries([...searchParams]),
-              sort_by: key,
-              sort_order: order,
-            });
-          }}
           header={{
             search: (
               <SearchBar
@@ -366,7 +392,9 @@ const IpdPatientsPage: React.FC<{}> = () => {
                       name="ward_id"
                       placeholder="Ward"
                       value={selectedWardId}
-                      onChange={(value) => setSelectedWardId(String(value || ""))}
+                      onChange={(value) =>
+                        setSelectedWardId(String(value || ""))
+                      }
                       options={wardOptions}
                     />
                   </View>,
@@ -387,20 +415,21 @@ const IpdPatientsPage: React.FC<{}> = () => {
                   </View>,
                 ]}
               />
-            ),            // sort: (
-            //   <DataSort
-            //     sortOptions={sortOptions}
-            //     onSort={(option) =>
-            //       handleSortChange(
-            //         option,
-            //         setActiveSort,
-            //         setSearchParams,
-            //         searchParams
-            //       )
-            //     }
-            //     activeSort={activeSort ?? undefined}
-            //   />
-            // ),
+            ),
+            sort: (
+              <DataSort
+                sortOptions={sortOptions}
+                onSort={(option) =>
+                  handleSortChange(
+                    option,
+                    setActiveSort,
+                    setSearchParams,
+                    searchParams,
+                  )
+                }
+                activeSort={activeSort ?? undefined}
+              />
+            ),
             // filter: (
             //   <Filter
             //     apiCall={() => {
@@ -483,7 +512,3 @@ const IpdPatientsPage: React.FC<{}> = () => {
 };
 
 export default IpdPatientsPage;
-
-
-
-

@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { FileText, Activity, CreditCard, Clock, Eye } from "lucide-react";
 import InfoCard from "@/components/ui/infoCard";
 import DynamicTable from "@/components/ui/DynamicTable";
+import DataSort, { SortOption } from "@/components/SortData";
 import SearchBar from "@/components/ui/search-bar";
 import DateRangePicker from "@/components/DateRangePicker";
 import Filter from "@/pages/filter";
@@ -32,6 +33,7 @@ import { IPD_GENERATE_PDF_URL } from "@/utils/urls/backend";
 import { useDownloadIpdPdf } from "@/actions/calls/ipd/downloadIpdPdf";
 import BouncingLoader from "@/components/BouncingLoader";
 import PaginationComponent from "@/components/Pagination";
+import { handleSortChange } from "@/utils/helperFunctions";
 
 const IpdBillsPage: React.FC = () => {
   const navigate = useNavigate();
@@ -67,6 +69,29 @@ const IpdBillsPage: React.FC = () => {
     { label: "Pending", value: "Pending" },
     { label: "Completed", value: "Completed" },
   ];
+
+  const sortOptions: SortOption[] = [
+    { label: "Bill Number (A-Z)", value: "invoice_number", order: "asc" },
+    { label: "Bill Number (Z-A)", value: "invoice_number", order: "desc" },
+    { label: "Patient Name (A-Z)", value: "patient_name", order: "asc" },
+    { label: "Patient Name (Z-A)", value: "patient_name", order: "desc" },
+    { label: "Admission Date (Oldest)", value: "admission_date_time", order: "asc" },
+    { label: "Admission Date (Newest)", value: "admission_date_time", order: "desc" },
+    { label: "Discharge Date (Oldest)", value: "discharge_date", order: "asc" },
+    { label: "Discharge Date (Newest)", value: "discharge_date", order: "desc" },
+    { label: "Total (Low-High)", value: "total_amount", order: "asc" },
+    { label: "Total (High-Low)", value: "total_amount", order: "desc" },
+    { label: "Paid (Low-High)", value: "receipt_total", order: "asc" },
+    { label: "Paid (High-Low)", value: "receipt_total", order: "desc" },
+    { label: "Balance (Low-High)", value: "balanced_amount", order: "asc" },
+    { label: "Balance (High-Low)", value: "balanced_amount", order: "desc" },
+    { label: "Status (A-Z)", value: "billing_status", order: "asc" },
+    { label: "Status (Z-A)", value: "billing_status", order: "desc" },
+  ];
+
+  const [activeSort, setActiveSort] = useState<SortOption | null>(
+    null,
+  );
   const handleGeneratePdf = async (ipdId?: string) => {
     if (ipdId) {
       setDownloadingBillId(ipdId);
@@ -192,14 +217,14 @@ const IpdBillsPage: React.FC = () => {
       <Card className="overflow-hidden border-0 shadow-medium bg-white dark:bg-slate-800">
         <DynamicTable
           tableHeaders={[
-            { label: "Bill No", key: "invoice_number" },
-            { label: "Patient Details", key: "patient_name" },
-            { label: "Admission", key: "admission_date_time" },
-            { label: "Discharge", key: "discharge_date" },
-            { label: "Total", key: "total_amount" },
-            { label: "Paid", key: "receipt_total" },
-            { label: "Balance", key: "balanced_amount" },
-            { label: "Status", key: "billing_status" },
+            "Bill No",
+            "Patient Details",
+            "Admission",
+            "Discharge",
+            "Total",
+            "Paid",
+            "Balance",
+            "Status",
             "Actions",
           ]}
           tableData={billData?.data?.map((bill: any) => [
@@ -266,18 +291,6 @@ const IpdBillsPage: React.FC = () => {
               </Button>
             </View>,
           ])}
-          sortBy={searchParams.get("sort_by") || undefined}
-          sortOrder={(searchParams.get("sort_order") as "asc" | "desc") || undefined}
-          onSort={(key, order) => {
-            setSearchParams(
-              {
-                ...Object.fromEntries([...searchParams]),
-                sort_by: key,
-                sort_order: order,
-              },
-              { replace: true },
-            );
-          }}
           header={{
             search: (
               <SearchBar
@@ -325,6 +338,20 @@ const IpdBillsPage: React.FC = () => {
                     />
                   </View>,
                 ]}
+              />
+            ),
+            sort: (
+              <DataSort
+                sortOptions={sortOptions}
+                onSort={(option) =>
+                  handleSortChange(
+                    option,
+                    setActiveSort,
+                    setSearchParams,
+                    searchParams,
+                  )
+                }
+                activeSort={activeSort ?? undefined}
               />
             ),
           }}          footer={{
