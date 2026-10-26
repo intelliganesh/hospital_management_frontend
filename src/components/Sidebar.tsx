@@ -23,6 +23,7 @@ import {
   Proportions,
   NotebookText,
   CalendarRange,
+  Hospital,
   // Hospital,
 } from "lucide-react";
 import {
@@ -78,6 +79,9 @@ import {
   ROOMS_TABLE_URL,
   BED_TABLE_URL,
   ONLINE_APPOINTMENT_TABLE_URL,
+  IPD_ENROLLMENTS_URL,
+  IPD_PATIENTS_URL,
+  IPD_BILLS_URL,
   // ONLINE_APPOINTMENT_TABLE_URL,
 } from "@/utils/urls/frontend";
 import { useSelector } from "react-redux";
@@ -89,7 +93,7 @@ import {
 import dayjs from "dayjs";
 import { PERMISSIONS } from "@/rolesRoute";
 import { usePermissions } from "@/utils/custom-hooks/use-permissions";
- 
+
 interface SidebarItemProps {
   href?: string;
   label?: string;
@@ -180,7 +184,7 @@ export const sidebarItems = [
     href:
       APPOINTMENT_TABLE_URL +
       `?currentPage=1&from_date=${dayjs().format(
-        "YYYY-MM-DD"
+        "YYYY-MM-DD",
       )}&to_date=${dayjs().format("YYYY-MM-DD")}`,
     requiredPermission: PERMISSIONS.VIEW_APPOINTMENTS,
   },
@@ -202,31 +206,31 @@ export const sidebarItems = [
     //   )}&to_date=${dayjs().format("YYYY-MM-DD")}`,
   },
   // IPD
-  // {
-  //   icon: <Hospital size={20} />,
-  //   label: "IPD",
-  //   requiredPermission: PERMISSIONS.VIEW_IPD,
-  //   children: (
-  //     <SidebarDropdown
-  //       title="IPD"
-  //       icon={<Hospital size={20} />}
-  //       variant="secondary"
-  //     >
-  //       <SidebarDropdownItem
-  //         to={`${IPD_ENROLLMENTS_URL}?currentPage=1`}
-  //         label="IPD Enrollments"
-  //       />
-  //       <SidebarDropdownItem
-  //         to={`${IPD_PATIENTS_URL}?currentPage=1`}
-  //         label="IPD Patients"
-  //       />
-  //       <SidebarDropdownItem
-  //         to={`${IPD_BILLS_URL}?currentPage=1`}
-  //         label="IPD Bills"
-  //       />
-  //     </SidebarDropdown>
-  //   ),
-  // },
+  {
+    icon: <Hospital size={20} />,
+    label: "IPD",
+    requiredPermission: PERMISSIONS.VIEW_IPD,
+    children: (
+      <SidebarDropdown
+        title="IPD"
+        icon={<Hospital size={20} />}
+        variant="secondary"
+      >
+        <SidebarDropdownItem
+          to={`${IPD_ENROLLMENTS_URL}?currentPage=1`}
+          label="IPD Enrollments"
+        />
+        <SidebarDropdownItem
+          to={`${IPD_PATIENTS_URL}?currentPage=1`}
+          label="IPD Patients"
+        />
+        <SidebarDropdownItem
+          to={`${IPD_BILLS_URL}?currentPage=1`}
+          label="IPD Bills"
+        />
+      </SidebarDropdown>
+    ),
+  },
   {
     icon: <FileText size={20} />,
     label: "Bills",
@@ -261,35 +265,35 @@ export const sidebarItems = [
       >
         <SidebarDropdownItem
           to={`${REPORT_EXPENSES}?currentPage=1&from_date=${dayjs().format(
-            "YYYY-MM-DD"
+            "YYYY-MM-DD",
           )}&to_date=${dayjs().format("YYYY-MM-DD")}`}
           label="Expenses Report"
           requiredPermission={PERMISSIONS.VIEW_EXPENSE_REPORT}
         />
         <SidebarDropdownItem
           to={`${REPORT_INVOICE}?currentPage=1&from_date=${dayjs().format(
-            "YYYY-MM-DD"
+            "YYYY-MM-DD",
           )}&to_date=${dayjs().format("YYYY-MM-DD")}`}
           label="Invoice Report"
           requiredPermission={PERMISSIONS.VIEW_INVOICE_REPORT}
         />
         <SidebarDropdownItem
           to={`${REPORT_FISTULA}?currentPage=1&from_date=${dayjs().format(
-            "YYYY-MM-DD"
+            "YYYY-MM-DD",
           )}&to_date=${dayjs().format("YYYY-MM-DD")}`}
           label="Fistula Report"
           requiredPermission={PERMISSIONS.VIEW_FISTULA_REPORT}
         />
         <SidebarDropdownItem
           to={`${REPORT_CONSULTATION}?currentPage=1&from_date=${dayjs().format(
-            "YYYY-MM-DD"
+            "YYYY-MM-DD",
           )}&to_date=${dayjs().format("YYYY-MM-DD")}`}
           label="Consultation Report"
           requiredPermission={PERMISSIONS.VIEW_CONSULTATION_REPORT}
         />
         <SidebarDropdownItem
           to={`${REPORT_IPD}?currentPage=1&from_date=${dayjs().format(
-            "YYYY-MM-DD"
+            "YYYY-MM-DD",
           )}&to_date=${dayjs().format("YYYY-MM-DD")}`}
           label="IPD Report"
           requiredPermission={PERMISSIONS.VIEW_REPORTS}
@@ -481,7 +485,7 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
   const { hasPermission } = usePermissions();
 
   const settingsData = useSelector(
-    (state: any) => state.systemSettings.settings
+    (state: any) => state.systemSettings.settings,
   );
 
   useEffect(() => {
@@ -529,7 +533,7 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
                         settingsData?.hospital_logo
                       }
                       onError={(
-                        e: React.SyntheticEvent<HTMLImageElement, Event>
+                        e: React.SyntheticEvent<HTMLImageElement, Event>,
                       ) => {
                         const target = e.target as HTMLImageElement;
                         target.onerror = null; // prevent looping
@@ -624,9 +628,12 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
                       active={
                         // Check if current path starts with the item's base path
                         // This will make parent items stay active for their children routes
-                        location.pathname.startsWith(item.href?.split("?")[0] || "") ||
+                        location.pathname.startsWith(
+                          item.href?.split("?")[0] || "",
+                        ) ||
                         // Special case for dashboard since it's the root
-                        (item.href === DASHBOARD_URL && location.pathname === '/')
+                        (item.href === DASHBOARD_URL &&
+                          location.pathname === "/")
                       }
                     />
                   )}
