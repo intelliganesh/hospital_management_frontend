@@ -130,6 +130,21 @@ const PostSurgeryFollowUp: React.FC<PostSurgeryFollowUpProps> = ({
 
   const { getPatientConsultationHandler } = usePatient();
 
+  const patientConsultationData = useSelector(
+    (state: RootState) => state.patient.patientConsultationData,
+  );
+  const latestConsultation = Array.isArray(patientConsultationData)
+    ? patientConsultationData.reduce((latest: any, consultation: any) => {
+        if (!latest) return consultation;
+        return String(consultation.id).localeCompare(String(latest.id)) > 0
+          ? consultation
+          : latest;
+      }, null)
+    : null;
+  const currentAppointmentNumber = formMode
+    ? appointment_number
+    : latestConsultation?.appointment_number || "";
+
   const postSurgeryListData = useSelector(
     (state: RootState) => state.postSurgery.postSurgeryListData,
   );
@@ -292,22 +307,18 @@ const PostSurgeryFollowUp: React.FC<PostSurgeryFollowUpProps> = ({
     }
 
     if (postSurgeryListData?.data?.length) {
-      const responseAppointmentNumber = postSurgeryListData.data.find(
-        (followUp: any) => followUp?.appointment_number,
-      )?.appointment_number;
-      const resolvedAppointmentNumber =
-        appointment_number || responseAppointmentNumber || "";
       const updatedData = postSurgeryListData.data.map((followUp: any) => ({
         ...followUp,
-        appointment_number:
-          followUp?.appointment_number || resolvedAppointmentNumber,
+        appointment_number: formMode
+          ? followUp?.appointment_number || currentAppointmentNumber
+          : currentAppointmentNumber,
       }));
 
       // Standalone mode: Always ensure an empty row at the bottom for new entries
       if (!formMode && !viewMode) {
         const dummyRow = {
           id: "",
-          appointment_number: resolvedAppointmentNumber,
+          appointment_number: currentAppointmentNumber,
           date: dayjs().format("YYYY-MM-DD"),
           ks_changed: false,
           dressing: false,
@@ -327,7 +338,7 @@ const PostSurgeryFollowUp: React.FC<PostSurgeryFollowUpProps> = ({
       if (formMode && postSurgeryId) {
         const defaultRow = {
           id: "",
-          appointment_number: appointment_number || "",
+          appointment_number: currentAppointmentNumber || "",
           date: dayjs().format("YYYY-MM-DD"),
           ks_changed: false,
           dressing: false,
@@ -350,7 +361,7 @@ const PostSurgeryFollowUp: React.FC<PostSurgeryFollowUpProps> = ({
         setData([
           {
             id: "",
-            appointment_number: appointment_number || "",
+            appointment_number: currentAppointmentNumber || "",
             date: dayjs().format("YYYY-MM-DD"),
           },
         ]);
@@ -364,7 +375,7 @@ const PostSurgeryFollowUp: React.FC<PostSurgeryFollowUpProps> = ({
     formMode,
     viewMode,
     postSurgeryId,
-    appointment_number,
+    currentAppointmentNumber,
     patient_id,
     consultation_id,
   ]);
@@ -425,11 +436,6 @@ const PostSurgeryFollowUp: React.FC<PostSurgeryFollowUpProps> = ({
     (newRow: any[]) => {
       const newObj: Record<string, any> = {};
       newObj["id"] = "";
-      const existingAppointmentNumber = data.find(
-        (followUp: any) => followUp?.appointment_number,
-      )?.appointment_number;
-      const resolvedAppointmentNumber =
-        appointment_number || existingAppointmentNumber || "";
 
       const uiHeaders = tableHeaders.filter((h) => h.key !== "id");
 
@@ -438,7 +444,7 @@ const PostSurgeryFollowUp: React.FC<PostSurgeryFollowUpProps> = ({
 
         if (!value) {
           if (header.key === "appointment_number") {
-            value = resolvedAppointmentNumber;
+            value = currentAppointmentNumber;
           } else if (header.key === "date") {
             value = dayjs().format("YYYY-MM-DD");
           } else if (FOLLOW_UP_CHECKBOX_KEYS.includes(header.key)) {
@@ -463,8 +469,7 @@ const PostSurgeryFollowUp: React.FC<PostSurgeryFollowUpProps> = ({
     },
     [
       tableHeaders,
-      data,
-      appointment_number,
+      currentAppointmentNumber,
       patient_id,
       consultation_id,
       formMode,

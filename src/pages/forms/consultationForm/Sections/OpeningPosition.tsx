@@ -89,9 +89,13 @@ const HIGH_LOW_RIDING_OPTIONS = [
 ];
 interface OpeningPositionProps {
   initialData?: any;
+  formType?: "add" | "edit";
 }
 
-const OpeningPosition: React.FC<OpeningPositionProps> = ({ initialData }) => {
+const OpeningPosition: React.FC<OpeningPositionProps> = ({
+  initialData,
+  formType = "add",
+}) => {
   const consultationDetailData = initialData;
 
   // const consultationDetail = {
@@ -170,13 +174,8 @@ const OpeningPosition: React.FC<OpeningPositionProps> = ({ initialData }) => {
 
         type_of_crypt: typeOfCrypt[i] || "",
         crypt_cause: cryptCause[i] || "",
-        high_low_riding_type:
-          highLowValue.toLowerCase() === "low"
-            ? "Low"
-            : highLowValue
-              ? "High"
-              : "",
-        basis_of_high_low_riding: highLowValue,
+        high_low_riding_type: "",
+        basis_of_high_low_riding: formType === "edit" ? highLowValue : "",
         distant_visceral_communication: distantVisceral[i] || "",
 
         type_of_fistula_sphincter: fistulaSphincter[i] || "",
@@ -200,6 +199,7 @@ const OpeningPosition: React.FC<OpeningPositionProps> = ({ initialData }) => {
     values?.distant_visceral_communication,
     values?.type_of_fistula_sphincter,
     values?.type_of_fistula_position,
+    formType,
   ]);
 
   /* ---------- Handlers ---------- */
@@ -550,20 +550,18 @@ const OpeningPosition: React.FC<OpeningPositionProps> = ({ initialData }) => {
               </View>
             </View>
             <View className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-              <View>
+              <View className="flex flex-col gap-4">
                 <SingleSelector
                   id={`high_low_riding_type_${index}`}
                   label="On The Basis Of"
                   placeholder="Select High or Low"
-                  value={entry.high_low_riding_type}
+                  // value={entry.high_low_riding_type}
                   onChange={(val: string) =>
                     handleHighLowRidingChange(index, val)
                   }
                   options={HIGH_LOW_RIDING_OPTIONS}
                 />
-              </View>
-              {entry.high_low_riding_type === "High" && (
-                <View>
+                {entry.high_low_riding_type === "High" && (
                   <SingleSelector
                     id={`basis_of_high_low_riding_${index}`}
                     label="High Riding"
@@ -581,8 +579,8 @@ const OpeningPosition: React.FC<OpeningPositionProps> = ({ initialData }) => {
                         value: x.fistula_name,
                       }))}
                   />
-                </View>
-              )}
+                )}
+              </View>
               <View>
                 <Input
                   label="Any Other Distant or Visceral Communications"

@@ -969,6 +969,7 @@ const ConsultationForm: React.FC<FormTypeProps> = ({ formType = "add" }) => {
                       >
                         <NewSectionSeven
                           initialData={sectionSevenDetailData}
+                          formType={formType}
                           errorFistulaRecurrenceCount={
                             errors.fistula_recurrence_surgery_count
                           }
@@ -1058,7 +1059,7 @@ const ConsultationForm: React.FC<FormTypeProps> = ({ formType = "add" }) => {
                           maxRows={1}
                           features={{
                             allowDelete: false,
-                            showAPNColumn: true,
+                            showAPNColumn: false,
                           }}
                           showDownloadButton={false}
                         />
