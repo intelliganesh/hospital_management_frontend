@@ -5,6 +5,7 @@ import { ArchiveX, Check, X, Plus } from "lucide-react";
 import BouncingLoader from "./BouncingLoader";
 import Input from "./input";
 import Button from "./button";
+import Checkbox from "./CheckBox";
 import {
   Table,
   TableRow,
@@ -46,8 +47,17 @@ interface EditableTableProps {
   features?: {
     allowDelete?: boolean;
     showAPNColumn?: boolean;
+    checkboxColumns?: string[];
   };
 }
+
+const isCheckboxChecked = (value: any): boolean =>
+  value === true ||
+  value === 1 ||
+  value === "1" ||
+  value === "true" ||
+  value === "yes" ||
+  value === "on";
 
 const EditableTable: React.FC<EditableTableProps> = ({
   tableData,
@@ -81,7 +91,7 @@ const EditableTable: React.FC<EditableTableProps> = ({
   } | null>(null);
 
   const [editValue, setEditValue] = useState<string>("");
-  const [newRow, setNewRow] = useState<string[]>([]);
+  const [newRow, setNewRow] = useState<any[]>([]);
   const [isAddingRow, setIsAddingRow] = useState(false);
 
   const startEdit = useCallback(
@@ -118,7 +128,12 @@ const EditableTable: React.FC<EditableTableProps> = ({
   }, [tableHeaders.length, editMode, onRowAdd]);
 
   const saveNewRow = useCallback(() => {
-    if (onRowAdd && newRow.some((cell) => cell.trim() !== "")) {
+    if (
+      onRowAdd &&
+      newRow.some(
+        (cell) => cell !== "" && cell !== null && cell !== undefined,
+      )
+    ) {
       onRowAdd(newRow);
     }
     setNewRow([]);
@@ -130,7 +145,7 @@ const EditableTable: React.FC<EditableTableProps> = ({
     setIsAddingRow(false);
   }, []);
 
-  const updateNewRowCell = useCallback((colIndex: number, value: string) => {
+  const updateNewRowCell = useCallback((colIndex: number, value: any) => {
     setNewRow((prev) => {
       const updated = [...prev];
       updated[colIndex] = value;
@@ -172,20 +187,6 @@ const EditableTable: React.FC<EditableTableProps> = ({
 
   return (
     <View>
-      {/* Header controls */}
-      {addRowEnabled && !isReadOnly && (
-        <View>
-          <Button
-            variant="primary"
-            onClick={startAddRow}
-            disabled={(maxRows && tableData.length >= maxRows ? true : editMode === "click" && isAddingRow)}
-            className="flex items-center justify-center gap-2 w-full h-11 transition-all active:scale-[0.98]"
-          >
-            <Plus className="w-4.5 h-4.5" />
-            Add Row
-          </Button>
-        </View>
-      )}
       <View className="p-4 border-b border-border bg-card flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
         <View className="flex gap-2 w-full justify-between items-center">
           {header?.search}
@@ -207,11 +208,11 @@ const EditableTable: React.FC<EditableTableProps> = ({
               {tableHeaders
                 .filter((x) => {
                   if (x === "ID") {
-                    return x !== "ID"
-                  };
+                    return x !== "ID";
+                  }
                   if (x === "Appointment Number") {
                     return features?.showAPNColumn ? true : false;
-                  };
+                  }
                   return true;
                 })
                 .map((header, index) => (
@@ -270,74 +271,111 @@ const EditableTable: React.FC<EditableTableProps> = ({
                           return false;
                         return true;
                       })
-                      .map((cell, colIndex) => (
-                        <TableCell
-                          key={`td_${rowIndex}_${colIndex}`}
-                          className="py-3 px-4 whitespace-nowrap"
-                        >
-                          {editMode === "always" && editable && !isReadOnly ? (
-                            // Always-edit mode: render input directly with premium styling
-                            <Input
-                              value={cell || ""}
-                              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                if (onCellEdit) {
-                                  onCellEdit(rowIndex, features?.showAPNColumn ? colIndex + 1 : colIndex + 2, e.target.value);
-                                }
-                              }}
-                              className="min-w-[150px] h-10 border-muted-foreground/20 focus:border-primary transition-all rounded-lg"
-                              placeholder="Type here..."
-                            />
-                          ) : editingCell?.row === rowIndex &&
-                            editingCell?.col === colIndex ? (
-                            // Click mode: editing state
-                            <View className="flex items-center gap-2">
+                      .map((cell, colIndex) => {
+                        const actualColIndex = features?.showAPNColumn
+                          ? colIndex + 1
+                          : colIndex + 2;
+                        const isCheckboxColumn =
+                          features?.checkboxColumns?.includes(
+                            tableHeaders[actualColIndex],
+                          );
+
+                        return (
+                          <TableCell
+                            key={`td_${rowIndex}_${colIndex}`}
+                            className="py-3 px-4 whitespace-nowrap"
+                          >
+                            {isCheckboxColumn ? (
+                              <View className="flex justify-center">
+                                <Checkbox
+                                  checked={isCheckboxChecked(cell)}
+                                  disabled={!editable || isReadOnly}
+                                  onChange={(e) => {
+                                    onCellEdit?.(
+                                      rowIndex,
+                                      actualColIndex,
+                                      e.target.checked,
+                                    );
+                                  }}
+                                />
+                              </View>
+                            ) : editMode === "always" &&
+                              editable &&
+                              !isReadOnly ? (
+                              // Always-edit mode: render input directly with premium styling
                               <Input
-                                value={editValue}
+                                value={cell || ""}
                                 onChange={(
-                                  e: React.ChangeEvent<HTMLInputElement>
-                                ) => setEditValue(e.target.value)}
-                                onKeyDown={handleKeyPress}
-                                className="min-w-0 h-8"
-                                autoFocus
+                                  e: React.ChangeEvent<HTMLInputElement>,
+                                ) => {
+                                  if (onCellEdit) {
+                                    onCellEdit(
+                                      rowIndex,
+                                      actualColIndex,
+                                      e.target.value,
+                                    );
+                                  }
+                                }}
+                                className="min-w-[150px] h-10 border-muted-foreground/20 focus:border-primary transition-all rounded-lg"
+                                placeholder="Type here..."
                               />
-                              <Button
-                                variant="ghost"
-                                //   size="sm"
-                                onClick={saveEdit}
-                                className="h-8 w-8 p-0"
+                            ) : editingCell?.row === rowIndex &&
+                              editingCell?.col === colIndex ? (
+                              // Click mode: editing state
+                              <View className="flex items-center gap-2">
+                                <Input
+                                  value={editValue}
+                                  onChange={(
+                                    e: React.ChangeEvent<HTMLInputElement>,
+                                  ) => setEditValue(e.target.value)}
+                                  onKeyDown={handleKeyPress}
+                                  className="min-w-0 h-8"
+                                  autoFocus
+                                />
+                                <Button
+                                  variant="ghost"
+                                  //   size="sm"
+                                  onClick={saveEdit}
+                                  className="h-8 w-8 p-0"
+                                >
+                                  <Check className="w-4 h-4 text-green-600" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  //   size="sm"
+                                  onClick={cancelEdit}
+                                  className="h-8 w-8 p-0"
+                                >
+                                  <X className="w-4 h-4 text-red-600" />
+                                </Button>
+                              </View>
+                            ) : (
+                              // Click mode: display state
+                              <View
+                                className={`${
+                                  editable && !isReadOnly
+                                    ? "cursor-pointer hover:bg-muted/30 rounded px-2 py-1 -mx-2 -my-1"
+                                    : ""
+                                }`}
+                                onClick={() =>
+                                  editable &&
+                                  !isReadOnly &&
+                                  editMode === "click" &&
+                                  startEdit(rowIndex, colIndex, cell)
+                                }
                               >
-                                <Check className="w-4 h-4 text-green-600" />
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                //   size="sm"
-                                onClick={cancelEdit}
-                                className="h-8 w-8 p-0"
-                              >
-                                <X className="w-4 h-4 text-red-600" />
-                              </Button>
-                            </View>
-                          ) : (
-                            // Click mode: display state
-                            <View
-                              className={`${
-                                editable && !isReadOnly
-                                  ? "cursor-pointer hover:bg-muted/30 rounded px-2 py-1 -mx-2 -my-1"
-                                  : ""
-                              }`}
-                              onClick={() =>
-                                editable && !isReadOnly && editMode === "click" && startEdit(rowIndex, colIndex, cell)
-                              }
-                            >
-                              {cell || (
-                                <span className="text-muted-foreground italic">
-                                  {editable && !isReadOnly ? "Click to edit" : "—"}
-                                </span>
-                              )}
-                            </View>
-                          )}
-                        </TableCell>
-                      ))}
+                                {cell || (
+                                  <span className="text-muted-foreground italic">
+                                    {editable && !isReadOnly
+                                      ? "Click to edit"
+                                      : "—"}
+                                  </span>
+                                )}
+                              </View>
+                            )}
+                          </TableCell>
+                        );
+                      })}
                     {(editable || deleteRowEnabled) && (
                       <TableCell className="px-4">
                         <View className="flex items-center gap-1">
@@ -348,11 +386,11 @@ const EditableTable: React.FC<EditableTableProps> = ({
                               : showRowDelete) && (
                               <Button
                                 variant="ghost"
-                                disabled={!features?.allowDelete}
+                                // disabled={!features?.allowDelete}
                                 onClick={() => {
                                   if (
                                     window.confirm(
-                                      "Are you sure you want to delete this row?"
+                                      "Are you sure you want to delete this row?",
                                     )
                                   ) {
                                     onRowDelete(rowIndex);
@@ -388,28 +426,54 @@ const EditableTable: React.FC<EditableTableProps> = ({
                     {tableHeaders
                       .filter((x) => {
                         if (x === "ID") return false;
-                        if (x === "Appointment Number") return features?.showAPNColumn;
+                        if (x === "Appointment Number")
+                          return features?.showAPNColumn;
                         return true;
                       })
-                      .map((_, colIndex) => {
-                        const actualColIndex = features?.showAPNColumn ? colIndex + 1 : colIndex + 2;
+                      .map((header, colIndex) => {
+                        const actualColIndex = features?.showAPNColumn
+                          ? colIndex + 1
+                          : colIndex + 2;
+                        const isCheckboxColumn =
+                          features?.checkboxColumns?.includes(header);
                         return (
                           <TableCell
                             key={`new_${colIndex}`}
                             className="py-3 px-4"
                           >
-                            <Input
-                              data-col={colIndex}
-                              value={newRow[actualColIndex - 1] || ""}
-                              onChange={(
-                                e: React.ChangeEvent<HTMLInputElement>
-                              ) => updateNewRowCell(actualColIndex - 1, e.target.value)}
-                              onKeyDown={(e: React.KeyboardEvent) =>
-                                handleNewRowKeyPress(e, colIndex)
-                              }
-                              placeholder={`Enter ${tableHeaders[actualColIndex]}`}
-                              className="h-10 rounded-lg shadow-sm focus:ring-2 focus:ring-primary/20"
-                            />
+                            {isCheckboxColumn ? (
+                              <View className="flex justify-center">
+                                <Checkbox
+                                  checked={isCheckboxChecked(
+                                    newRow[actualColIndex - 1],
+                                  )}
+                                  onChange={(e) =>
+                                    updateNewRowCell(
+                                      actualColIndex - 1,
+                                      e.target.checked,
+                                    )
+                                  }
+                                />
+                              </View>
+                            ) : (
+                              <Input
+                                data-col={colIndex}
+                                value={newRow[actualColIndex - 1] || ""}
+                                onChange={(
+                                  e: React.ChangeEvent<HTMLInputElement>,
+                                ) =>
+                                  updateNewRowCell(
+                                    actualColIndex - 1,
+                                    e.target.value,
+                                  )
+                                }
+                                onKeyDown={(e: React.KeyboardEvent) =>
+                                  handleNewRowKeyPress(e, colIndex)
+                                }
+                                placeholder={`Enter ${tableHeaders[actualColIndex]}`}
+                                className="h-10 rounded-lg shadow-sm focus:ring-2 focus:ring-primary/20"
+                              />
+                            )}
                           </TableCell>
                         );
                       })}
@@ -443,6 +507,25 @@ const EditableTable: React.FC<EditableTableProps> = ({
 
       {/* Footer (pagination) */}
       {footer?.pagination && <View className="pt-4">{footer.pagination}</View>}
+
+      {/* Add Row Button */}
+      {addRowEnabled && !isReadOnly && (
+        <View>
+          <Button
+            variant="primary"
+            onClick={startAddRow}
+            disabled={
+              maxRows && tableData.length >= maxRows
+                ? true
+                : editMode === "click" && isAddingRow
+            }
+            className="flex items-center justify-center gap-2 w-full h-11 transition-all active:scale-[0.98] mt-4 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <Plus className="w-4.5 h-4.5" />
+            Add Row
+          </Button>
+        </View>
+      )}
     </View>
   );
 };

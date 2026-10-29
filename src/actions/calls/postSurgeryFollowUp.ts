@@ -201,7 +201,7 @@ export const usePostSurgery = () => {
         (response: AuthPayload, success: boolean, statusCode: number) => {
           if (success && statusCode === 200) {
             dispatch(postSurgeryFollowUpDetailDropdownSlice(response.data));
-            return callback(true);
+            return callback(true, response.data as any);
           } else {
             response && handleApiError(response);
             return callback(false);

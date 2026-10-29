@@ -30,9 +30,7 @@ import getStatusColorScheme from "@/utils/statusColorSchemaDecider";
 import { Plus, X } from "lucide-react";
 import { toast } from "@/utils/custom-hooks/use-toast";
 import { TAB_COLORS } from "../consultationFormConfig";
-import PostSurgeryFollowUp from "@/pages/postSurgeryFollowUp";
 // import RadioGroup from "@/components/RadioGroup";
-import Switch from "@/components/ui/switch";
 // import dayjs from "dayjs";
 // import Text from "@/components/text";
 // import Text from "@/components/text";
@@ -92,7 +90,6 @@ const SectionSix: React.FC<SectionFourProps> = ({
   const { consultationFeesDropdownHandler } = useConsultationFees();
   const [amountFor, setAmountFor] = useState<string>("");
   const [amount, setAmount] = useState<string>("");
-  const [postSurgeryData, setPostSurgeryData] = useState<any[]>([]);
 
 
   // const totalServiceCost = useExtractValue("serviceCost", "totalServiceCost");
@@ -749,75 +746,6 @@ const SectionSix: React.FC<SectionFourProps> = ({
         )
         }
 
-        {/* Post Surgery Follow Up */}
-         <View className=" mt-6 flex items-center justify-between border-t border-b border-border p-2 bg-background">
-              <Text className="text-sm font-semibold">Post Surgery Follow Up </Text>
-              <View className="flex items-center">
-                <Switch
-                showIcons
-                size="medium"
-                variant="green"
-                labelPosition="right"
-                // id="post_surgery_details"
-                name="post_surgery_details"
-                onChange={(checked)=>{
-                  // setShowPostSurgery(checked);
-                  
-                  onSetHandler("post_surgery_details", checked ? "yes" : "no");
-                }}
-                checked={values?.post_surgery_details ? values?.post_surgery_details === "yes" : false}
-                // defaultChecked={values?.post_surgery_details === "yes"}
-              />
-              </View>
-            </View>
-        {
-          values?.post_surgery_details === "yes" && ( 
-        <View className="mt-6">
-          {/* <PostSurgeryFollowUp
-            patient_id={consultationDetail?.consultations?.patient_id}
-            consultation_id={consultationDetail?.consultations?.id}
-            appointment_number={consultationDetail?.consultations?.appointment_number}
-            onRecordsChange={(data: any[]) => {
-              console.log("data", data);
-              setPostSurgeryData(data);
-              onSetHandler("post_surgery_followup", data[0]);
-            }}
-            mode="embedded"
-            maxRows={1}
-            features={{ showDownloadButtons: false,
-              allowDelete: false,
-             }}
-          /> */}
-          <PostSurgeryFollowUp
-            patient_id={consultationDetail?.consultations?.patient_id}
-            consultation_id={consultationDetail?.consultations?.id}
-            appointment_number={consultationDetail?.consultations?.appointment_number}
-            onRecordsChange={(data: any[]) => {
-              setPostSurgeryData(data);
-              onSetHandler("post_surgery_followup", postSurgeryData[0]);
-            }}
-            formMode={true}
-            maxRows={1}
-            // viewMode={false}
-            features={{
-              allowDelete: false,
-              showAPNColumn: false,
-             }}
-            showDownloadButton={false}
-          />
-
-          
-          <Input
-            type="text"
-            id="post_surgery_followup"
-            name="post_surgery_followup"
-            label="Post Surgery Follow Up"
-            value={JSON.stringify(postSurgeryData[0])}
-            hidden
-          />
-        </View>
-        )
-        }
         {/* Cost summary  */}
         <View className="mt-12">
           <CostSummary />

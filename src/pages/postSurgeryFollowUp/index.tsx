@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import { usePostSurgery } from "@/actions/calls/postSurgeryFollowUp";
 
@@ -18,12 +18,49 @@ import { toast } from "@/utils/custom-hooks/use-toast";
 import dayjs from "dayjs";
 import { Download } from "lucide-react";
 
+const FOLLOW_UP_CHECKBOX_COLUMNS = [
+  "KS Changed",
+  "Dressing",
+  "Partial Lay Open",
+  "Follow-up Examination",
+  "New Abscess I&D",
+];
+
+const FOLLOW_UP_CHECKBOX_KEYS = [
+  "ks_changed",
+  "dressing",
+  "partial_lay_open",
+  "follow_up_examination",
+  "new_abscess_threading",
+];
+
+const getMostRecentSurgery = (surgeries: any[]) =>
+  surgeries.reduce((latest: any, surgery: any) => {
+    if (!latest) return surgery;
+
+    const latestDate = dayjs(latest.date);
+    const surgeryDate = dayjs(surgery.date);
+
+    if (!surgeryDate.isValid()) return latest;
+    if (!latestDate.isValid()) return surgery;
+
+    if (surgeryDate.isAfter(latestDate)) return surgery;
+    if (surgeryDate.isBefore(latestDate)) return latest;
+
+    // Surgery dates do not include time. UUID v7 IDs are time ordered,
+    // so use the greater ID for surgeries created on the same date.
+    return String(surgery.id).localeCompare(String(latest.id)) > 0
+      ? surgery
+      : latest;
+  }, null);
+
 interface PostSurgeryFollowUpProps {
   patient_id?: string;
   consultation_id?: string;
   appointment_number?: string;
   formMode?: boolean;
   viewMode?: boolean;
+  autoSelectLatestSurgery?: boolean;
   onRecordsChange?: (data: any[]) => void;
   showDownloadButton?: boolean;
   maxRows?: number;
@@ -38,6 +75,7 @@ const PostSurgeryFollowUp: React.FC<PostSurgeryFollowUpProps> = ({
   appointment_number = "",
   formMode = false,
   viewMode = false,
+  autoSelectLatestSurgery = false,
   onRecordsChange,
   showDownloadButton = true,
   maxRows,
@@ -73,6 +111,11 @@ const PostSurgeryFollowUp: React.FC<PostSurgeryFollowUpProps> = ({
     });
 
   const [data, setData] = useState<any[]>([]);
+  const onRecordsChangeRef = useRef(onRecordsChange);
+
+  useEffect(() => {
+    onRecordsChangeRef.current = onRecordsChange;
+  }, [onRecordsChange]);
 
   const {
     postSurgeryListHandler,
@@ -106,6 +149,30 @@ const PostSurgeryFollowUp: React.FC<PostSurgeryFollowUpProps> = ({
         value: item.id,
       }))
     : [];
+
+  useEffect(() => {
+    if (
+      (!formMode && !autoSelectLatestSurgery) ||
+      postSurgeryId ||
+      !Array.isArray(postSurgeryFollowUpDetailDropdownData) ||
+      postSurgeryFollowUpDetailDropdownData.length === 0
+    ) {
+      return;
+    }
+
+    const mostRecentSurgery = getMostRecentSurgery(
+      postSurgeryFollowUpDetailDropdownData,
+    );
+
+    if (mostRecentSurgery?.id) {
+      setPostSurgeryId(mostRecentSurgery.id);
+    }
+  }, [
+    formMode,
+    autoSelectLatestSurgery,
+    postSurgeryId,
+    postSurgeryFollowUpDetailDropdownData,
+  ]);
 
   // const patientConsultationData = useSelector(
   //   (state: RootState) => state.patient.patientConsultationData
@@ -141,7 +208,17 @@ const PostSurgeryFollowUp: React.FC<PostSurgeryFollowUpProps> = ({
             });
             setToogleForm(false);
             setShowFollowUps(true);
-            postSurgeryFollowUpDetailDropdownHandler(patientId, () => {});
+            postSurgeryFollowUpDetailDropdownHandler(
+              patientId,
+              (dropdownStatus: boolean, dropdownData: any) => {
+                if (!dropdownStatus || !Array.isArray(dropdownData)) return;
+
+                const mostRecentSurgery = getMostRecentSurgery(dropdownData);
+                if (mostRecentSurgery?.id) {
+                  setPostSurgeryId(mostRecentSurgery.id);
+                }
+              },
+            );
           } else {
             setIsSubmitting(false);
             // toast({
@@ -167,6 +244,11 @@ const PostSurgeryFollowUp: React.FC<PostSurgeryFollowUpProps> = ({
   };
 
   useEffect(() => {
+    if (!postSurgeryId) {
+      setData([]);
+      return;
+    }
+
     postSurgeryListHandler(
       searchParams?.get("currentPage") ?? 1,
       () => {},
@@ -204,21 +286,35 @@ const PostSurgeryFollowUp: React.FC<PostSurgeryFollowUpProps> = ({
   }, [patientId]);
 
   useEffect(() => {
-    if (postSurgeryListData?.data) {
-      let updatedData = [...postSurgeryListData.data];
+    if (!postSurgeryId) {
+      setData([]);
+      return;
+    }
+
+    if (postSurgeryListData?.data?.length) {
+      const responseAppointmentNumber = postSurgeryListData.data.find(
+        (followUp: any) => followUp?.appointment_number,
+      )?.appointment_number;
+      const resolvedAppointmentNumber =
+        appointment_number || responseAppointmentNumber || "";
+      const updatedData = postSurgeryListData.data.map((followUp: any) => ({
+        ...followUp,
+        appointment_number:
+          followUp?.appointment_number || resolvedAppointmentNumber,
+      }));
 
       // Standalone mode: Always ensure an empty row at the bottom for new entries
       if (!formMode && !viewMode) {
         const dummyRow = {
           id: "",
-          appointment_number: appointment_number || "",
+          appointment_number: resolvedAppointmentNumber,
           date: dayjs().format("YYYY-MM-DD"),
-          ks_changed: "",
-          dressing: "",
-          partial_lay_open: "",
-          follow_up_examination: "",
+          ks_changed: false,
+          dressing: false,
+          partial_lay_open: false,
+          follow_up_examination: false,
           // new_abscess_i_or_d: "",
-          new_abscess_threading: "",
+          new_abscess_threading: false,
           // new_tract_primary_threading: "",
           cut_through: "",
           // cut_through_or_any_other: "",
@@ -228,6 +324,27 @@ const PostSurgeryFollowUp: React.FC<PostSurgeryFollowUpProps> = ({
 
       setData(updatedData);
     } else {
+      if (formMode && postSurgeryId) {
+        const defaultRow = {
+          id: "",
+          appointment_number: appointment_number || "",
+          date: dayjs().format("YYYY-MM-DD"),
+          ks_changed: false,
+          dressing: false,
+          partial_lay_open: false,
+          follow_up_examination: false,
+          new_abscess_threading: false,
+          cut_through: "",
+          patient_id: patient_id || "",
+          consultation_id: consultation_id || "",
+          post_surgery_details_id: postSurgeryId,
+        };
+
+        setData([defaultRow]);
+        onRecordsChangeRef.current?.([defaultRow]);
+        return;
+      }
+
       // If no data, but in standalone mode, still show one empty row
       if (!formMode && !viewMode && postSurgeryId) {
         setData([
@@ -248,6 +365,8 @@ const PostSurgeryFollowUp: React.FC<PostSurgeryFollowUpProps> = ({
     viewMode,
     postSurgeryId,
     appointment_number,
+    patient_id,
+    consultation_id,
   ]);
 
   // const tableHeaders = [
@@ -306,6 +425,11 @@ const PostSurgeryFollowUp: React.FC<PostSurgeryFollowUpProps> = ({
     (newRow: any[]) => {
       const newObj: Record<string, any> = {};
       newObj["id"] = "";
+      const existingAppointmentNumber = data.find(
+        (followUp: any) => followUp?.appointment_number,
+      )?.appointment_number;
+      const resolvedAppointmentNumber =
+        appointment_number || existingAppointmentNumber || "";
 
       const uiHeaders = tableHeaders.filter((h) => h.key !== "id");
 
@@ -314,9 +438,11 @@ const PostSurgeryFollowUp: React.FC<PostSurgeryFollowUpProps> = ({
 
         if (!value) {
           if (header.key === "appointment_number") {
-            value = appointment_number || "";
+            value = resolvedAppointmentNumber;
           } else if (header.key === "date") {
             value = dayjs().format("YYYY-MM-DD");
+          } else if (FOLLOW_UP_CHECKBOX_KEYS.includes(header.key)) {
+            value = false;
           }
         }
 
@@ -337,6 +463,7 @@ const PostSurgeryFollowUp: React.FC<PostSurgeryFollowUpProps> = ({
     },
     [
       tableHeaders,
+      data,
       appointment_number,
       patient_id,
       consultation_id,
@@ -580,7 +707,10 @@ const PostSurgeryFollowUp: React.FC<PostSurgeryFollowUpProps> = ({
               showRowSave={!formMode}
               showRowDelete={(row) => !!row[0]} // row[0] is the ID column
               isReadOnly={viewMode}
-              features={features}
+              features={{
+                ...features,
+                checkboxColumns: FOLLOW_UP_CHECKBOX_COLUMNS,
+              }}
               onSubmitCompleteRow={(data: any) => {
                 // Only call API in standalone mode
                 if (formMode) return;
