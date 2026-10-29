@@ -41,6 +41,7 @@ interface SectionFourProps {
   mainOnSetHandler: (name: string, value: any) => void;
   autoOpen: boolean;
   colorScheme?: any;
+  postSurgeryFollowUps?: any[];
 }
 
 const POST_SURGERY_TREATMENT_FIELDS = [
@@ -57,7 +58,11 @@ const GENERATED_TREATMENT_GIVEN_PATTERN =
 const isSelectedTreatment = (value: any) =>
   value === true || value === 1 || value === "1" || value === "true";
 
-const SectionFour: React.FC<SectionFourProps> = ({ autoOpen, colorScheme }) => {
+const SectionFour: React.FC<SectionFourProps> = ({
+  autoOpen,
+  colorScheme,
+  postSurgeryFollowUps,
+}) => {
   // const examinationDetails = useSelector(
   //   (state: RootState) => state.examinations.examinationDetails
   // );
@@ -215,9 +220,10 @@ const SectionFour: React.FC<SectionFourProps> = ({ autoOpen, colorScheme }) => {
   }, [onSetHandler]);
 
   useEffect(() => {
-    const followUps = Array.isArray(postSurgeryListData?.data)
-      ? postSurgeryListData.data
-      : [];
+    const followUps = postSurgeryFollowUps ??
+      (Array.isArray(postSurgeryListData?.data)
+        ? postSurgeryListData.data
+        : []);
 
     const selectedTreatments = POST_SURGERY_TREATMENT_FIELDS.filter(
       ({ key }) =>
@@ -238,7 +244,7 @@ const SectionFour: React.FC<SectionFourProps> = ({ autoOpen, colorScheme }) => {
     if (updatedAdvice !== currentAdvice) {
       onSetHandlerRef.current("advice", updatedAdvice);
     }
-  }, [postSurgeryListData]);
+  }, [postSurgeryListData, postSurgeryFollowUps]);
 
   const dispatch = useDispatch();
 

@@ -61,6 +61,7 @@ interface PostSurgeryFollowUpProps {
   formMode?: boolean;
   viewMode?: boolean;
   autoSelectLatestSurgery?: boolean;
+  showDefaultRow?: boolean;
   onRecordsChange?: (data: any[]) => void;
   showDownloadButton?: boolean;
   maxRows?: number;
@@ -76,6 +77,7 @@ const PostSurgeryFollowUp: React.FC<PostSurgeryFollowUpProps> = ({
   formMode = false,
   viewMode = false,
   autoSelectLatestSurgery = false,
+  showDefaultRow = false,
   onRecordsChange,
   showDownloadButton = true,
   maxRows,
@@ -315,7 +317,7 @@ const PostSurgeryFollowUp: React.FC<PostSurgeryFollowUpProps> = ({
       }));
 
       // Standalone mode: Always ensure an empty row at the bottom for new entries
-      if (!formMode && !viewMode) {
+      if (!formMode && (!viewMode || showDefaultRow)) {
         const dummyRow = {
           id: "",
           appointment_number: currentAppointmentNumber,
@@ -334,6 +336,9 @@ const PostSurgeryFollowUp: React.FC<PostSurgeryFollowUpProps> = ({
       }
 
       setData(updatedData);
+      if (formMode) {
+        onRecordsChangeRef.current?.(updatedData);
+      }
     } else {
       if (formMode && postSurgeryId) {
         const defaultRow = {
@@ -357,7 +362,7 @@ const PostSurgeryFollowUp: React.FC<PostSurgeryFollowUpProps> = ({
       }
 
       // If no data, but in standalone mode, still show one empty row
-      if (!formMode && !viewMode && postSurgeryId) {
+      if (!formMode && (!viewMode || showDefaultRow) && postSurgeryId) {
         setData([
           {
             id: "",
@@ -374,6 +379,7 @@ const PostSurgeryFollowUp: React.FC<PostSurgeryFollowUpProps> = ({
     postSurgeryListData,
     formMode,
     viewMode,
+    showDefaultRow,
     postSurgeryId,
     currentAppointmentNumber,
     patient_id,

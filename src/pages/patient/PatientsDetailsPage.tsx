@@ -227,6 +227,8 @@ const PatientDetailsPage = () => {
           <View>
             <PostSurgeryFollowUp
               patient_id={patient?.id}
+              autoSelectLatestSurgery={true}
+              showDefaultRow={true}
               viewMode={true}
               showDownloadButton={true}
               features={{

@@ -1111,6 +1111,11 @@ const ConsultationForm: React.FC<FormTypeProps> = ({ formType = "add" }) => {
                 >
                   <NewSectionFour
                     mainOnSetHandler={onSetHandler}
+                    postSurgeryFollowUps={
+                      formValues?.post_surgery_details === "yes"
+                        ? postSurgeryData
+                        : undefined
+                    }
                     autoOpen={expandedSection === "medicineLifestyle"}
                     colorScheme={TAB_COLORS.medicineLifestyle}
                   />

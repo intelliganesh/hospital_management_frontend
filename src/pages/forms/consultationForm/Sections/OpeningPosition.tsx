@@ -61,6 +61,7 @@ const REPEATABLE_FIELDS: (keyof EntryType)[] = [
   "any_other",
   "type_of_crypt",
   "crypt_cause",
+  "high_low_riding_type",
   "basis_of_high_low_riding",
   "distant_visceral_communication",
   "type_of_fistula_sphincter",
@@ -148,6 +149,7 @@ const OpeningPosition: React.FC<OpeningPositionProps> = ({
 
     const typeOfCrypt = values.type_of_crypt?.split("#") || [];
     const cryptCause = values.crypt_cause?.split("#") || [];
+    const highLowTypes = values.high_low_riding_type?.split("#") || [];
     const highLow = values.basis_of_high_low_riding?.split("#") || [];
     const distantVisceral =
       values.distant_visceral_communication?.split("#") || [];
@@ -174,7 +176,13 @@ const OpeningPosition: React.FC<OpeningPositionProps> = ({
 
         type_of_crypt: typeOfCrypt[i] || "",
         crypt_cause: cryptCause[i] || "",
-        high_low_riding_type: "",
+        high_low_riding_type:
+          formType === "edit" &&
+          HIGH_LOW_RIDING_OPTIONS.some(
+            (option) => option.value === highLowTypes[i],
+          )
+            ? highLowTypes[i]
+            : "",
         basis_of_high_low_riding: formType === "edit" ? highLowValue : "",
         distant_visceral_communication: distantVisceral[i] || "",
 
@@ -195,6 +203,7 @@ const OpeningPosition: React.FC<OpeningPositionProps> = ({
     values?.any_other,
     values?.type_of_crypt,
     values?.crypt_cause,
+    values?.high_low_riding_type,
     values?.basis_of_high_low_riding,
     values?.distant_visceral_communication,
     values?.type_of_fistula_sphincter,
@@ -221,7 +230,6 @@ const OpeningPosition: React.FC<OpeningPositionProps> = ({
       copy[index] = {
         ...copy[index],
         high_low_riding_type: value,
-        basis_of_high_low_riding: value === "Low" ? "Low" : "",
       };
       return copy;
     });
@@ -555,7 +563,7 @@ const OpeningPosition: React.FC<OpeningPositionProps> = ({
                   id={`high_low_riding_type_${index}`}
                   label="On The Basis Of"
                   placeholder="Select High or Low"
-                  // value={entry.high_low_riding_type}
+                  value={entry.high_low_riding_type}
                   onChange={(val: string) =>
                     handleHighLowRidingChange(index, val)
                   }

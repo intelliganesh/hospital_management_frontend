@@ -386,7 +386,7 @@ const EditableTable: React.FC<EditableTableProps> = ({
                               : showRowDelete) && (
                               <Button
                                 variant="ghost"
-                                // disabled={!features?.allowDelete}
+                                disabled={!features?.allowDelete}
                                 onClick={() => {
                                   if (
                                     window.confirm(
