@@ -1,3 +1,7 @@
+import DetailsBreadcrumb, {
+  DetailsBreadcrumbProps,
+} from "@/components/DetailsBreadcrumb";
+import { APPOINTMENT_TABLE_URL as BREADCRUMB_LIST_URL } from "@/utils/urls/frontend";
 import AppointmentIndex from ".";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
@@ -7,7 +11,9 @@ import { useAppointments } from "@/actions/calls/appointments";
 import View from "@/components/view";
 import BouncingLoader from "@/components/BouncingLoader";
 
-const AppointmentDetailsPage = () => {
+const AppointmentDetailsPage = ({
+  breadcrumbParent,
+}: { breadcrumbParent?: DetailsBreadcrumbProps }) => {
   const params = useParams();
   const [isLoading, setIsLoading] = useState(true);
 
@@ -27,6 +33,17 @@ const AppointmentDetailsPage = () => {
   }, [params.id]);
 
   return <>
+      <DetailsBreadcrumb
+        parentLabel="Appointments"
+        label={
+          String(
+            appointmentDetails?.appointment_number ||
+            appointmentDetails?.patient_name || "Details",
+          )
+        }
+        parentTo={`${BREADCRUMB_LIST_URL}?currentPage=1`}
+      {...breadcrumbParent}
+      />
      <View className="fixed top-4 left-0  w-full z-50">
              <BouncingLoader  isLoading={isLoading} />
            </View>

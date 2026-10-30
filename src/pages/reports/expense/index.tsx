@@ -34,6 +34,7 @@ import { clearList } from "@/actions/slices/expenseReport";
 import { useExpenseReport } from "@/actions/calls/reports/expenses";
 import { EXPENSE_REPORT_DOWNLOAD_URL } from "@/utils/urls/backend";
 import { handleApiError } from "@/utils/errorHandler";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 // import { Plus } from "lucide-react";
 // import DataSort from "@/components/SortData";
 // import ActionMenu from "@/components/editDeleteAction";
@@ -174,6 +175,21 @@ const Expense: React.FC<{}> = ({}) => {
       <View className="fixed top-4 left-0  w-full z-50">
         <BouncingLoader isLoading={loadingStatus} />
       </View>
+      <Breadcrumb className="mb-4">
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink to="/">Dashboard</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbLink to="#">Reports</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>Expense Report</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
       <View className="mb-6">
         <Text
           as="h1"

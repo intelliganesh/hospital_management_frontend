@@ -35,6 +35,7 @@ import { useAmountType } from "@/actions/calls/amountType";
 import { Separator } from "@/components/ui/separator";
 import { handleApiError } from "@/utils/errorHandler";
 import PaymentTreemap from "@/components/PaymentTreemap";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 
 const Invoice: React.FC<{}> = ({ }) => {
   //   const navigate = useNavigate();
@@ -389,6 +390,21 @@ const Invoice: React.FC<{}> = ({ }) => {
       <View className="fixed top-4 left-0  w-full z-50">
         <BouncingLoader isLoading={loadingStatus} />
       </View>
+      <Breadcrumb className="mb-4">
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink to="/">Dashboard</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbLink to="#">Reports</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>Invoice Report</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
       <View className="flex justify-between items-center mb-6">
         <View className="flex items-center gap-3 mb-4">
           <View className="p-2 rounded-lg bg-primary/10">
@@ -423,8 +439,9 @@ const Invoice: React.FC<{}> = ({ }) => {
       <View className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <InfoCard
           label="Amount Billed"
-          value={`${currencySymbol || ""}${invoiceReportList?.includeInvoiceAmount || "0"
-            }`}
+          value={`${currencySymbol || ""}${
+            invoiceReportList?.includeInvoiceAmount || "0"
+          }`}
           valueStyle="!text-blue-600 dark:!text-blue-400 !text-2xl"
           icon={<FileText size={20} />}
           iconStyle="!bg-gradient-to-br !from-blue-100 !via-blue-200 !to-blue-300 dark:!from-blue-800/40 dark:!via-blue-700/40 dark:!to-blue-600/40 !text-blue-600 dark:!text-blue-400 !shadow-lg !shadow-blue-500/25 dark:!shadow-blue-400/20"
@@ -433,8 +450,9 @@ const Invoice: React.FC<{}> = ({ }) => {
 
         <InfoCard
           label="Amount Collected"
-          value={`${currencySymbol || ""}${invoiceReportList?.collected_amount || "0"
-            }`}
+          value={`${currencySymbol || ""}${
+            invoiceReportList?.collected_amount || "0"
+          }`}
           valueStyle="!text-emerald-600 dark:!text-emerald-400 !text-2xl"
           icon={<TrendingUp size={20} />}
           iconStyle="!bg-gradient-to-br !from-emerald-100 !via-emerald-200 !to-emerald-300 dark:!from-emerald-800/40 dark:!via-emerald-700/40 dark:!to-emerald-600/40 !text-emerald-600 dark:!text-emerald-400 !shadow-lg !shadow-emerald-500/25 dark:!shadow-emerald-400/20"
@@ -443,8 +461,9 @@ const Invoice: React.FC<{}> = ({ }) => {
 
         <InfoCard
           label="Cancelled by Patient"
-          value={`${currencySymbol || ""}${invoiceReportList?.excludeInvoiceAmount || "0"
-            }`}
+          value={`${currencySymbol || ""}${
+            invoiceReportList?.excludeInvoiceAmount || "0"
+          }`}
           valueStyle="!text-red-600 dark:!text-red-400 !text-2xl"
           icon={<UserX size={20} />}
           iconStyle="!bg-gradient-to-br !from-red-100 !via-red-200 !to-red-300 dark:!from-red-800/40 dark:!via-red-700/40 dark:!to-red-600/40 !text-red-600 dark:!text-red-400 !shadow-lg !shadow-red-500/25 dark:!shadow-red-400/20"
@@ -453,8 +472,9 @@ const Invoice: React.FC<{}> = ({ }) => {
 
         <InfoCard
           label="Discount Amount"
-          value={`${currencySymbol || ""}${invoiceReportList?.discountIncludeInvoiceAmount || "0"
-            }`}
+          value={`${currencySymbol || ""}${
+            invoiceReportList?.discountIncludeInvoiceAmount || "0"
+          }`}
           valueStyle="!text-orange-600 dark:!text-orange-400 !text-2xl"
           icon={<Percent size={20} />}
           iconStyle="!bg-gradient-to-br !from-orange-100 !via-orange-200 !to-orange-300 dark:!from-orange-800/40 dark:!via-orange-700/40 dark:!to-orange-600/40 !text-orange-600 dark:!text-orange-400 !shadow-lg !shadow-orange-500/25 dark:!shadow-orange-400/20"

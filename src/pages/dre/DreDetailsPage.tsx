@@ -1,3 +1,5 @@
+import DetailsBreadcrumb from "@/components/DetailsBreadcrumb";
+import { DRE_TABLE_URL as BREADCRUMB_LIST_URL } from "@/utils/urls/frontend";
 // import AppointmentIndex from ".";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -53,6 +55,12 @@ const DietDetailsPage = () => {
     <View className="min-h-screen p-4">
       <BouncingLoader isLoading={isLoading} />
       <View className="max-w-4xl mx-auto space-y-6">
+        <DetailsBreadcrumb
+          parentLabel="DRE"
+          label={String(dietData?.diet_name || "Details")}
+          parentTo={`${BREADCRUMB_LIST_URL}?currentPage=1`}
+          masters
+        />
         {/* Header */}
         <View className="flex items-center gap-4 mb-6 flex item-center justify-between">
           <View>

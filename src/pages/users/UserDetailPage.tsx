@@ -1,3 +1,5 @@
+import DetailsBreadcrumb from "@/components/DetailsBreadcrumb";
+import { USER_TABLE_URL as BREADCRUMB_LIST_URL } from "@/utils/urls/frontend";
 import View from "@/components/view";
 import Text from "@/components/text";
 import Input from "@/components/input";
@@ -253,6 +255,11 @@ const UserDetailPage: React.FC<{}> = () => {
       <BouncingLoader isLoading={isLoading} />
       {/* </View> */}
       <View className="max-w-6xl mx-auto">
+        <DetailsBreadcrumb
+          parentLabel="Users"
+          label={String(userDetails?.name || "Details")}
+          parentTo={`${BREADCRUMB_LIST_URL}?currentPage=1`}
+        />
         <View className="flex justify-between items-center mb-6">
           <View>
             <Text

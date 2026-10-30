@@ -27,6 +27,7 @@ import { useConsultationReport } from "@/actions/calls/reports/consultationRepor
 import { CONSULTATION_REPORT_LIST_DOWNLOAD_URL } from "@/utils/urls/backend";
 import { handleApiError } from "@/utils/errorHandler";
 import { useOpd } from "@/actions/calls/opd";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 
 export const formatClockPositions = (value?: string | null) => {
   if (!value) return "-";
@@ -258,6 +259,21 @@ const ConsultationReport: React.FC<{}> = ({ }) => {
       <View className="fixed top-4 left-0  w-full z-50">
         <BouncingLoader isLoading={loadingStatus} />
       </View>
+      <Breadcrumb className="mb-4">
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink to="/">Dashboard</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbLink to="#">Reports</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>Fistula Report</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
       <View className="mb-6">
         <Text
           as="h1"
@@ -281,8 +297,9 @@ const ConsultationReport: React.FC<{}> = ({ }) => {
         />
         <InfoCard
           label="Total Revenue"
-          value={`${currencySymbol}${consultationReportList?.totalRevenue || "0"
-            }`}
+          value={`${currencySymbol}${
+            consultationReportList?.totalRevenue || "0"
+          }`}
           valueStyle="!text-emerald-600 dark:!text-emerald-400 !text-2xl"
           icon={<TrendingUp size={20} />}
           iconStyle="!bg-gradient-to-br !from-emerald-100 !via-emerald-200 !to-emerald-300 dark:!from-emerald-800/40 dark:!via-emerald-700/40 dark:!to-emerald-600/40 !text-emerald-600 dark:!text-emerald-400 !shadow-lg !shadow-emerald-500/25 dark:!shadow-emerald-400/20"
@@ -290,8 +307,9 @@ const ConsultationReport: React.FC<{}> = ({ }) => {
         />
         <InfoCard
           label="Pending Payments"
-          value={`${currencySymbol}${consultationReportList?.pendingPayments || "0"
-            }`}
+          value={`${currencySymbol}${
+            consultationReportList?.pendingPayments || "0"
+          }`}
           valueStyle="!text-orange-600 dark:!text-orange-400 !text-2xl"
           icon={<FileText size={20} />}
           iconStyle="!bg-gradient-to-br !from-orange-100 !via-orange-200 !to-orange-300 dark:!from-orange-800/40 dark:!via-orange-700/40 dark:!to-orange-600/40 !text-orange-600 dark:!text-orange-400 !shadow-lg !shadow-orange-500/25 dark:!shadow-orange-400/20"
@@ -299,8 +317,9 @@ const ConsultationReport: React.FC<{}> = ({ }) => {
         />
         <InfoCard
           label="Completed Payments"
-          value={`${currencySymbol}${consultationReportList?.completedPayments || "0"
-            }`}
+          value={`${currencySymbol}${
+            consultationReportList?.completedPayments || "0"
+          }`}
           valueStyle="!text-purple-600 dark:!text-purple-400 !text-2xl"
           icon={<UserCheck size={20} />}
           iconStyle="!bg-gradient-to-br !from-purple-100 !via-purple-200 !to-purple-300 dark:!from-purple-800/40 dark:!via-purple-700/40 dark:!to-purple-600/40 !text-purple-600 dark:!text-purple-400 !shadow-lg !shadow-purple-500/25 dark:!shadow-purple-400/20"

@@ -1,3 +1,4 @@
+import MastersBreadcrumb from "@/components/MastersBreadcrumb";
 import { useBillingServiceCategory } from "@/actions/calls/billingServiceCategory";
 import BouncingLoader from "@/components/BouncingLoader";
 import Button from "@/components/button";
@@ -90,6 +91,7 @@ const BillingServiceCategoryPage: React.FC = () => {
 
   return (
     <React.Fragment>
+      <MastersBreadcrumb label="Billing Service Categories" />
       <BouncingLoader isLoading={isLoading} />
       <Modal
         title="Billing Service Category Delete"

@@ -1,3 +1,5 @@
+import DetailsBreadcrumb from "@/components/DetailsBreadcrumb";
+import { ONLINE_APPOINTMENT_TABLE_URL as BREADCRUMB_LIST_URL } from "@/utils/urls/frontend";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/actions/store";
@@ -311,6 +313,11 @@ ${appointment.meeting_link}
 
   return (
     <View className="p-6 space-y-6 bg-background min-h-screen">
+      <DetailsBreadcrumb
+        parentLabel="Online Appointments"
+        label={String(appointment?.appointment_reference_number || appointment?.name || "Details")}
+        parentTo={`${BREADCRUMB_LIST_URL}?currentPage=1`}
+      />
       <View className="fixed top-4 left-0 w-full z-50">
         <BouncingLoader isLoading={isDataLoading || isLoading} />
       </View>

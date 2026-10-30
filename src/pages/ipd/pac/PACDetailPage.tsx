@@ -1,3 +1,4 @@
+import DetailsBreadcrumb from "@/components/DetailsBreadcrumb";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import View from "@/components/view";
@@ -243,6 +244,11 @@ const PACDetailPage: React.FC = () => {
 
   return (
     <View className="p-4 md:p-8 space-y-6 max-w-9xl mx-auto animate-in fade-in duration-700">
+      <DetailsBreadcrumb
+        parentLabel="PAC"
+        label={String(anaesthesiaDetail?.id || pacId || "Details")}
+        parentTo={`/ipd/${_id}/pac?currentPage=1`}
+      />
       <View className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <View className="space-y-1">
           <Text

@@ -1,3 +1,4 @@
+import MastersBreadcrumb from "@/components/MastersBreadcrumb";
 // import { useRoom } from "@/actions/calls/rooms";
 import { useWards } from "@/actions/calls/wards";
 import { RootState } from "@/actions/store";
@@ -97,6 +98,7 @@ const WardsPage: React.FC<{}> = () => {
   // };
   return (
     <React.Fragment>
+      <MastersBreadcrumb label="Wards" />
       <Modal
         title="Ward Delete"
         isOpen={deleteId ? true : false}

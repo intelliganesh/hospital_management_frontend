@@ -1,3 +1,5 @@
+import DetailsBreadcrumb from "@/components/DetailsBreadcrumb";
+import { COMORBIDITIES_TABLE_URL as BREADCRUMB_LIST_URL } from "@/utils/urls/frontend";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, AlertCircle } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -73,6 +75,12 @@ const ComorbidityDetail = () => {
 
   return (
     <View className="container mx-auto p-4 max-w-4xl">
+      <DetailsBreadcrumb
+        parentLabel="Comorbidities"
+        label={String(comorbidityData?.name || "Details")}
+        parentTo={`${BREADCRUMB_LIST_URL}?currentPage=1`}
+        masters
+      />
       <BouncingLoader isLoading={isLoading} />
 
       {/* Header */}

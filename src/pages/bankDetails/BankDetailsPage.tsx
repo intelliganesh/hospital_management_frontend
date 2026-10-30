@@ -1,3 +1,4 @@
+import MastersBreadcrumb from "@/components/MastersBreadcrumb";
 import { useBankDetails } from "@/actions/calls/bankDetails";
 import { RootState } from "@/actions/store";
 import BouncingLoader from "@/components/BouncingLoader";
@@ -115,6 +116,7 @@ const BankDetailsPage: React.FC<{}> = () => {
 
   return (
     <React.Fragment>
+      <MastersBreadcrumb label="Bank Details" />
       <BouncingLoader isLoading={isLoading} />
       <Modal
         title="Bank Details Delete"

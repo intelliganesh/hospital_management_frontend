@@ -1,4 +1,6 @@
 import React from "react";
+import DetailsBreadcrumb from "@/components/DetailsBreadcrumb";
+import { IPD_BILLS_URL } from "@/utils/urls/frontend";
 import View from "@/components/view";
 import Text from "@/components/text";
 import { Card } from "@/components/ui/card";
@@ -83,6 +85,11 @@ const IpdBillViewPage: React.FC = () => {
 
   return (
     <View className="mx-auto space-y-6 pb-20 pt-4">
+      <DetailsBreadcrumb
+        parentLabel="IPD Bills"
+        parentTo={`${IPD_BILLS_URL}?currentPage=1`}
+        label={billData.billNo || "Details"}
+      />
       {/* Top Actions */}
       <View className="flex flex-row justify-between items-center print:hidden">
         <Button variant="ghost" size="small" onPress={() => navigate(-1)} className="flex items-center gap-2 text-slate-600">

@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { IPD_BILLS_URL } from "@/utils/urls/frontend";
 import View from "@/components/view";
 import Text from "@/components/text";
 import { Card } from "@/components/ui/card";
@@ -518,11 +519,17 @@ const IpdBillDetailsPage: React.FC = () => {
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbLink to="/ipd/bills">IPD Bills</BreadcrumbLink>
+              <BreadcrumbLink to={`${IPD_BILLS_URL}?currentPage=1`}>
+                IPD Bills
+              </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbPage>Bill No</BreadcrumbPage>
+              <BreadcrumbPage>
+                {ipdBillingDetailsData?.invoice?.invoice_number ||
+                  ipdBillingDetailsData?.ipd?.ipd_number ||
+                  "Details"}
+              </BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
@@ -635,6 +642,25 @@ const IpdBillDetailsPage: React.FC = () => {
         </Card>
       </View>
 
+      {/* Tabs with Add Charge */}
+      <View className="relative">
+        <TabView tabs={tabs} defaultValue="bill-items" />
+        <View className="absolute top-0 right-0">
+          {ipdBillingDetailsData?.invoice?.ipd_billing_status ===
+          "Completed" ? (
+            ""
+          ) : (
+            <Button
+              variant="primary"
+              className="bg-[#2a9d8f] hover:bg-[#21867a] border-none flex items-center gap-2 px-4 py-2 text-white"
+              onPress={handleOpenAdd}
+            >
+              <Plus size={18} /> Add Charge
+            </Button>
+          )}
+        </View>
+      </View>
+
       {/* Financial Summary Strip */}
       <Card className="bg-primary-20 dark:bg-card p-6 border border-primary-200 dark:border-primary-500 shadow-lg flex flex-row justify-between items-center text-white">
         <View className="flex flex-row gap-12">
@@ -718,25 +744,6 @@ const IpdBillDetailsPage: React.FC = () => {
           )}
         </View>
       </Card>
-
-      {/* Tabs with Add Charge */}
-      <View className="relative">
-        <TabView tabs={tabs} defaultValue="bill-items" />
-        <View className="absolute top-0 right-0">
-          {ipdBillingDetailsData?.invoice?.ipd_billing_status ===
-          "Completed" ? (
-            ""
-          ) : (
-            <Button
-              variant="primary"
-              className="bg-[#2a9d8f] hover:bg-[#21867a] border-none flex items-center gap-2 px-4 py-2 text-white"
-              onPress={handleOpenAdd}
-            >
-              <Plus size={18} /> Add Charge
-            </Button>
-          )}
-        </View>
-      </View>
 
       {/* MODALS */}
 

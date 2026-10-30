@@ -1,3 +1,4 @@
+import MastersBreadcrumb from "@/components/MastersBreadcrumb";
 import { useComorbidity } from "@/actions/calls/comorbidities";
 import BouncingLoader from "@/components/BouncingLoader";
 import Button from "@/components/button";
@@ -91,6 +92,7 @@ const ComorbiditiesPage = () => {
 
   return (
     <>
+      <MastersBreadcrumb label="Comorbidities" />
       <React.Fragment>
         <BouncingLoader isLoading={isLoading} />
         <Modal

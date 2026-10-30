@@ -237,7 +237,9 @@ const IpdPatientDetailsPage = () => {
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbLink to="/ipd/patients">IPD Patients</BreadcrumbLink>
+              <BreadcrumbLink to={`${IPD_PATIENTS_URL}?currentPage=1`}>
+                IPD Patients
+              </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>

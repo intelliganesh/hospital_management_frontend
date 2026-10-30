@@ -1,3 +1,4 @@
+import MastersBreadcrumb from "@/components/MastersBreadcrumb";
 import { useFistula } from "@/actions/calls/fistula";
 import BouncingLoader from "@/components/BouncingLoader";
 import Button from "@/components/button";
@@ -97,6 +98,7 @@ const FistulaPage: React.FC<{}> = () => {
 
   return (
     <React.Fragment>
+      <MastersBreadcrumb label="Fistula" />
       <BouncingLoader isLoading={isLoading} />
       <Modal
         title="Delete Fistula"

@@ -25,6 +25,7 @@ import { clearPatientDetailsSlice } from "@/actions/slices/patient";
 import DeleteLoader from "@/components/deleteLoader";
 import { useFistula } from "@/actions/calls/fistula";
 import dayjs from "dayjs";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 const FistulaEntryList: React.FC<{}> = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -139,6 +140,17 @@ const FistulaEntryList: React.FC<{}> = () => {
           </View>
         </Modal>
       )}
+      <Breadcrumb className="mb-4">
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink to="/">Dashboard</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>Fistula List</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
       <View className="mb-8">
         <View className="flex justify-between items-center gap-4">
           <View>

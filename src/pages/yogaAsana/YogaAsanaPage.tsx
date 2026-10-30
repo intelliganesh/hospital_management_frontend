@@ -1,3 +1,4 @@
+import MastersBreadcrumb from "@/components/MastersBreadcrumb";
 import { useYogaAsana } from "@/actions/calls/yogaAsana";
 import { RootState } from "@/actions/store";
 import BouncingLoader from "@/components/BouncingLoader";
@@ -101,6 +102,7 @@ const YogaAsanaPage: React.FC<{}> = () => {
 
   return (
     <React.Fragment>
+      <MastersBreadcrumb label="Yoga Asana" />
        <BouncingLoader  isLoading={isLoading} />
       <Modal
         title="Yoga Asana Delete"

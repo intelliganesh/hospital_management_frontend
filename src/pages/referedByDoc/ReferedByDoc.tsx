@@ -1,3 +1,4 @@
+import MastersBreadcrumb from "@/components/MastersBreadcrumb";
 import { useReferedByDoc } from "@/actions/calls/referedByDoc";
 import { RootState } from "@/actions/store";
 import BouncingLoader from "@/components/BouncingLoader";
@@ -109,6 +110,7 @@ const ReferedByDocPage: React.FC<{}> = () => {
 
   return (
     <React.Fragment>
+      <MastersBreadcrumb label="Referred By Doctors" />
       <BouncingLoader isLoading={isLoading} />
       <Modal
         title="Referred By Doctor Delete"

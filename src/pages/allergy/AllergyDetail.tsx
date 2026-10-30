@@ -1,3 +1,5 @@
+import DetailsBreadcrumb from "@/components/DetailsBreadcrumb";
+import { ALLERGY_TABLE_URL as BREADCRUMB_LIST_URL } from "@/utils/urls/frontend";
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -63,6 +65,12 @@ const AllergyDetail = () => {
 
   return (
     <View className="container mx-auto p-4 max-w-4xl">
+      <DetailsBreadcrumb
+        parentLabel="Allergies"
+        label={String(allergyData?.allergen_name || "Details")}
+        parentTo={`${BREADCRUMB_LIST_URL}?currentPage=1`}
+        masters
+      />
       <View className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
         <View className="flex items-center gap-3">
           <View className="p-2 bg-amber-50 rounded-lg">

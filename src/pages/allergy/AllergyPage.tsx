@@ -1,3 +1,4 @@
+import MastersBreadcrumb from "@/components/MastersBreadcrumb";
 import { useAllergies } from "@/actions/calls/allergies";
 import BouncingLoader from "@/components/BouncingLoader";
 import Button from "@/components/button";
@@ -80,6 +81,7 @@ const AllergyPage: React.FC<{}> = () => {
 
   return (
     <React.Fragment>
+      <MastersBreadcrumb label="Allergies" />
       <BouncingLoader isLoading={isLoading} />
       <Modal
         title="Allergy Delete"

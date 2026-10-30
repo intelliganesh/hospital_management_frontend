@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import View from "@/components/view";
 import Text from "@/components/text";
 import { Card } from "@/components/ui/card";
-import { FileText, Activity, CreditCard, Clock, Eye } from "lucide-react";
+import { FileText, Activity, CreditCard, Clock, Eye, Edit } from "lucide-react";
 import InfoCard from "@/components/ui/infoCard";
 import DynamicTable from "@/components/ui/DynamicTable";
 import DataSort, { SortOption } from "@/components/SortData";
@@ -39,7 +39,9 @@ const IpdBillsPage: React.FC = () => {
   const navigate = useNavigate();
   const { getIpdBillingList, cleanUp } = useIpdBilling();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [filterData, setFilterData] = useState<null | { multiple_filter: Record<string, any> }>(null);
+  const [filterData, setFilterData] = useState<null | {
+    multiple_filter: Record<string, any>;
+  }>(null);
   const [downloadingBillId, setDownloadingBillId] = useState<string | null>(
     null,
   );
@@ -72,10 +74,22 @@ const IpdBillsPage: React.FC = () => {
     { label: "Bill Number (Z-A)", value: "invoice_number", order: "desc" },
     { label: "Patient Name (A-Z)", value: "patient_name", order: "asc" },
     { label: "Patient Name (Z-A)", value: "patient_name", order: "desc" },
-    { label: "Admission Date (Oldest)", value: "admission_date_time", order: "asc" },
-    { label: "Admission Date (Newest)", value: "admission_date_time", order: "desc" },
+    {
+      label: "Admission Date (Oldest)",
+      value: "admission_date_time",
+      order: "asc",
+    },
+    {
+      label: "Admission Date (Newest)",
+      value: "admission_date_time",
+      order: "desc",
+    },
     { label: "Discharge Date (Oldest)", value: "discharge_date", order: "asc" },
-    { label: "Discharge Date (Newest)", value: "discharge_date", order: "desc" },
+    {
+      label: "Discharge Date (Newest)",
+      value: "discharge_date",
+      order: "desc",
+    },
     { label: "Total (Low-High)", value: "total_amount", order: "asc" },
     { label: "Total (High-Low)", value: "total_amount", order: "desc" },
     { label: "Paid (Low-High)", value: "receipt_total", order: "asc" },
@@ -86,9 +100,7 @@ const IpdBillsPage: React.FC = () => {
     { label: "Status (Z-A)", value: "billing_status", order: "desc" },
   ];
 
-  const [activeSort, setActiveSort] = useState<SortOption | null>(
-    null,
-  );
+  const [activeSort, setActiveSort] = useState<SortOption | null>(null);
   const handleGeneratePdf = async (ipdId?: string) => {
     if (ipdId) {
       setDownloadingBillId(ipdId);
@@ -107,25 +119,25 @@ const IpdBillsPage: React.FC = () => {
 
   useEffect(() => {
     getIpdBillingList(
-        searchParams?.get("currentPage") ?? 1,
-        () => {},
-        searchParams.get("search") ?? null,
-        searchParams.get("sort_by") ?? null,
-        searchParams.get("sort_order") ?? null,
-        {
-          from_date: searchParams.get("from_date") ?? null,
-          to_date: searchParams.get("to_date") ?? null,
-          ...(filterData || {}),
-        },
-        (status) => {
-          setIsLoading(
-            status === "pending"
+      searchParams?.get("currentPage") ?? 1,
+      () => {},
+      searchParams.get("search") ?? null,
+      searchParams.get("sort_by") ?? null,
+      searchParams.get("sort_order") ?? null,
+      {
+        from_date: searchParams.get("from_date") ?? null,
+        to_date: searchParams.get("to_date") ?? null,
+        ...(filterData || {}),
+      },
+      (status) => {
+        setIsLoading(
+          status === "pending"
+            ? true
+            : status === "failed"
               ? true
-              : status === "failed"
-                ? true
-                : status === "success" && false,
-          );
-        },
+              : status === "success" && false,
+        );
+      },
     );
     return () => {
       cleanUp();
@@ -152,6 +164,10 @@ const IpdBillsPage: React.FC = () => {
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
+              <BreadcrumbLink to="#">IPD</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
               <BreadcrumbPage>IPD Bills</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
@@ -170,7 +186,10 @@ const IpdBillsPage: React.FC = () => {
             </Text>
           </View>
           <View>
-            <Text as="label" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+            <Text
+              as="label"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2"
+            >
               Select Date Range
             </Text>
             <DateRangePicker placeholder="Choose your dates" />
@@ -270,7 +289,7 @@ const IpdBillsPage: React.FC = () => {
                 }
                 title="View Details"
               >
-                <Eye size={14} />
+                <Edit size={14} />
               </Button>
               <Button
                 variant="ghost"
@@ -351,7 +370,8 @@ const IpdBillsPage: React.FC = () => {
                 activeSort={activeSort ?? undefined}
               />
             ),
-          }}          footer={{
+          }}
+          footer={{
             pagination: (
               <PaginationComponent
                 current_page={billData?.current_page}
@@ -375,6 +395,3 @@ const IpdBillsPage: React.FC = () => {
 };
 
 export default IpdBillsPage;
-
-
-

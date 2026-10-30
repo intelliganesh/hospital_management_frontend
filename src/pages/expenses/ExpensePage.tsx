@@ -7,6 +7,7 @@ import Modal from "@/components/Modal";
 import PaginationComponent from "@/components/Pagination";
 import DataSort, { SortOption } from "@/components/SortData";
 import Text from "@/components/text";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { Card } from "@/components/ui/card";
 import DynamicTable from "@/components/ui/DynamicTable";
 import SearchBar from "@/components/ui/search-bar";
@@ -163,6 +164,17 @@ const ExpensesPage = () => {
             </Button>
           </View>
         </Modal>
+        <Breadcrumb className="mb-4">
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink to="/">Dashboard</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>Expenses</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
         <View className="mb-6">
           <Text
             as="h1"

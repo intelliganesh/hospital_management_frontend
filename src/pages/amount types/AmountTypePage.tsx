@@ -1,3 +1,4 @@
+import MastersBreadcrumb from "@/components/MastersBreadcrumb";
 import { useAmountType } from "@/actions/calls/amountType";
 import BouncingLoader from "@/components/BouncingLoader";
 import Button from "@/components/button";
@@ -73,6 +74,7 @@ const  AmountTypePage: React.FC<{}> = () => {
 
   return (
     <React.Fragment>
+      <MastersBreadcrumb label="Amount Types" />
       <BouncingLoader isLoading={isLoading} />
       <Modal
         title="Amount Type Delete"

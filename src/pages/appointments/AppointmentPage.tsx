@@ -45,6 +45,7 @@ import BouncingLoader from "@/components/BouncingLoader";
 import InfoCard from "@/components/ui/infoCard";
 import DeleteLoader from "@/components/deleteLoader";
 import dayjs from "dayjs";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbList, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 
 // import { useOpd } from "@/actions/calls/opd";
 
@@ -64,7 +65,7 @@ export const AppointmentPage = () => {
 
   // const patients = useSelector((state: RootState) => state.opd.patientList);
   const [filterData, setFilterData] = useState<null | Record<string, string>>(
-    null
+    null,
   );
 
   const doctors = useSelector((state: RootState) => state.opd.userList);
@@ -87,7 +88,7 @@ export const AppointmentPage = () => {
   useEffect(() => {
     if (searchParams?.has("currentPage")) {
       appointmentListHandler(
-        filterData ? 1 : searchParams?.get("currentPage") ?? 1,
+        filterData ? 1 : (searchParams?.get("currentPage") ?? 1),
         () => {},
         searchParams.get("search") ?? null,
         searchParams.get("sort_by") ?? null,
@@ -100,10 +101,10 @@ export const AppointmentPage = () => {
             status === "pending"
               ? true
               : status === "failed"
-              ? true
-              : status === "success" && false
+                ? true
+                : status === "success" && false,
           );
-        }
+        },
       );
     }
     return () => {
@@ -196,11 +197,11 @@ export const AppointmentPage = () => {
 
   const [activeSort, setActiveSort] = useState<SortOption | null>(null);
   const paginateObj = useSelector(
-    (state: RootState) => state.appointment.userCompleteObj
+    (state: RootState) => state.appointment.userCompleteObj,
   );
 
   const statsObj = useSelector(
-    (state: RootState) => state.appointment.appointmentStatsData
+    (state: RootState) => state.appointment.appointmentStatsData,
   );
 
   // useEffect(() => {
@@ -258,7 +259,7 @@ export const AppointmentPage = () => {
                       searchParams?.get("currentPage") ?? 1,
                       () => {
                         modalCloseHandler();
-                      }
+                      },
                     );
                     // }
                   },
@@ -267,10 +268,10 @@ export const AppointmentPage = () => {
                       status === "pending"
                         ? true
                         : status === "failed"
-                        ? false
-                        : status === "success" && false
+                          ? false
+                          : status === "success" && false,
                     );
-                  }
+                  },
                 );
               }
             }}
@@ -305,7 +306,7 @@ export const AppointmentPage = () => {
                       });
                       appointmentListHandler(
                         searchParams?.get("currentPage") ?? 1,
-                        () => null
+                        () => null,
                       );
                       setFollowUpModalData(null);
                     } else {
@@ -315,7 +316,7 @@ export const AppointmentPage = () => {
                         variant: "destructive",
                       });
                     }
-                  }
+                  },
                 );
               } else {
                 toast({
@@ -328,6 +329,17 @@ export const AppointmentPage = () => {
           }
         }}
       />
+      <Breadcrumb className="mb-4">
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink to="/">Dashboard</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>Appointments</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
 
       <View className="mb-6 flex justify-between items-center">
         <View>
@@ -548,12 +560,12 @@ export const AppointmentPage = () => {
             <View>
               <Text className="text-sm font-normal">
                 {dayjs(
-                  `${appointment.appointment_date} ${appointment.appointment_time}`
+                  `${appointment.appointment_date} ${appointment.appointment_time}`,
                 ).format(DATE_FORMAT)}
               </Text>
               <Text className="text-sm font-normal">
                 {dayjs(
-                  `${appointment.appointment_date} ${appointment.appointment_time}`
+                  `${appointment.appointment_date} ${appointment.appointment_time}`,
                 ).format(TIME_FORMAT)}
               </Text>
             </View>,
@@ -577,7 +589,7 @@ export const AppointmentPage = () => {
                         APPOINTMENT_TABLE_URL +
                           APPOINTMENT_FORM_URL +
                           "/" +
-                          appointment.id
+                          appointment.id,
                       )
               }
               onDelete={
@@ -610,7 +622,7 @@ export const AppointmentPage = () => {
                     option,
                     setActiveSort,
                     setSearchParams,
-                    searchParams
+                    searchParams,
                   )
                 }
                 activeSort={activeSort ?? undefined}
@@ -698,7 +710,7 @@ export const AppointmentPage = () => {
                       ...Object.fromEntries(searchParams),
                       currentPage: `${page}`,
                     },
-                    { replace: true }
+                    { replace: true },
                   )
                 }
               />

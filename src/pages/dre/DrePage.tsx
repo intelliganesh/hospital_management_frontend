@@ -1,3 +1,4 @@
+import MastersBreadcrumb from "@/components/MastersBreadcrumb";
 import { useDre } from "@/actions/calls/dre";
 import BouncingLoader from "@/components/BouncingLoader";
 import Button from "@/components/button";
@@ -71,6 +72,7 @@ const DrePage: React.FC<{}> = () => {
 
   return (
     <React.Fragment>
+      <MastersBreadcrumb label="DRE" />
       <BouncingLoader isLoading={isLoading} />
       <Modal
         title="DRE Delete"

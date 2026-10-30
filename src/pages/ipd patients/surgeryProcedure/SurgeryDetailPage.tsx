@@ -1,3 +1,9 @@
+import DetailsBreadcrumb from "@/components/DetailsBreadcrumb";
+import {
+  IPD_PATIENTS_URL as BREADCRUMB_LIST_URL,
+  IPD_PATIENTS_DETAILS_URL,
+  SURGERY_LIST_URL,
+} from "@/utils/urls/frontend";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import View from "@/components/view";
@@ -249,6 +255,15 @@ const SurgeryDetailPage: React.FC = () => {
 
   return (
     <View className="p-4 md:p-8 space-y-6 max-w-9xl mx-auto animate-in fade-in duration-700">
+      <DetailsBreadcrumb
+        parentLabel="Surgeries"
+        label={String(surgeryReportData?.surgery_name || surgeryReportData?.id || "Details")}
+        parentTo={
+          surgeryReportData?.ipd_id
+            ? `${BREADCRUMB_LIST_URL}${IPD_PATIENTS_DETAILS_URL}${SURGERY_LIST_URL}/${surgeryReportData.ipd_id}?currentPage=1`
+            : `${BREADCRUMB_LIST_URL}?currentPage=1`
+        }
+      />
       {/* Page Header */}
       <View className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <View className="space-y-1">

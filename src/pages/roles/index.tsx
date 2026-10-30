@@ -1,3 +1,4 @@
+import MastersBreadcrumb from "@/components/MastersBreadcrumb";
 import Button from "@/components/button";
 import Modal from "@/components/Modal";
 import DataSort, { SortOption } from "@/components/SortData";
@@ -119,6 +120,7 @@ const RolesPage: React.FC<{}> = () => {
 
   return (
     <React.Fragment>
+      <MastersBreadcrumb label="Roles" />
       <BouncingLoader isLoading={isLoading} />
       <Modal
         title="Role Description"

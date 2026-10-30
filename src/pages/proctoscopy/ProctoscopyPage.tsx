@@ -1,3 +1,4 @@
+import MastersBreadcrumb from "@/components/MastersBreadcrumb";
 import { useProctoscopy } from "@/actions/calls/proctoscopy";
 import BouncingLoader from "@/components/BouncingLoader";
 import Button from "@/components/button";
@@ -69,6 +70,7 @@ const ProctoscopyPage: React.FC<{}> = () => {
 
   return (
     <React.Fragment>
+      <MastersBreadcrumb label="Proctoscopy" />
       <BouncingLoader isLoading={isLoading} />
       <Modal
         title="Proctoscopy Delete"

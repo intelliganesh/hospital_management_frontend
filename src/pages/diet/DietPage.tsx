@@ -1,3 +1,4 @@
+import MastersBreadcrumb from "@/components/MastersBreadcrumb";
 import { useDiet } from "@/actions/calls/diet";
 import BouncingLoader from "@/components/BouncingLoader";
 import Button from "@/components/button";
@@ -76,6 +77,7 @@ const DietPage: React.FC<{}> = () => {
 
   return (
     <React.Fragment>
+      <MastersBreadcrumb label="Diets" />
       <BouncingLoader isLoading={isLoading} />
       <Modal
         title="Diet Delete"

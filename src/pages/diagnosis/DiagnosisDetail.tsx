@@ -1,3 +1,5 @@
+import DetailsBreadcrumb from "@/components/DetailsBreadcrumb";
+import { DIAGNOSIS_TABLE_URL as BREADCRUMB_LIST_URL } from "@/utils/urls/frontend";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -52,6 +54,12 @@ const DiagnosisDetail: React.FC = () => {
     <View>
       <BouncingLoader isLoading={isLoading} />
       <View className="container mx-auto px-6 py-8">
+        <DetailsBreadcrumb
+          parentLabel="Diagnosis"
+          label={String(diagnosisData?.diagnosis_name || "Details")}
+          parentTo={`${BREADCRUMB_LIST_URL}?currentPage=1`}
+          masters
+        />
         {/* Hero Header */}
         <View className=" mb-12">
           <Text as="h1" className="text-3xl font-bold  mb-2">

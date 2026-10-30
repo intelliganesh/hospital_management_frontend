@@ -1,3 +1,4 @@
+import MastersBreadcrumb from "@/components/MastersBreadcrumb";
 import Button from "@/components/button";
 import Modal from "@/components/Modal";
 import DataSort, { SortOption } from "@/components/SortData";
@@ -133,6 +134,7 @@ export const MedicinesPage = () => {
 
   return (
     <React.Fragment>
+      <MastersBreadcrumb label="Medicines" />
       <BouncingLoader isLoading={isLoading} />
       <Modal
         title="Medicine Delete"

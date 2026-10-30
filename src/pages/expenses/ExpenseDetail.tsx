@@ -1,3 +1,5 @@
+import DetailsBreadcrumb from "@/components/DetailsBreadcrumb";
+import { EXPENSES_TABLE_URL as BREADCRUMB_LIST_URL } from "@/utils/urls/frontend";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -73,6 +75,11 @@ const ExpenseDetail = () => {
   return (
     <div className="min-h-screen bg-background p-4 space-y-6">
       <div className="max-w-4xl mx-auto">
+        <DetailsBreadcrumb
+          parentLabel="Expenses"
+          label={String(expensesData?.voucher_number || expensesData?.expense_name || "Details")}
+          parentTo={`${BREADCRUMB_LIST_URL}?currentPage=1`}
+        />
         {/* Header Section */}
         <div className="flex justify-between items-center mb-4">
           <div>

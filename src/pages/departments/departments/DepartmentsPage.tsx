@@ -1,3 +1,4 @@
+import MastersBreadcrumb from "@/components/MastersBreadcrumb";
 import { useDepartment } from "@/actions/calls/department";
 import { RootState } from "@/actions/store";
 import BouncingLoader from "@/components/BouncingLoader";
@@ -106,6 +107,7 @@ const DepartmentsPage: React.FC<{}> = () => {
   // };
   return (
     <React.Fragment>
+      <MastersBreadcrumb label="Departments" />
       <BouncingLoader isLoading={isLoading} />
       <Modal
         title="Room Delete"

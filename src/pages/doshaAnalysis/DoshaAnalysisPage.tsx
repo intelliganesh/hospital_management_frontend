@@ -1,3 +1,4 @@
+import MastersBreadcrumb from "@/components/MastersBreadcrumb";
 import useDoshaAnalysis from ".";
 // import { Plus } from "lucide-react";
 import Text from "@/components/text";
@@ -177,6 +178,11 @@ const DoshaAnalysisPage: React.FC<{}> = () => {
 
   return (
     <React.Fragment>
+      <MastersBreadcrumb
+        label={
+          type ? type.charAt(0).toUpperCase() + type.slice(1) : "Dosha Analysis"
+        }
+      />
       <BouncingLoader isLoading={isLoading} />
       <Modal
         title={`Delete ${type ? type?.charAt(0)?.toUpperCase() + type?.slice(1) : ""}`}
