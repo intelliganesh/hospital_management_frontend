@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import View from "@/components/view";
 // import { Appointment } from "@/interfaces/appointments";
 import useForm from "@/utils/custom-hooks/use-form";
@@ -41,10 +41,28 @@ interface SectionFourProps {
   mainOnSetHandler: (name: string, value: any) => void;
   autoOpen: boolean;
   colorScheme?: any;
+  postSurgeryFollowUps?: any[];
 }
 
-// eslint-disable-next-line no-empty-pattern
-const SectionFour: React.FC<SectionFourProps> = ({ autoOpen, colorScheme }) => {
+const POST_SURGERY_TREATMENT_FIELDS = [
+  { key: "ks_changed", label: "KS Changed" },
+  { key: "dressing", label: "Dressing" },
+  { key: "partial_lay_open", label: "Partial Lay Open" },
+  { key: "follow_up_examination", label: "Follow-up Examination" },
+  { key: "new_abscess_threading", label: "New Abscess I&D" },
+] as const;
+
+const GENERATED_TREATMENT_GIVEN_PATTERN =
+  /<p\b[^>]*>(?:(?!<\/p>)[\s\S])*?Treatment\s*Given\s*:?(?:(?!<\/p>)[\s\S])*?<\/p>/gi;
+
+const isSelectedTreatment = (value: any) =>
+  value === true || value === 1 || value === "1" || value === "true";
+
+const SectionFour: React.FC<SectionFourProps> = ({
+  autoOpen,
+  colorScheme,
+  postSurgeryFollowUps,
+}) => {
   // const examinationDetails = useSelector(
   //   (state: RootState) => state.examinations.examinationDetails
   // );
@@ -126,6 +144,10 @@ const SectionFour: React.FC<SectionFourProps> = ({ autoOpen, colorScheme }) => {
     (state: any) => state?.consultation?.consultationDetailData,
   );
 
+  const postSurgeryListData = useSelector(
+    (state: RootState) => state.postSurgery.postSurgeryListData,
+  );
+
   //consultationData?.consultations?.type
 
   // useEffect(() => {
@@ -186,6 +208,43 @@ const SectionFour: React.FC<SectionFourProps> = ({ autoOpen, colorScheme }) => {
 
   const { values, handleTipTapChange, onSetHandler } =
     useForm<Consultation | null>(consultationDetailData);
+  const adviceRef = useRef(values?.advice || "");
+  const onSetHandlerRef = useRef(onSetHandler);
+
+  useEffect(() => {
+    adviceRef.current = values?.advice || "";
+  }, [values?.advice]);
+
+  useEffect(() => {
+    onSetHandlerRef.current = onSetHandler;
+  }, [onSetHandler]);
+
+  useEffect(() => {
+    const followUps = postSurgeryFollowUps ??
+      (Array.isArray(postSurgeryListData?.data)
+        ? postSurgeryListData.data
+        : []);
+
+    const selectedTreatments = POST_SURGERY_TREATMENT_FIELDS.filter(
+      ({ key }) =>
+        followUps.some((followUp: any) =>
+          isSelectedTreatment(followUp?.[key]),
+        ),
+    ).map(({ label }) => label);
+
+    const currentAdvice = adviceRef.current;
+    const adviceWithoutGeneratedTreatment = currentAdvice
+      .replace(GENERATED_TREATMENT_GIVEN_PATTERN, "")
+      .trim();
+    const generatedTreatment = `<p><strong>Treatment Given:</strong>${
+      selectedTreatments.length ? ` ${selectedTreatments.join(", ")}` : ""
+    }</p>`;
+    const updatedAdvice = `${adviceWithoutGeneratedTreatment}${generatedTreatment}`;
+
+    if (updatedAdvice !== currentAdvice) {
+      onSetHandlerRef.current("advice", updatedAdvice);
+    }
+  }, [postSurgeryListData, postSurgeryFollowUps]);
 
   const dispatch = useDispatch();
 

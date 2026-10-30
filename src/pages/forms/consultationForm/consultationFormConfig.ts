@@ -46,6 +46,18 @@ export const TAB_COLORS = {
     textColor: "!text-orange-700 dark:!text-orange-300",
     shadow: "shadow-md shadow-orange-500/25 dark:shadow-orange-400/20",
   },
+  postSurgeryFollowUp: {
+    name: "Post Surgery Follow Up",
+    primary:
+      "bg-gradient-to-br from-yellow-100 via-yellow-200 to-yellow-300",
+    borderColor: "border-yellow-300",
+    primaryHover:
+      "hover:from-yellow-200 hover:via-yellow-300 hover:to-yellow-400",
+    darkPrimary:
+      "dark:!bg-gradient-to-br dark:from-yellow-600 dark:via-yellow-700 dark:to-yellow-800",
+    textColor: "!text-yellow-700 dark:!text-yellow-300",
+    shadow: "shadow-md shadow-yellow-500/25 dark:shadow-yellow-400/20",
+  },
   treatmentPlan: {
     name: "Treatment Plan",
     primary: "bg-gradient-to-br from-teal-100 via-teal-200 to-teal-300",

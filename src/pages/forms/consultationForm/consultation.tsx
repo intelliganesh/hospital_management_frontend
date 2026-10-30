@@ -50,6 +50,8 @@ import CollapsibleContainer from "@/components/CollapsibleContainer";
 import TreatmentPlan from "./Sections/TreatmentPlan";
 import { formSubmissionFailMessage } from "@/utils/helperFunctions";
 import { TAB_COLORS } from "./consultationFormConfig";
+import Switch from "@/components/ui/switch";
+import PostSurgeryFollowUp from "@/pages/postSurgeryFollowUp";
 
 const ConsultationForm: React.FC<FormTypeProps> = ({ formType = "add" }) => {
   const { id } = useParams();
@@ -105,6 +107,7 @@ const ConsultationForm: React.FC<FormTypeProps> = ({ formType = "add" }) => {
   const [, setDocUpload] = useState<File[] | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [medicinePopup, setMedicinePopup] = useState<boolean>(false);
+  const [postSurgeryData, setPostSurgeryData] = useState<any[]>([]);
   const [activeSection, setActiveSection] = useState<string | null>(
     "patientDetails",
   );
@@ -117,6 +120,7 @@ const ConsultationForm: React.FC<FormTypeProps> = ({ formType = "add" }) => {
   // const medicalHistoryRef = useRef(null);
   const examinationRef = useRef(null);
   const fistulaRef = useRef(null);
+  const postSurgeryFollowUpRef = useRef(null);
   // const managementsRef = useRef(null);
   const treatmentPlanRef = useRef(null);
   // const documentsRef = useRef(null);
@@ -737,6 +741,28 @@ const ConsultationForm: React.FC<FormTypeProps> = ({ formType = "add" }) => {
                       </Button>
                     )}
 
+                  <Button
+                    className={`flex-1 ${
+                      activeSection === "postSurgeryFollowUp"
+                        ? `${TAB_COLORS.postSurgeryFollowUp.primary} ${TAB_COLORS.postSurgeryFollowUp.primaryHover} ${TAB_COLORS.postSurgeryFollowUp.darkPrimary} ${TAB_COLORS.postSurgeryFollowUp.shadow} ${TAB_COLORS.postSurgeryFollowUp.textColor} font-semibold`
+                        : `${TAB_COLORS.postSurgeryFollowUp.textColor} font-semibold`
+                    }`}
+                    variant={
+                      activeSection === "postSurgeryFollowUp"
+                        ? undefined
+                        : "ghost"
+                    }
+                    size="small"
+                    onClick={() =>
+                      handleSectionClick(
+                        postSurgeryFollowUpRef,
+                        "postSurgeryFollowUp",
+                      )
+                    }
+                  >
+                    Post Surgery Follow Up
+                  </Button>
+
                   {/* <Button
                     className={`flex-1 ${
                       activeSection === "management"
@@ -836,7 +862,7 @@ const ConsultationForm: React.FC<FormTypeProps> = ({ formType = "add" }) => {
                       );
                     }}
                   >
-                    Payment & Follow-up
+                    Payment Details
                   </Button>
                 </View>
                 <View className="space-y-4">
@@ -943,6 +969,7 @@ const ConsultationForm: React.FC<FormTypeProps> = ({ formType = "add" }) => {
                       >
                         <NewSectionSeven
                           initialData={sectionSevenDetailData}
+                          formType={formType}
                           errorFistulaRecurrenceCount={
                             errors.fistula_recurrence_surgery_count
                           }
@@ -976,6 +1003,78 @@ const ConsultationForm: React.FC<FormTypeProps> = ({ formType = "add" }) => {
                   >
                   <NewSectionEight />
                   </View> */}
+                <View
+                  className="space-y-4 mt-16"
+                  id="postSurgeryFollowUp"
+                  ref={postSurgeryFollowUpRef}
+                  style={{ scrollMarginTop: "50px" }}
+                >
+                  <CollapsibleContainer
+                    title="Post Surgery Follow Up"
+                    variant="custom"
+                    colorScheme={TAB_COLORS.postSurgeryFollowUp}
+                    autoOpen={expandedSection === "postSurgeryFollowUp"}
+                    headerTitleClassName="!text-2xl"
+                  >
+                    <View className="flex items-center justify-between border-b border-border p-2 bg-background">
+                      <Text className="text-sm font-semibold">
+                        Post Surgery Follow Up
+                      </Text>
+                      <Switch
+                        showIcons
+                        size="medium"
+                        variant="green"
+                        labelPosition="right"
+                        name="post_surgery_details"
+                        onChange={(checked) => {
+                          onSetHandler(
+                            "post_surgery_details",
+                            checked ? "yes" : "no",
+                          );
+                        }}
+                        checked={
+                          formValues?.post_surgery_details === "yes"
+                        }
+                      />
+                    </View>
+
+                    {formValues?.post_surgery_details === "yes" && (
+                      <View className="mt-6">
+                        <PostSurgeryFollowUp
+                          patient_id={
+                            consultationDetail?.consultations?.patient_id
+                          }
+                          consultation_id={
+                            consultationDetail?.consultations?.id
+                          }
+                          appointment_number={
+                            consultationDetail?.consultations
+                              ?.appointment_number
+                          }
+                          onRecordsChange={(data: any[]) => {
+                            setPostSurgeryData(data);
+                            onSetHandler("post_surgery_followup", data[0]);
+                          }}
+                          formMode={true}
+                          maxRows={1}
+                          features={{
+                            allowDelete: false,
+                            showAPNColumn: false,
+                          }}
+                          showDownloadButton={false}
+                        />
+                        <Input
+                          type="text"
+                          id="post_surgery_followup"
+                          name="post_surgery_followup"
+                          label="Post Surgery Follow Up"
+                          value={JSON.stringify(postSurgeryData[0])}
+                          hidden
+                        />
+                      </View>
+                    )}
+                  </CollapsibleContainer>
+                </View>
 
                 <View
                   className="space-y-4 mt-16"
@@ -1012,6 +1111,11 @@ const ConsultationForm: React.FC<FormTypeProps> = ({ formType = "add" }) => {
                 >
                   <NewSectionFour
                     mainOnSetHandler={onSetHandler}
+                    postSurgeryFollowUps={
+                      formValues?.post_surgery_details === "yes"
+                        ? postSurgeryData
+                        : undefined
+                    }
                     autoOpen={expandedSection === "medicineLifestyle"}
                     colorScheme={TAB_COLORS.medicineLifestyle}
                   />
@@ -1070,7 +1174,7 @@ const ConsultationForm: React.FC<FormTypeProps> = ({ formType = "add" }) => {
                   style={{ scrollMarginTop: "50px" }}
                 >
                   <CollapsibleContainer
-                    title="Payment & Follow-up"
+                    title="Payment Details"
                     variant="custom"
                     colorScheme={TAB_COLORS.consultationBilling}
                     defaultOpen={true}

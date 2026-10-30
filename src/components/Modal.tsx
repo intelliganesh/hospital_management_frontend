@@ -15,6 +15,7 @@ export interface ModalProps {
   size?: "sm" | "md" | "lg" | "xl" | "full";
   closeOnOutsideClick?: boolean;
   closeOnEsc?: boolean;
+  contentOverflowVisible?: boolean;
 }
 
 const Modal: React.FC<ModalProps> = ({
@@ -28,6 +29,7 @@ const Modal: React.FC<ModalProps> = ({
   size = "md",
   closeOnOutsideClick = true,
   closeOnEsc = true,
+  contentOverflowVisible = false,
 }) => {
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
@@ -69,7 +71,7 @@ const Modal: React.FC<ModalProps> = ({
     >
       <View
         // className={`w-full ${sizeClasses[size]} bg-white dark:bg-background rounded-lg shadow-lg overflow-hidden border border-border`}
-        className={`w-full ${sizeClasses[size]} bg-white dark:bg-slate-800 rounded-xl shadow-2xl overflow-hidden border-0 animate-fade-in`}
+        className={`w-full ${sizeClasses[size]} bg-white dark:bg-slate-800 rounded-xl shadow-2xl ${contentOverflowVisible ? "overflow-visible" : "overflow-hidden"} border-0 animate-fade-in`}
       >
         {/* <View className="p-6 border-b border-neutral-200 flex justify-between items-start"> */}
         <View className="p-6 border-b border-slate-200 dark:border-slate-700 flex justify-between items-start">
@@ -102,7 +104,10 @@ const Modal: React.FC<ModalProps> = ({
           )}
         </View>
 
-        <View className="p-6 overflow-y-auto" style={{ maxHeight: "80vh" }}>
+        <View
+          className={`p-6 ${contentOverflowVisible ? "overflow-visible" : "overflow-y-auto"}`}
+          style={contentOverflowVisible ? undefined : { maxHeight: "80vh" }}
+        >
           {children}
         </View>
 
@@ -119,3 +124,4 @@ const Modal: React.FC<ModalProps> = ({
 };
 
 export default Modal;
+

@@ -18,7 +18,6 @@ import {
 import DynamicTable from "@/components/ui/DynamicTable";
 import DataSort, { SortOption } from "@/components/SortData";
 import Text from "@/components/text";
-import getStatusColorScheme from "@/utils/statusColorSchemaDecider";
 import SingleSelector from "@/components/SingleSelector";
 import { useIpdPatients } from "@/actions/calls/ipd";
 import { useDispatch, useSelector } from "react-redux";
@@ -47,38 +46,46 @@ const IpdEnrollmentsPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [selectedPatient, setSelectedPatient] = useState(null);
-  const [filterData, setFilterData] = useState<null | { multiple_filter: Record<string, any> }>(null);
+  const [filterData, setFilterData] = useState<null | {
+    multiple_filter: Record<string, any>;
+  }>(null);
 
   const [showEnrollmentModel, setShowEnrollmentModel] = useState(false);
   const [showEnrollmentForm, setShowEnrollmentForm] = useState(false);
   const dispatch = useDispatch();
   const { PuaListHandler } = useOpd();
 
-  const { ipdEnrollmentPatientListHandler, deleteIpdPatientEnrollmentHandler, cleanUp } = useIpdPatients();
+  const {
+    ipdEnrollmentPatientListHandler,
+    deleteIpdPatientEnrollmentHandler,
+    cleanUp,
+  } = useIpdPatients();
 
-  const ipdEnrollmentData = useSelector((state: RootState) => state.ipd.ipdEnrollmentData);
+  const ipdEnrollmentData = useSelector(
+    (state: RootState) => state.ipd.ipdEnrollmentData,
+  );
 
   useEffect(() => {
     ipdEnrollmentPatientListHandler(
-        searchParams?.get("currentPage") ?? 1,
-        () => { },
-        searchParams.get("search") ?? null,
-        searchParams.get("sort_by") ?? null,
-        searchParams.get("sort_order") ?? null,
-        {
-          from_date: searchParams.get("from_date") ?? null,
-          to_date: searchParams.get("to_date") ?? null,
-          ...(filterData || {}),
-        },
-        (status) => {
-          setIsLoading(
-            status === "pending"
+      searchParams?.get("currentPage") ?? 1,
+      () => {},
+      searchParams.get("search") ?? null,
+      searchParams.get("sort_by") ?? null,
+      searchParams.get("sort_order") ?? null,
+      {
+        from_date: searchParams.get("from_date") ?? null,
+        to_date: searchParams.get("to_date") ?? null,
+        ...(filterData || {}),
+      },
+      (status) => {
+        setIsLoading(
+          status === "pending"
+            ? true
+            : status === "failed"
               ? true
-              : status === "failed"
-                ? true
-                : status === "success" && false
-          );
-        }
+              : status === "success" && false,
+        );
+      },
     );
     return () => {
       cleanUp();
@@ -95,7 +102,7 @@ const IpdEnrollmentsPage: React.FC = () => {
   ]);
 
   useEffect(() => {
-    PuaListHandler(() => { });
+    PuaListHandler(() => {});
   }, []);
 
   const patientList = useSelector((state: RootState) => state.opd.patientList);
@@ -114,7 +121,6 @@ const IpdEnrollmentsPage: React.FC = () => {
     value: patient.id,
     phone_no: patient.phone_no,
   }));
-
 
   const patientNameOptions = patientList?.map((patient: any) => ({
     label:
@@ -142,25 +148,39 @@ const IpdEnrollmentsPage: React.FC = () => {
   ];
 
   const sortOptions: SortOption[] = [
-    { label: "Appointment Number (A-Z)", value: "appointment_number", order: "asc" },
-    { label: "Appointment Number (Z-A)", value: "appointment_number", order: "desc" },
+    {
+      label: "Appointment Number (A-Z)",
+      value: "appointment_number",
+      order: "asc",
+    },
+    {
+      label: "Appointment Number (Z-A)",
+      value: "appointment_number",
+      order: "desc",
+    },
     { label: "Patient Name (A-Z)", value: "patient_name", order: "asc" },
     { label: "Patient Name (Z-A)", value: "patient_name", order: "desc" },
     { label: "Doctor Name (A-Z)", value: "doctor_name", order: "asc" },
     { label: "Doctor Name (Z-A)", value: "doctor_name", order: "desc" },
     { label: "Department (A-Z)", value: "department_type", order: "asc" },
     { label: "Department (Z-A)", value: "department_type", order: "desc" },
-    { label: "Appointment Date (Oldest)", value: "appointment_date", order: "asc" },
-    { label: "Appointment Date (Newest)", value: "appointment_date", order: "desc" },
+    {
+      label: "Appointment Date (Oldest)",
+      value: "appointment_date",
+      order: "asc",
+    },
+    {
+      label: "Appointment Date (Newest)",
+      value: "appointment_date",
+      order: "desc",
+    },
     { label: "Status (A-Z)", value: "status", order: "asc" },
     { label: "Status (Z-A)", value: "status", order: "desc" },
     { label: "Created Date (Oldest)", value: "created_at", order: "asc" },
     { label: "Created Date (Newest)", value: "created_at", order: "desc" },
   ];
 
-  const [activeSort, setActiveSort] = useState<SortOption | null>(
-    null,
-  );
+  const [activeSort, setActiveSort] = useState<SortOption | null>(null);
   const modalCloseHandler = () => {
     setDeleteId("");
   };
@@ -193,7 +213,7 @@ const IpdEnrollmentsPage: React.FC = () => {
                         searchParams?.get("currentPage") ?? 1,
                         () => {
                           modalCloseHandler();
-                        }
+                        },
                       );
                       // }
                     },
@@ -203,9 +223,9 @@ const IpdEnrollmentsPage: React.FC = () => {
                           ? true
                           : status === "failed"
                             ? false
-                            : status === "success" && false
+                            : status === "success" && false,
                       );
-                    }
+                    },
                   );
                 }
               }}
@@ -218,59 +238,77 @@ const IpdEnrollmentsPage: React.FC = () => {
 
       {showEnrollmentModel && (
         <Modal
-          title={showEnrollmentForm ? "New IPD Patient with Enrollment" : "Enroll IPD Patient"}
+          title={
+            showEnrollmentForm
+              ? "New IPD Patient with Enrollment"
+              : "Enroll IPD Patient"
+          }
           isOpen={showEnrollmentModel}
           onClose={() => {
-            setShowEnrollmentModel(false)
-            setShowEnrollmentForm(false)
+            setShowEnrollmentModel(false);
+            setShowEnrollmentForm(false);
           }}
           closeOnOutsideClick={false}
+          contentOverflowVisible
           size={showEnrollmentForm ? "full" : "lg"}
         >
-          {
-            !showEnrollmentForm ? (
-              <View className="flex flex-col gap-6">
-                <View className="flex flex-col gap-2">
-                  <SingleSelector
-                    name="patient_id"
-                    value={selectedPatient}
-                    onChange={(value) => setSelectedPatient(value)}
-                    label="Select Patient"
-                    placeholder="Search Patient"
-                    options={patients}
-                  />
-                  <Button variant="primary" className="px-6 py-3" onPress={() => navigate(IPD_ENROLLMENT_FORM_URL + "/" + selectedPatient)}>
-                    Enroll Patient to IPD
-                  </Button>
-                </View>
-
-                <View className="flex items-center gap-2">
-                  <View className="h-[1px] w-full bg-border"></View>
-                  <View className="flex items-center">
-                    <Text className="text-text-lighter" weight="font-bold">OR</Text>
-                  </View>
-                  <View className="h-[1px] w-full bg-border"></View>
-                </View>
-
-                <View className="flex justify-center gap-2">
-                  <Button variant="outline" className="px-6 py-3 flex items-center" onPress={() => setShowEnrollmentForm(true)}>
-                    <UserPlus className="mr-2 h-5 w-5" /> Add New IPD Patient
-                  </Button>
-                </View>
-
+          {!showEnrollmentForm ? (
+            <View className="flex flex-col gap-6">
+              <View className="flex flex-col gap-2">
+                <SingleSelector
+                  name="patient_id"
+                  value={selectedPatient}
+                  onChange={(value) => setSelectedPatient(value)}
+                  label="Select Patient"
+                  placeholder="Search Patient"
+                  options={patients}
+                />
+                <Button
+                  variant="primary"
+                  className="px-6 py-3"
+                  onPress={() =>
+                    navigate(IPD_ENROLLMENT_FORM_URL + "/" + selectedPatient)
+                  }
+                >
+                  Enroll Patient to IPD
+                </Button>
               </View>
-            ) : (
-              <View>
 
-                <IpdEnrollmentForm formType="addPatientWithEnrollment" />
-                <View className="flex justify-center mt-4">
-                  <Button variant="ghost" className="px-6 py-3 flex items-center" onPress={() => setShowEnrollmentForm(false)}>
-                    <MoveLeft className="mr-2 h-5 w-5 text-primary animate-pulse  " /> Enroll Existing Patient to IPD
-                  </Button>
+              <View className="flex items-center gap-2">
+                <View className="h-[1px] w-full bg-border"></View>
+                <View className="flex items-center">
+                  <Text className="text-text-lighter" weight="font-bold">
+                    OR
+                  </Text>
                 </View>
+                <View className="h-[1px] w-full bg-border"></View>
               </View>
-            )
-          }
+
+              <View className="flex justify-center gap-2">
+                <Button
+                  variant="outline"
+                  className="px-6 py-3 flex items-center"
+                  onPress={() => setShowEnrollmentForm(true)}
+                >
+                  <UserPlus className="mr-2 h-5 w-5" /> Add New IPD Patient
+                </Button>
+              </View>
+            </View>
+          ) : (
+            <View>
+              <IpdEnrollmentForm formType="addPatientWithEnrollment" />
+              <View className="flex justify-center mt-4">
+                <Button
+                  variant="ghost"
+                  className="px-6 py-3 flex items-center"
+                  onPress={() => setShowEnrollmentForm(false)}
+                >
+                  <MoveLeft className="mr-2 h-5 w-5 text-primary animate-pulse  " />{" "}
+                  Enroll Existing Patient to IPD
+                </Button>
+              </View>
+            </View>
+          )}
         </Modal>
       )}
 
@@ -301,19 +339,22 @@ const IpdEnrollmentsPage: React.FC = () => {
           </View>
           <View className="flex flex-col sm:flex-row sm:items-end gap-4">
             <View>
-              <Text as="label" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+              <Text
+                as="label"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2"
+              >
                 Select Date Range
               </Text>
               <DateRangePicker placeholder="Choose your dates" />
             </View>
-          <Button
-            variant="primary"
-            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 shadow-lg hover:shadow-xl transition-all duration-200"
-            onPress={() => setShowEnrollmentModel(true)}
-          >
-            <Plus size={20} />
-            Enroll IPD Patient
-          </Button>
+            <Button
+              variant="primary"
+              className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 shadow-lg hover:shadow-xl transition-all duration-200"
+              onPress={() => setShowEnrollmentModel(true)}
+            >
+              <Plus size={20} />
+              Enroll IPD Patient
+            </Button>
           </View>
         </View>
       </View>
@@ -351,113 +392,107 @@ const IpdEnrollmentsPage: React.FC = () => {
             "Created At",
             "Actions",
           ]}
-          tableData={ipdEnrollmentData?.data?.map((patient: any) => [
-            <Link to={`/appointment-list/appointment-details/${patient.appointment_id}`} className="font-medium">{patient.appointment_number}</Link>,
-            <View className="flex items-center">
-              <View className="h-8 w-8 rounded-full bg-secondary-50 flex items-center justify-center mr-3">
-                <Text
-                  as="span"
-                  className="text-xs font-medium text-secondary-600"
-                >
-                  {patient.patient_name?.charAt(0)}
-                </Text>
-              </View>
-              <View>
-                <Text
-                  as="span"
-                  className="font-medium text-text-DEFAULT block"
-                >
-                  {patient.patient_name}
-                </Text>
-                <Text
-                  as="span"
-                  className="text-xs text-slate-500"
-                >
-                  {patient.patient_number}
-                </Text>
-              </View>
-            </View>,
-            <View className="flex items-center">
-              <View className="h-8 w-8 rounded-full bg-secondary-50 flex items-center justify-center mr-3">
-                <Text
-                  as="span"
-                  className="text-xs font-medium text-secondary-600"
-                >
-                  {patient.doctor_name?.charAt(0)}
-                </Text>
-              </View>
-              <View>
-                <Text
-                  as="span"
-                  className="font-medium text-text-DEFAULT block"
-                >
-                  {patient.doctor_name}
-                </Text>
-                {/* <Text
+          tableData={
+            ipdEnrollmentData?.data?.map((patient: any) => [
+              <Link
+                to={`/appointment-list/appointment-details/${patient.appointment_id}`}
+                className="font-medium"
+              >
+                {patient.appointment_number}
+              </Link>,
+              <View className="flex items-center">
+                <View className="h-8 w-8 rounded-full bg-secondary-50 flex items-center justify-center mr-3">
+                  <Text
+                    as="span"
+                    className="text-xs font-medium text-secondary-600"
+                  >
+                    {patient.patient_name?.charAt(0)}
+                  </Text>
+                </View>
+                <View>
+                  <Text
+                    as="span"
+                    className="font-medium text-text-DEFAULT block"
+                  >
+                    {patient.patient_name}
+                  </Text>
+                  <Text as="span" className="text-xs text-slate-500">
+                    {patient.patient_number}
+                  </Text>
+                </View>
+              </View>,
+              <View className="flex items-center">
+                <View className="h-8 w-8 rounded-full bg-secondary-50 flex items-center justify-center mr-3">
+                  <Text
+                    as="span"
+                    className="text-xs font-medium text-secondary-600"
+                  >
+                    {patient.doctor_name?.charAt(0)}
+                  </Text>
+                </View>
+                <View>
+                  <Text
+                    as="span"
+                    className="font-medium text-text-DEFAULT block"
+                  >
+                    {patient.doctor_name}
+                  </Text>
+                  {/* <Text
                   as="span"
                   className="text-xs text-slate-500"
                 >
                   {patient.doctor_id}
                 </Text> */}
-              </View>
-            </View>,
-            patient.type || "N/A",
-            <View>
-              <Text className="text-sm font-normal">
-                {dayjs(
-                  `${patient.appointment_date} ${patient.appointment_time}`
-                ).format(DATE_FORMAT)}
-              </Text>
-              <Text className="text-sm font-normal">
-                {dayjs(
-                  `${patient.appointment_date} ${patient.appointment_time}`
-                ).format(TIME_FORMAT)}
-              </Text>
-            </View>,
-            <Text
-              as="span"
-              className={`inline-flex px-2 py-1 text-xs font-medium rounded-full `}
-              style={getStatusColorScheme(patient?.status)}
-            >
-              {patient.status}
-            </Text>,
-            <View>
-              <Text className="text-sm font-normal">
-                {dayjs(
-                  `${patient.created_at}`
-                ).format(DATE_FORMAT)}
-              </Text>
-              <Text className="text-sm font-normal">
-                {dayjs(
-                  `${patient.created_at}`
-                ).format(TIME_FORMAT)}
-              </Text>
-            </View>,
+                </View>
+              </View>,
+              patient.type || "N/A",
+              <View>
+                <Text className="text-sm font-normal">
+                  {dayjs(
+                    `${patient.appointment_date} ${patient.appointment_time}`,
+                  ).format(DATE_FORMAT)}
+                </Text>
+                <Text className="text-sm font-normal">
+                  {dayjs(
+                    `${patient.appointment_date} ${patient.appointment_time}`,
+                  ).format(TIME_FORMAT)}
+                </Text>
+              </View>,
+              <View>
+                <Text className="text-sm font-normal">
+                  {dayjs(`${patient.created_at}`).format(DATE_FORMAT)}
+                </Text>
+                <Text className="text-sm font-normal">
+                  {dayjs(`${patient.created_at}`).format(TIME_FORMAT)}
+                </Text>
+              </View>,
 
-            <View className="flex items-center gap-1">
-
-              <Button
-                variant="ghost"
-                onPress={() =>
-                  navigate(`${IPD_ENROLLMENT_FORM_URL}/${patient?.patient_id}/${patient?.id}`)
-                }
-                className="flex items-center w-auto px-2 py-2 text-sm text-primary-700 hover:bg-primary-100"
-                title="Enroll Patient to IPD"
-              >
-                <Hospital size={18} className="text-primary animate-pulse" />
-              </Button>
-              <ActionMenu
-                editTitle="Edit Patient"
-                // onView={() =>
-                //   navigate(`${IPD_ENROLLMENT_DETAILS_URL}/${patient.id}`)
-                // }
-                deleteTitle="Delete Patient Enrollment"
-                onDelete={() => {
-                  setDeleteId(patient.id);
-                }}
-              />
-            </View>,
-          ]) || []}
+              <View className="flex items-center gap-1">
+                <Button
+                  variant="ghost"
+                  onPress={() =>
+                    navigate(
+                      `${IPD_ENROLLMENT_FORM_URL}/${patient?.patient_id}/${patient?.id}`,
+                    )
+                  }
+                  className="flex items-center w-auto px-2 py-2 text-sm text-primary-700 hover:bg-primary-100"
+                  title="Enroll Patient to IPD"
+                >
+                  <Hospital size={18} className="text-primary animate-pulse" />
+                </Button>
+                <ActionMenu
+                  editTitle="Edit Patient"
+                  // onView={() =>
+                  //   navigate(`${IPD_ENROLLMENT_DETAILS_URL}/${patient.id}`)
+                  // }
+                  deleteTitle="Delete Patient Enrollment"
+                  onDelete={() => {
+                    setDeleteId(patient.id);
+                  }}
+                />
+              </View>,
+            ]) || []
+          }
           header={{
             search: (
               <SearchBar
@@ -468,7 +503,7 @@ const IpdEnrollmentsPage: React.FC = () => {
                       currentPage: "1",
                       search: value,
                     },
-                    { replace: true }
+                    { replace: true },
                   );
                 }}
                 className="shadow-sm dark:shadow-none"
@@ -501,13 +536,6 @@ const IpdEnrollmentsPage: React.FC = () => {
                       name="doctor_name"
                       placeholder="Doctor Name"
                       options={doctorNameOptions}
-                    />
-                  </View>,
-                  <View className="w-full my-4" key="status">
-                    <SingleSelector
-                      name="status"
-                      placeholder="Status"
-                      options={statusOptions}
                     />
                   </View>,
                 ]}
@@ -556,7 +584,7 @@ const IpdEnrollmentsPage: React.FC = () => {
                       ...Object.fromEntries(searchParams),
                       currentPage: `${page}`,
                     },
-                    { replace: true }
+                    { replace: true },
                   )
                 }
               />
@@ -569,6 +597,3 @@ const IpdEnrollmentsPage: React.FC = () => {
 };
 
 export default IpdEnrollmentsPage;
-
-
-

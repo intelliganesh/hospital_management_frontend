@@ -13,11 +13,13 @@ import Textarea from "@/components/Textarea";
 interface SectionSevenProps {
   errorFistulaRecurrenceCount: string;
   initialData: any;
+  formType?: "add" | "edit";
 }
 
 const SectionSeven: React.FC<SectionSevenProps> = ({
   errorFistulaRecurrenceCount,
   initialData,
+  formType = "add",
 }) => {
   // const [position] = useState("o'clock");
 
@@ -112,7 +114,7 @@ const SectionSeven: React.FC<SectionSevenProps> = ({
         {/* Opening Position */}
         <View className="col-span-2">
           {Number(values?.no_of_fistula) > 0 && (
-            <OpeningPosition initialData={initialData} />
+            <OpeningPosition initialData={initialData} formType={formType} />
           )}
         </View>
 

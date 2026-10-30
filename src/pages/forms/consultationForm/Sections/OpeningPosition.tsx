@@ -24,6 +24,7 @@ type EntryType = {
   any_other?: string;
   type_of_crypt: string;
   crypt_cause?: string;
+  high_low_riding_type: string;
   basis_of_high_low_riding: string;
   distant_visceral_communication?: string;
   type_of_fistula_sphincter?: string;
@@ -43,6 +44,7 @@ const emptyEntry: EntryType = {
   any_other: "",
   type_of_crypt: "",
   crypt_cause: "",
+  high_low_riding_type: "",
   basis_of_high_low_riding: "",
   distant_visceral_communication: "",
   type_of_fistula_sphincter: "",
@@ -59,6 +61,7 @@ const REPEATABLE_FIELDS: (keyof EntryType)[] = [
   "any_other",
   "type_of_crypt",
   "crypt_cause",
+  "high_low_riding_type",
   "basis_of_high_low_riding",
   "distant_visceral_communication",
   "type_of_fistula_sphincter",
@@ -80,11 +83,20 @@ const INTERNAL_LEVEL_OPTIONS = [
     label: "Below the level of anal valve",
   },
 ];
+
+const HIGH_LOW_RIDING_OPTIONS = [
+  { label: "High", value: "High" },
+  { label: "Low", value: "Low" },
+];
 interface OpeningPositionProps {
   initialData?: any;
+  formType?: "add" | "edit";
 }
 
-const OpeningPosition: React.FC<OpeningPositionProps> = ({ initialData }) => {
+const OpeningPosition: React.FC<OpeningPositionProps> = ({
+  initialData,
+  formType = "add",
+}) => {
   const consultationDetailData = initialData;
 
   // const consultationDetail = {
@@ -137,6 +149,7 @@ const OpeningPosition: React.FC<OpeningPositionProps> = ({ initialData }) => {
 
     const typeOfCrypt = values.type_of_crypt?.split("#") || [];
     const cryptCause = values.crypt_cause?.split("#") || [];
+    const highLowTypes = values.high_low_riding_type?.split("#") || [];
     const highLow = values.basis_of_high_low_riding?.split("#") || [];
     const distantVisceral =
       values.distant_visceral_communication?.split("#") || [];
@@ -144,28 +157,39 @@ const OpeningPosition: React.FC<OpeningPositionProps> = ({ initialData }) => {
     const fistulaSphincter = values.type_of_fistula_sphincter?.split("#") || [];
     const fistulaPosition = values.type_of_fistula_position?.split("#") || [];
 
-    const mapped: EntryType[] = extPos.map((_, i) => ({
-      external_opening_position: extPos[i] || "",
-      internal_opening_distance: internalOpeningDistance[i] || "",
-      secondary_anal_valve: secValve[i] || "",
+    const mapped: EntryType[] = extPos.map((_, i) => {
+      const highLowValue = highLow[i] || "";
 
-      internal_opening_value: internalParts[i * 2] || "",
-      internal_opening_level:
-        internalParts[i * 2 + 1] || "Above the level of anal verge",
+      return {
+        external_opening_position: extPos[i] || "",
+        internal_opening_distance: internalOpeningDistance[i] || "",
+        secondary_anal_valve: secValve[i] || "",
 
-      no_of_external_opening_position: noOfExtPos[i] || "",
-      no_of_tracks_in_one_fistula: noOfTracks[i] || "",
-      no_of_secondary_opening_position: noOfSecPos[i] || "",
-      any_other: anyOther[i] || "",
+        internal_opening_value: internalParts[i * 2] || "",
+        internal_opening_level:
+          internalParts[i * 2 + 1] || "Above the level of anal verge",
 
-      type_of_crypt: typeOfCrypt[i] || "",
-      crypt_cause: cryptCause[i] || "",
-      basis_of_high_low_riding: highLow[i] || "",
-      distant_visceral_communication: distantVisceral[i] || "",
+        no_of_external_opening_position: noOfExtPos[i] || "",
+        no_of_tracks_in_one_fistula: noOfTracks[i] || "",
+        no_of_secondary_opening_position: noOfSecPos[i] || "",
+        any_other: anyOther[i] || "",
 
-      type_of_fistula_sphincter: fistulaSphincter[i] || "",
-      type_of_fistula_position: fistulaPosition[i] || "",
-    }));
+        type_of_crypt: typeOfCrypt[i] || "",
+        crypt_cause: cryptCause[i] || "",
+        high_low_riding_type:
+          formType === "edit" &&
+          HIGH_LOW_RIDING_OPTIONS.some(
+            (option) => option.value === highLowTypes[i],
+          )
+            ? highLowTypes[i]
+            : "",
+        basis_of_high_low_riding: formType === "edit" ? highLowValue : "",
+        distant_visceral_communication: distantVisceral[i] || "",
+
+        type_of_fistula_sphincter: fistulaSphincter[i] || "",
+        type_of_fistula_position: fistulaPosition[i] || "",
+      };
+    });
 
     setPositions(mapped);
   }, [
@@ -179,10 +203,12 @@ const OpeningPosition: React.FC<OpeningPositionProps> = ({ initialData }) => {
     values?.any_other,
     values?.type_of_crypt,
     values?.crypt_cause,
+    values?.high_low_riding_type,
     values?.basis_of_high_low_riding,
     values?.distant_visceral_communication,
     values?.type_of_fistula_sphincter,
     values?.type_of_fistula_position,
+    formType,
   ]);
 
   /* ---------- Handlers ---------- */
@@ -194,6 +220,17 @@ const OpeningPosition: React.FC<OpeningPositionProps> = ({ initialData }) => {
     setPositions((prev) => {
       const copy = [...prev];
       copy[index] = { ...copy[index], [field]: value };
+      return copy;
+    });
+  };
+
+  const handleHighLowRidingChange = (index: number, value: string) => {
+    setPositions((prev) => {
+      const copy = [...prev];
+      copy[index] = {
+        ...copy[index],
+        high_low_riding_type: value,
+      };
       return copy;
     });
   };
@@ -521,24 +558,36 @@ const OpeningPosition: React.FC<OpeningPositionProps> = ({ initialData }) => {
               </View>
             </View>
             <View className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-              <View>
+              <View className="flex flex-col gap-4">
                 <SingleSelector
-                  id="basis_of_high_low_riding"
-                  label="On The Basis Of high/Low Riding"
-                  name="basis_of_high_low_riding"
-                  placeholder="Select Fistula High/Low Riding"
-                  value={entry.basis_of_high_low_riding}
+                  id={`high_low_riding_type_${index}`}
+                  label="On The Basis Of"
+                  placeholder="Select High or Low"
+                  value={entry.high_low_riding_type}
                   onChange={(val: string) =>
-                    handleChange(index, "basis_of_high_low_riding", val)
+                    handleHighLowRidingChange(index, val)
                   }
-                  options={fistulaDropDownList
-                    ?.filter((x) => x?.sub_fistula_name === "high_low_riding")
-                    .map((x) => ({
-                      label: x.fistula_name,
-                      value: x.fistula_name,
-                    }))}
-                  // options={fistulaSphincterTypes}
+                  options={HIGH_LOW_RIDING_OPTIONS}
                 />
+                {entry.high_low_riding_type === "High" && (
+                  <SingleSelector
+                    id={`basis_of_high_low_riding_${index}`}
+                    label="High Riding"
+                    placeholder="Select Fistula High Riding"
+                    value={entry.basis_of_high_low_riding}
+                    onChange={(val: string) =>
+                      handleChange(index, "basis_of_high_low_riding", val)
+                    }
+                    options={fistulaDropDownList
+                      ?.filter(
+                        (x) => x?.sub_fistula_name === "high_low_riding",
+                      )
+                      .map((x) => ({
+                        label: x.fistula_name,
+                        value: x.fistula_name,
+                      }))}
+                  />
+                )}
               </View>
               <View>
                 <Input
