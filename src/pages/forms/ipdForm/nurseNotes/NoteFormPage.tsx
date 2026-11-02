@@ -12,9 +12,9 @@ import { useNurseNotes } from "@/actions/calls/ipd/nurseNotes";
 import { FormTypeProps } from "@/interfaces/dashboard";
 import useForm from "@/utils/custom-hooks/use-form";
 import { clearNurseNotesDetailSlice } from "@/actions/slices/ipd/nurseNotes";
-import { LoadingStatus } from "@/interfaces";
+import { LoadingStatus, MeasurementUnit } from "@/interfaces";
 import { useDispatch, useSelector } from "react-redux";
-import { formSubmissionFailMessage } from "@/utils/helperFunctions";
+import { appendUnit, formSubmissionFailMessage, removeUnit } from "@/utils/helperFunctions";
 import { validationSchema } from "./nurseNotesFormValidation";
 import { RootState } from "@/actions/store";
 import { useOpd } from "@/actions/calls/opd";
@@ -36,6 +36,14 @@ import { useDateFormater } from "@/utils/custom-hooks/useDateFormater";
 
 import { useIpdPatients } from "@/actions/calls/ipd";
 import { clearIpdPatientDetailDataSlice } from "@/actions/slices/ipd/ipdEnrollment";
+
+// vital fields that are sent to backend along with their unit
+const nurseNotesUnitFields: Partial<Record<keyof NurseNotes, MeasurementUnit>> = {
+  temperature: MeasurementUnit.FAHRENHEIT,
+  bp: MeasurementUnit.MMHG,
+  pulse: MeasurementUnit.BPM,
+  spo2: MeasurementUnit.PERCENTAGE,
+};
 
 const NoteFormPage: React.FC<FormTypeProps> = ({ formType = "add" }) => {
   const { id: ipdID, noteId } = useParams<{
@@ -123,6 +131,11 @@ const NoteFormPage: React.FC<FormTypeProps> = ({ formType = "add" }) => {
 
   const nurseNotesFormObj = {
     ...nurseNotesDetail,
+    // backend sends vitals with unit, show only the value in the fields
+    temperature: removeUnit(nurseNotesDetail?.temperature, MeasurementUnit.FAHRENHEIT),
+    bp: removeUnit(nurseNotesDetail?.bp, MeasurementUnit.MMHG),
+    pulse: removeUnit(nurseNotesDetail?.pulse, MeasurementUnit.BPM),
+    spo2: removeUnit(nurseNotesDetail?.spo2, MeasurementUnit.PERCENTAGE),
     nurse_id: nurseNotesDetail?.nurse_id || dutyNurse?.user_id || "",
   };
 
@@ -139,6 +152,12 @@ const NoteFormPage: React.FC<FormTypeProps> = ({ formType = "add" }) => {
     for (let [key, value] of formData.entries()) {
       nurseNotesFormObj[key as keyof NurseNotes] = value as any;
     }
+
+    // send vitals to backend along with their unit (e.g. "72 bpm")
+    Object.entries(nurseNotesUnitFields).forEach(([field, unit]) => {
+      const key = field as keyof NurseNotes;
+      (nurseNotesFormObj as any)[key] = appendUnit(nurseNotesFormObj[key], unit as MeasurementUnit);
+    });
 
     nurseNotesFormObj =
       formType === "add"
@@ -289,121 +308,7 @@ const NoteFormPage: React.FC<FormTypeProps> = ({ formType = "add" }) => {
           <View className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 p-6 space-y-6">
             {/* Basic Information Section */}
 
-            {/* Remark 1 */}
-            <View>
-              <Text className="text-lg font-semibold text-slate-800 dark:text-slate-200 mb-4 pb-2 border-b-2 border-primary-600 dark:border-primary-500">
-                Remark 1
-              </Text>
-              <textarea
-                id="remark1"
-                name="remark1"
-                value={values?.remark1 || ""}
-                onChange={handleChange}
-                placeholder="Enter initial remarks..."
-                rows={3}
-                className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
-              />
-              {formErrors.remark1 && (
-                <Text className="text-red-500 text-sm mt-1">
-                  {formErrors.remark1}
-                </Text>
-              )}
-            </View>
-
-            {/* Vitals Section - Always visible */}
-            <View>
-              <Text className="text-lg font-semibold text-slate-800 dark:text-slate-200 mb-4 pb-2 border-b-2 border-primary-600 dark:border-primary-500">
-                Vitals
-              </Text>
-              <View className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <View>
-                  <Input
-                    id="temperature"
-                    name="temperature"
-                    label="Temperature (°F)"
-                    type="text"
-                    value={values?.temperature || ""}
-                    onChange={handleChange}
-                    placeholder="e.g., 98.6"
-                  />
-                  {formErrors.temperature && (
-                    <Text className="text-red-500 text-sm mt-1">
-                      {formErrors.temperature}
-                    </Text>
-                  )}
-                </View>
-                <View>
-                  <Input
-                    id="bp"
-                    name="bp"
-                    label="Blood Pressure"
-                    type="text"
-                    value={values?.bp || ""}
-                    onChange={handleChange}
-                    placeholder="e.g., 120/80"
-                  />
-                  {formErrors.bp && (
-                    <Text className="text-red-500 text-sm mt-1">
-                      {formErrors.bp}
-                    </Text>
-                  )}
-                </View>
-                <View>
-                  <Input
-                    id="pulse"
-                    name="pulse"
-                    label="Pulse (bpm)"
-                    type="text"
-                    value={values?.pulse || ""}
-                    onChange={handleChange}
-                    placeholder="e.g., 72"
-                  />
-                  {formErrors.pulse && (
-                    <Text className="text-red-500 text-sm mt-1">
-                      {formErrors.pulse}
-                    </Text>
-                  )}
-                </View>
-                <View>
-                  <Input
-                    id="spo2"
-                    name="spo2"
-                    label="SpO₂ (%)"
-                    type="text"
-                    value={values?.spo2 || ""}
-                    onChange={handleChange}
-                    placeholder="e.g., 98"
-                  />
-                  {formErrors.spo2 && (
-                    <Text className="text-red-500 text-sm mt-1">
-                      {formErrors.spo2}
-                    </Text>
-                  )}
-                </View>
-              </View>
-            </View>
-
-            {/* Remark 2 */}
-            <View>
-              <Text className="text-lg font-semibold text-slate-800 dark:text-slate-200 mb-4 pb-2 border-b-2 border-primary-600 dark:border-primary-500">
-                Remark 2
-              </Text>
-              <textarea
-                id="remark2"
-                name="remark2"
-                value={values?.remark2 || ""}
-                onChange={handleChange}
-                placeholder="Enter additional remarks..."
-                rows={3}
-                className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
-              />
-              {formErrors.remark2 && (
-                <Text className="text-red-500 text-sm mt-1">
-                  {formErrors.remark2}
-                </Text>
-              )}
-            </View>
-
+            {/* Nurse */}
             <View>
               <Text className="text-lg font-semibold text-slate-800 dark:text-slate-200 mb-4 pb-2 border-b-2 border-primary-600 dark:border-primary-500">
                 Nurse
@@ -445,6 +350,121 @@ const NoteFormPage: React.FC<FormTypeProps> = ({ formType = "add" }) => {
                   )}
                 </View>
               </View>
+            </View>
+
+            {/* Remark 1 */}
+            <View>
+              <Text className="text-lg font-semibold text-slate-800 dark:text-slate-200 mb-4 pb-2 border-b-2 border-primary-600 dark:border-primary-500">
+                Remark 1
+              </Text>
+              <textarea
+                id="remark1"
+                name="remark1"
+                value={values?.remark1 || ""}
+                onChange={handleChange}
+                placeholder="Enter initial remarks..."
+                rows={3}
+                className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+              />
+              {formErrors.remark1 && (
+                <Text className="text-red-500 text-sm mt-1">
+                  {formErrors.remark1}
+                </Text>
+              )}
+            </View>
+
+            {/* Vitals Section - Always visible */}
+            <View>
+              <Text className="text-lg font-semibold text-slate-800 dark:text-slate-200 mb-4 pb-2 border-b-2 border-primary-600 dark:border-primary-500">
+                Vitals
+              </Text>
+              <View className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <View>
+                  <Input
+                    id="temperature"
+                    name="temperature"
+                    label={`Temperature (${MeasurementUnit.FAHRENHEIT})`}
+                    type="text"
+                    value={values?.temperature || ""}
+                    onChange={handleChange}
+                    placeholder="e.g., 98.6"
+                  />
+                  {formErrors.temperature && (
+                    <Text className="text-red-500 text-sm mt-1">
+                      {formErrors.temperature}
+                    </Text>
+                  )}
+                </View>
+                <View>
+                  <Input
+                    id="bp"
+                    name="bp"
+                    label={`Blood Pressure (${MeasurementUnit.MMHG})`}
+                    type="text"
+                    value={values?.bp || ""}
+                    onChange={handleChange}
+                    placeholder="e.g., 120/80"
+                  />
+                  {formErrors.bp && (
+                    <Text className="text-red-500 text-sm mt-1">
+                      {formErrors.bp}
+                    </Text>
+                  )}
+                </View>
+                <View>
+                  <Input
+                    id="pulse"
+                    name="pulse"
+                    label={`Pulse (${MeasurementUnit.BPM})`}
+                    type="text"
+                    value={values?.pulse || ""}
+                    onChange={handleChange}
+                    placeholder="e.g., 72"
+                  />
+                  {formErrors.pulse && (
+                    <Text className="text-red-500 text-sm mt-1">
+                      {formErrors.pulse}
+                    </Text>
+                  )}
+                </View>
+                <View>
+                  <Input
+                    id="spo2"
+                    name="spo2"
+                    label={`SpO₂ (${MeasurementUnit.PERCENTAGE})`}
+                    type="text"
+                    value={values?.spo2 || ""}
+                    onChange={handleChange}
+                    placeholder="e.g., 98"
+                  />
+                  {formErrors.spo2 && (
+                    <Text className="text-red-500 text-sm mt-1">
+                      {formErrors.spo2}
+                    </Text>
+                  )}
+                </View>
+              </View>
+            </View>
+
+            {/* Remark 2 */}
+            <View>
+              <Text className="text-lg font-semibold text-slate-800 dark:text-slate-200 mb-4 pb-2 border-b-2 border-primary-600 dark:border-primary-500">
+                Remark 2
+              </Text>
+              <textarea
+                id="remark2"
+                name="remark2"
+                value={values?.remark2 || ""}
+                onChange={handleChange}
+                placeholder="Enter additional remarks..."
+                rows={3}
+                className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+              />
+              {formErrors.remark2 && (
+                <Text className="text-red-500 text-sm mt-1">
+                  {formErrors.remark2}
+                </Text>
+              )}
             </View>
 
             {/* Form Actions */}

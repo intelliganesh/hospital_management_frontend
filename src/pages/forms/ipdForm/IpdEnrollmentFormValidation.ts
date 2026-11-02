@@ -69,5 +69,8 @@ export const admisstionAndAllocationStepSchema = Yup.object().shape({
 })
 
 export const paymentAndEnrollmentStepSchema = Yup.object().shape({
-  advance_amount: Yup.number().nullable()
+  advance_amount: Yup.number().nullable(),
+  payment_mode: Yup.string().when("advance_amount", (advanceAmount: any, schema: any) => {
+    return Number(advanceAmount[0]) > 0 ? schema.required("Payment Mode is required") : schema.optional();
+  }),
 })

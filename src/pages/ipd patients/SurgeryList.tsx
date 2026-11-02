@@ -15,10 +15,13 @@ import Input from "@/components/input";
 import DeleteLoader from "@/components/deleteLoader";
 import { useSurgeryReport } from "@/actions/calls/ipd/surgeryProcedure/surgeryReport";
 import {
+  DATE_FORMAT,
   IPD_PATIENTS_DETAILS_URL,
   IPD_PATIENTS_URL,
   SURGERY_PROCEDURE_URL,
 } from "@/utils/urls/frontend";
+import dayjs from "dayjs";
+import { formatSurgeryTime } from "@/utils/dateTimeUtils";
 import { useOpd } from "@/actions/calls/opd";
 import useForm from "@/utils/custom-hooks/use-form";
 import * as yup from "yup";
@@ -266,13 +269,15 @@ const SurgeryList: React.FC<SurgeryListProps> = ({ showAddButton = true }) => {
         <DynamicTable
           tableHeaders={[
             "Date",
+            "Surgery Time",
             "Doctor",
             "Surgery",
             "Status",
             "Action",
           ]}
           tableData={surgeryData?.data?.map((data: any) => [
-            data.surgery_date,
+            data.surgery_date ? dayjs(data.surgery_date).format(DATE_FORMAT) : "N/A",
+            formatSurgeryTime(data.surgery_start_datetime, data.surgery_end_datetime, true),
             data.surgeon,
             data.surgery_name,
             data.status,

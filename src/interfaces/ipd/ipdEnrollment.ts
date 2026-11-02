@@ -10,6 +10,7 @@ export interface IpdEnrollment {
     room_id?: number | null;
     bed_id?: number | null;
     advance_amount?: number | null;
+    payment_mode?: string;
 }
 
 export interface NewIPDPatientWithEnrollment extends IpdEnrollment {

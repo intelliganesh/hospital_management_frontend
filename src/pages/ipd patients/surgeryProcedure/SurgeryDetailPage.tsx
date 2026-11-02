@@ -31,6 +31,7 @@ import { clearPreOperativeChecklistDetailSlice } from "@/actions/slices/ipd/surg
 import { clearIpdPatientDetailDataSlice } from "@/actions/slices/ipd/ipdEnrollment";
 import Modal from "@/components/Modal";
 import dayjs from "dayjs";
+import { formatSurgeryTime } from "@/utils/dateTimeUtils";
 
 import SurgeryConsentTab from "./components/SurgeryConsentTab";
 import PreOpChecklistTab from "./components/PreOpChecklistTab";
@@ -232,12 +233,7 @@ const SurgeryDetailPage: React.FC = () => {
 
   const surgeryStart = surgeryReportData?.surgery_start_datetime;
   const surgeryEnd = surgeryReportData?.surgery_end_datetime;
-  const formattedSurgeryTime =
-    surgeryStart && surgeryEnd
-      ? `${dayjs(surgeryStart).format("DD MMM YYYY, hh:mm A")} – ${dayjs(
-          surgeryEnd,
-        ).format("hh:mm A")}`
-      : "-";
+  const formattedSurgeryTime = formatSurgeryTime(surgeryStart, surgeryEnd);
 
   if (isLoading) {
     return (
@@ -359,7 +355,7 @@ const SurgeryDetailPage: React.FC = () => {
                   value={surgeryReportData?.surgery_name}
                 />
                 <ReadOnlyField
-                  label="Surgery Time"
+                  label="Surgery Date and Time"
                   value={formattedSurgeryTime}
                 />
                 <ReadOnlyField

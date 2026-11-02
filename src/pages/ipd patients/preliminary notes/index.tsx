@@ -10,6 +10,9 @@ import SectionFour from "./SectionFour";
 import SectionFive from "./SectionFive";
 import SectionSix from "./SectionSix";
 import { PreliminaryNotes } from "@/interfaces/preliminaryNotes";
+import { MeasurementUnit } from "@/interfaces";
+import { appendUnit } from "@/utils/helperFunctions";
+import { vitalUnitFields } from "./preliminaryFormOptions";
 import { FormTypeProps } from "@/interfaces/dashboard";
 import { usePreliminaryNotes } from "@/actions/calls/ipd/preliminaryNotes";
 import { clearRoomDetailSlice } from "@/actions/slices/rooms";
@@ -72,6 +75,12 @@ const PreliminaryNotesForm: React.FC<FormTypeProps> = ({
       for (let [key, value] of formData.entries()) {
         preliminaryNotesFormObj[key as keyof PreliminaryNotes] = value as any;
       }
+
+      // send vitals to backend along with their unit (e.g. "72 bpm")
+      Object.entries(vitalUnitFields).forEach(([field, unit]) => {
+        const key = field as keyof PreliminaryNotes;
+        (preliminaryNotesFormObj as any)[key] = appendUnit(preliminaryNotesFormObj[key], unit as MeasurementUnit);
+      });
 
       // await validationForm.validate(preliminaryNotesFormObj, { abortEarly: false });
       setErrors({});

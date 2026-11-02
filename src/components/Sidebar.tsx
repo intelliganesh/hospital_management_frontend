@@ -24,6 +24,7 @@ import {
   NotebookText,
   CalendarRange,
   Hospital,
+  FlaskConical,
   // Hospital,
 } from "lucide-react";
 import {
@@ -82,6 +83,7 @@ import {
   IPD_ENROLLMENTS_URL,
   IPD_PATIENTS_URL,
   IPD_BILLS_URL,
+  LAB_INVESTIGATIONS_URL,
   // ONLINE_APPOINTMENT_TABLE_URL,
 } from "@/utils/urls/frontend";
 import { useSelector } from "react-redux";
@@ -230,6 +232,12 @@ export const sidebarItems = [
         />
       </SidebarDropdown>
     ),
+  },
+  {
+    icon: <FlaskConical size={20} />,
+    label: "Laboratory Investigations",
+    href: LAB_INVESTIGATIONS_URL + "?currentPage=1",
+    requiredPermission: PERMISSIONS.VIEW_LAB_INVESTIGATIONS,
   },
   {
     icon: <FileText size={20} />,

@@ -279,6 +279,10 @@ export const IPD_BILLS_URL: string = "/ipd-bills";
 export const IPD_BILL_DETAILS_URL: string = "/ipd-bill-details";
 export const IPD_BILL_VIEW_URL: string = "/ipd-bill-view";
 
+// Laboratory Investigations URLs
+export const LAB_INVESTIGATIONS_URL: string = "/lab-investigations";
+export const LAB_INVESTIGATIONS_FORM_URL: string = "/lab-investigations-form";
+
 // bank details urls
 export const BANK_DETAILS_TABLE_URL: string = "/bank-details-list";
 export const BANK_DETAILS_FORM_URL: string = "/bank-details-form";

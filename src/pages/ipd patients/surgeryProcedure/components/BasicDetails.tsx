@@ -19,6 +19,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/actions/store";
 import { useSurgeryReport } from "@/actions/calls/ipd/surgeryProcedure/surgeryReport";
 import dayjs from "dayjs";
+import { formatSurgeryTime } from "@/utils/dateTimeUtils";
 
 const BasicDetails: React.FC<{}> = () => {
   const { id } = useParams();
@@ -38,12 +39,7 @@ const BasicDetails: React.FC<{}> = () => {
   const surgeryStart = surgeryReportData?.surgery_start_datetime;
   const surgeryEnd = surgeryReportData?.surgery_end_datetime;
 
-  const formattedSurgeryTime =
-    surgeryStart && surgeryEnd
-      ? `${dayjs(surgeryStart).format("DD MMM YYYY, hh:mm A")} – ${dayjs(
-          surgeryEnd,
-        ).format("hh:mm A")}`
-      : "-";
+  const formattedSurgeryTime = formatSurgeryTime(surgeryStart, surgeryEnd);
 
   useEffect(() => {
     if (id) {
@@ -139,7 +135,7 @@ const BasicDetails: React.FC<{}> = () => {
 
       <InfoCard
         icon={Clock}
-        label="Surgery Time"
+        label="Surgery Date and Time"
         value={formattedSurgeryTime}
       />
 

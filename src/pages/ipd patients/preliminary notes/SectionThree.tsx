@@ -1,17 +1,32 @@
 import { RootState } from "@/actions/store";
 import Input from "@/components/input";
 import View from "@/components/view";
+import { MeasurementUnit } from "@/interfaces";
 import { PreliminaryNotes } from "@/interfaces/preliminaryNotes";
 import useForm from "@/utils/custom-hooks/use-form";
+import { removeUnit } from "@/utils/helperFunctions";
+import { useMemo } from "react";
 import { useSelector } from "react-redux";
+import { vitalUnitFields } from "./preliminaryFormOptions";
 
 const SectionThree: React.FC = () => {
   const preliminaryNotes = useSelector(
     (state: RootState) => state.preliminaryNotes.preliminaryNotesDetailData
   ) as Partial<PreliminaryNotes> | null;
 
+  // backend sends vitals with unit, show only the value in the fields
+  const preliminaryNotesWithoutUnits = useMemo(() => {
+    if (!preliminaryNotes) return preliminaryNotes;
+    const notes: Partial<PreliminaryNotes> = { ...preliminaryNotes };
+    Object.entries(vitalUnitFields).forEach(([field, unit]) => {
+      const key = field as keyof PreliminaryNotes;
+      (notes as any)[key] = removeUnit(notes[key], unit as MeasurementUnit);
+    });
+    return notes;
+  }, [preliminaryNotes]);
+
   const { values, handleChange } = useForm<Partial<PreliminaryNotes> | null>(
-    preliminaryNotes
+    preliminaryNotesWithoutUnits
   );
 
   return (
@@ -21,7 +36,7 @@ const SectionThree: React.FC = () => {
           <Input
             id="bp"
             name="bp"
-            label="BP"
+            label={`BP (${MeasurementUnit.MMHG})`}
             placeholder="e.g., 120/80"
             onChange={handleChange}
             value={values?.bp}
@@ -31,8 +46,8 @@ const SectionThree: React.FC = () => {
           <Input
             id="pulse"
             name="pulse"
-            label="Pulse"
-            placeholder="e.g., 72 bpm"
+            label={`Pulse (${MeasurementUnit.BPM})`}
+            placeholder="e.g., 72"
             onChange={handleChange}
             value={values?.pulse}
           />
@@ -41,8 +56,8 @@ const SectionThree: React.FC = () => {
           <Input
             id="temperature"
             name="temperature"
-            label="Temperature"
-            placeholder="e.g., 98.6°F"
+            label={`Temperature (${MeasurementUnit.FAHRENHEIT})`}
+            placeholder="e.g., 98.6"
             onChange={handleChange}
             value={values?.temperature}
           />
@@ -53,8 +68,8 @@ const SectionThree: React.FC = () => {
           <Input
             id="spo2"
             name="spo2"
-            label="SpO2"
-            placeholder="e.g., 98%"
+            label={`SpO2 (${MeasurementUnit.PERCENTAGE})`}
+            placeholder="e.g., 98"
             onChange={handleChange}
             value={values?.spo2}
           />
@@ -65,7 +80,7 @@ const SectionThree: React.FC = () => {
             name="weight"
             type="number"
             step="0.1"
-            label="Weight (kg)"
+            label={`Weight (${MeasurementUnit.KG})`}
             placeholder="Enter weight"
             onChange={handleChange}
             value={values?.weight}
@@ -77,7 +92,7 @@ const SectionThree: React.FC = () => {
             name="height"
             type="number"
             step="0.1"
-            label="Height (cm)"
+            label={`Height (${MeasurementUnit.CM})`}
             placeholder="Enter height"
             onChange={handleChange}
             value={values?.height}

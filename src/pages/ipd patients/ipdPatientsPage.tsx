@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Users, UserCheck, UserX } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import ActionMenu from "@/components/editDeleteAction";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import {
   IPD_PATIENTS_URL,
   IPD_PATIENTS_DETAILS_URL,
@@ -286,7 +286,16 @@ const IpdPatientsPage: React.FC<{}> = () => {
           tableData={
             ipdPatientRows.length > 0
               ? ipdPatientRows?.map((ipdPatient: any) => [
-                  ipdPatient?.ipd_number,
+                  <Link
+                    to={`${IPD_PATIENTS_URL}${IPD_PATIENTS_DETAILS_URL}/${ipdPatient?.id}`}
+                  >
+                    <Text
+                      as="span"
+                      className="font-medium text-text-DEFAULT hover:text-secondary hover:underline"
+                    >
+                      {ipdPatient?.ipd_number}
+                    </Text>
+                  </Link>,
                   ipdPatient?.admission_date_time
                     ? dayjs(ipdPatient?.admission_date_time).format(
                         "DD-MM-YYYY hh:mm a",
@@ -336,11 +345,6 @@ const IpdPatientsPage: React.FC<{}> = () => {
                     {ipdPatient?.status}
                   </Text>,
                   <ActionMenu
-                    onView={() =>
-                      navigate(
-                        `${IPD_PATIENTS_URL}${IPD_PATIENTS_DETAILS_URL}/${ipdPatient?.id}`,
-                      )
-                    }
                     onEdit={() =>
                       navigate(
                         `${IPD_ENROLLMENT_FORM_EDIT_URL}/${ipdPatient?.patient?.id}/${ipdPatient?.id}`,

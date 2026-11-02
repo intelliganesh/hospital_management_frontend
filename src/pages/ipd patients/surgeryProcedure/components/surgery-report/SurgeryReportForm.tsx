@@ -198,9 +198,7 @@ const SurgeryReportForm: React.FC<Props> = ({ readOnly = false }) => {
             name="surgery_start_datetime"
             label="Surgery Start Date & Time"
             type="datetime-local"
-            value={toDateTimeInputValue(
-              values?.surgery_start_datetime || values?.surgery_date,
-            )}
+            value={toDateTimeInputValue(values?.surgery_start_datetime)}
             onChange={handleChange}
             disabled={readOnly}
           />

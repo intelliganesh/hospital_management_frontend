@@ -6,6 +6,7 @@ import SingleSelector from "@/components/SingleSelector";
 import { reactiveOptions } from "./preliminaryFormOptions";
 import { useSelector } from "react-redux";
 import { RootState } from "@/actions/store";
+import { MeasurementUnit } from "@/interfaces";
 
 const SectionFive: React.FC = () => {
   const preliminaryNotes = useSelector(
@@ -22,7 +23,7 @@ const SectionFive: React.FC = () => {
           <Input
             id="hb"
             name="hb"
-            label="Hb %"
+            label={`Hb (${MeasurementUnit.PERCENTAGE})`}
             placeholder="Hemoglobin"
             onChange={handleChange}
             value={values?.hb}
@@ -95,7 +96,7 @@ const SectionFive: React.FC = () => {
         <View>
           <SingleSelector
             id="hiv"
-            label="HIV I & II"
+            label="HIV I & HIV II"
             name="hiv"
             value={values?.hiv || ""}
             placeholder="Select result"

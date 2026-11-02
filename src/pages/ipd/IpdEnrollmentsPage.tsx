@@ -2,7 +2,7 @@ import View from "@/components/view";
 import Modal from "@/components/Modal";
 import Button from "@/components/button";
 import { Card } from "@/components/ui/card";
-import { Plus, Hospital, UserPlus, MoveLeft } from "lucide-react";
+import { Plus, UserPlus, MoveLeft } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import SearchBar from "@/components/ui/search-bar";
 import DateRangePicker from "@/components/DateRangePicker";
@@ -140,12 +140,6 @@ const IpdEnrollmentsPage: React.FC = () => {
       value: doctor.name,
     }));
 
-  const statusOptions = [
-    { label: "Admitted", value: "Admitted" },
-    { label: "Discharged", value: "Discharged" },
-    { label: "Active", value: "Active" },
-    { label: "Inactive", value: "Inactive" },
-  ];
 
   const sortOptions: SortOption[] = [
     {
@@ -468,20 +462,13 @@ const IpdEnrollmentsPage: React.FC = () => {
               </View>,
 
               <View className="flex items-center gap-1">
-                <Button
-                  variant="ghost"
-                  onPress={() =>
+                <ActionMenu
+                  editTitle="Enroll Patient to IPD"
+                  onEdit={() =>
                     navigate(
                       `${IPD_ENROLLMENT_FORM_URL}/${patient?.patient_id}/${patient?.id}`,
                     )
                   }
-                  className="flex items-center w-auto px-2 py-2 text-sm text-primary-700 hover:bg-primary-100"
-                  title="Enroll Patient to IPD"
-                >
-                  <Hospital size={18} className="text-primary animate-pulse" />
-                </Button>
-                <ActionMenu
-                  editTitle="Edit Patient"
                   // onView={() =>
                   //   navigate(`${IPD_ENROLLMENT_DETAILS_URL}/${patient.id}`)
                   // }

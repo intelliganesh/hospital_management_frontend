@@ -143,6 +143,16 @@ export enum GenericStatus {
   PAID = "Paid",
 }
 
+// Units of measurement, add new units here and reuse them instead of redefining units on each page
+export enum MeasurementUnit {
+  MMHG = "mmHg",
+  BPM = "bpm",
+  FAHRENHEIT = "°F",
+  PERCENTAGE = "%",
+  KG = "kg",
+  CM = "cm",
+}
+
 export enum PaymentType {
   UPI = "UPI",
   EMI = "EMI",

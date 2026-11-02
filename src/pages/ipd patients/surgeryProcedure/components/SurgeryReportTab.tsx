@@ -10,7 +10,7 @@ interface Props {
 
 const SurgeryReportTab: React.FC<Props> = ({ detail }) => {
   const formatDateTime = (val: string) => {
-    return val ? dayjs(val).format("DD MMM YYYY, hh:mm A") : "-";
+    return val ? dayjs(val).format("DD MMM YYYY, hh:mm A") : "N/A";
   };
 
   return (

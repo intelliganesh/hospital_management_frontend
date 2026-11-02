@@ -34,3 +34,21 @@ export const formSubmissionFailMessage = (
         variant: "destructive",
         description
 })
+
+const escapeRegExp = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+// removes the unit (e.g. "98.6 °F" -> "98.6") so only the value is shown in the field
+export const removeUnit = (value: any, unit: string) => {
+    if (value === null || value === undefined) return value;
+    const unitWithoutSymbol = unit.replace("°", "");
+    return String(value)
+        .replace(new RegExp(`\\s*°?(${escapeRegExp(unit)}|${escapeRegExp(unitWithoutSymbol)})\\s*$`, "i"), "")
+        .trim();
+};
+
+// appends the unit to the value (e.g. "98.6" -> "98.6 °F") before sending to backend
+export const appendUnit = (value: any, unit: string) => {
+    const cleanValue = removeUnit(value, unit);
+    if (cleanValue === null || cleanValue === undefined || cleanValue === "") return cleanValue;
+    return `${cleanValue} ${unit}`;
+};

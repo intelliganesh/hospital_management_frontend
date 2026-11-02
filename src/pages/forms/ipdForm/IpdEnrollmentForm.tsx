@@ -10,11 +10,12 @@ import Input from "@/components/input";
 import { toast } from "@/components/ui/use-toast";
 import { usePatient } from "@/actions/calls/patient";
 import BouncingLoader from "@/components/BouncingLoader";
-import { LoadingStatus } from "@/interfaces";
+import { LoadingStatus, PaymentType } from "@/interfaces";
 import dayjs from "dayjs";
 import useForm from "@/utils/custom-hooks/use-form";
 import { NewIPDPatientWithEnrollment } from "@/interfaces/ipd/ipdEnrollment";
-import { Edit } from "lucide-react";
+import { CheckCircle2, Edit, Receipt } from "lucide-react";
+import Modal from "@/components/Modal";
 import IPDModels from "./IPDModels";
 import { setPatientModel } from "@/actions/slices/medicalStatus";
 import { clearPatientDetailsSlice } from "@/actions/slices/patient";
@@ -29,6 +30,11 @@ import { genderOptions } from "../patientForm/patientFormOptions";
 import { useOpd } from "@/actions/calls/opd";
 import { RootState } from "@/actions/store";
 import { clearIpdPatientDetailDataSlice } from "@/actions/slices/ipd/ipdEnrollment";
+
+const paymentModes = Object.values(PaymentType).map((value) => ({
+  value,
+  label: value,
+}));
 
 interface IpdEnrollmentFormProps {
   formType?: "addEnrollment" | "editEnrollment" | "addPatientWithEnrollment";
@@ -46,7 +52,8 @@ const IpdEnrollmentForm: React.FC<IpdEnrollmentFormProps> = ({
   const [patientDetailsStepErrors, setPatientDetailsStepErrors] = useState<Record<string, string>>({});
   const [medicalAssignementStepErrors, setMedicalAssignementStepErrors] = useState<Record<string, string>>({});
   const [, setAdmisstionAndAllocationStepErrors] = useState<Record<string, string>>({});
-  const [, setPaymentAndEnrollmentStepErrors] = useState<Record<string, string>>({});
+  const [paymentAndEnrollmentStepErrors, setPaymentAndEnrollmentStepErrors] = useState<Record<string, string>>({});
+  const [enrolledData, setEnrolledData] = useState<any>(null);
   // const [isSubmitting, setIsSubmitting] = useState(false);
 
   const dispatch = useDispatch();
@@ -167,6 +174,7 @@ const IpdEnrollmentForm: React.FC<IpdEnrollmentFormProps> = ({
       room_id: ipdPatientDetailData?.room_id || null,
       bed_id: ipdPatientDetailData?.bed_id || null,
       advance_amount: ipdPatientDetailData?.advance_amount || null,
+      payment_mode: ipdPatientDetailData?.payment_mode || "",
     };
 
     // Always return the full shape to satisfy the strict NewIPDPatientWithEnrollment type.
@@ -226,6 +234,7 @@ const IpdEnrollmentForm: React.FC<IpdEnrollmentFormProps> = ({
 
       if (formType === "editEnrollment") {
         delete formData.advance_amount;
+        delete formData.payment_mode;
         delete formData.admission_date_time;
         delete formData.patient_id;
         delete formData.consultation_id;
@@ -242,14 +251,15 @@ const IpdEnrollmentForm: React.FC<IpdEnrollmentFormProps> = ({
       setIsLoading(true);
 
       if (formType === "addEnrollment" || formType === "addPatientWithEnrollment") {
-        ipdPatientEnrollmentHandler(formData, (success) => {
+        ipdPatientEnrollmentHandler(formData, (success, result) => {
+          setIsLoading(false);
           if (success) {
             toast({
               title: "Success!",
               description: "Patient enrolled to IPD successfully.",
               variant: "success",
             });
-            navigate(-1);
+            setEnrolledData(result?.data || {});
           }
         });
       } else if (ipdCaseId && formType === "editEnrollment") {
@@ -613,7 +623,7 @@ const IpdEnrollmentForm: React.FC<IpdEnrollmentFormProps> = ({
     title: "Payment and Enrollment",
     description: "Enter payment information",
     content: (
-      <View className="mt-6">
+      <View className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 mt-6">
         <Input
           id="advance_amount"
           name="advance_amount"
@@ -625,22 +635,25 @@ const IpdEnrollmentForm: React.FC<IpdEnrollmentFormProps> = ({
           //   handleFieldChange("advance_amount", e.target.value)
           // }
           onChange={(value) => onSetHandler("advance_amount", Number(value.target.value))}
+          error={paymentAndEnrollmentStepErrors?.advance_amount}
         />
-        {/* <SingleSelector
-            id="payment_mode"
-            label="Payment Mode"
-            name="payment_mode"
-            value={values.payment_mode || ""}
-            placeholder="Select Payment Mode"
-            // onChange={(value) => handleFieldChange("payment_mode", value)}
-            onChange={(value) => onSetHandler("payment_mode", value)}
-            options={paymentModes}
-          /> */}
+        <SingleSelector
+          id="payment_mode"
+          label="Payment Mode"
+          name="payment_mode"
+          value={values?.payment_mode || ""}
+          placeholder="Select Payment Mode"
+          onChange={(value) => onSetHandler("payment_mode", value)}
+          options={paymentModes}
+          error={paymentAndEnrollmentStepErrors?.payment_mode}
+          required={Number(values?.advance_amount) > 0}
+        />
       </View>
     ),
     validate: async () => {
       const errors = await validationSetter(paymentAndEnrollmentStepSchema, {
         advance_amount: values.advance_amount,
+        payment_mode: values.payment_mode,
       });
 
       if (Object.keys(errors).length > 0) {
@@ -804,9 +817,48 @@ const IpdEnrollmentForm: React.FC<IpdEnrollmentFormProps> = ({
     steps.push(lastStep);
   }
 
+  // TODO: receipt generation will be wired once the API is ready
+  const handleGenerateReceipt = () => {
+    toast({
+      title: "Coming soon",
+      description: "Receipt generation will be available shortly.",
+    });
+  };
+
   return (
     <>
       <BouncingLoader isLoading={isLoading} />
+      <Modal
+        title="Enrollment Successful"
+        isOpen={!!enrolledData}
+        onClose={() => navigate(-1)}
+        closeOnOutsideClick={false}
+      >
+        <View className="flex flex-col items-center text-center gap-3 py-2">
+          <CheckCircle2 size={44} className="text-green-600" />
+          <Text as="p" className="text-slate-700 dark:text-slate-300">
+            Patient has been enrolled to IPD successfully.
+          </Text>
+          {Number(values?.advance_amount) > 0 && (
+            <Text as="p" className="text-sm text-slate-500 dark:text-slate-400">
+              Advance of ₹{values?.advance_amount} received via {values?.payment_mode}
+            </Text>
+          )}
+        </View>
+        <View className="flex justify-end gap-2 mt-6">
+          <Button variant="outline" onPress={() => navigate(-1)}>
+            Done
+          </Button>
+          <Button
+            variant="primary"
+            onPress={handleGenerateReceipt}
+            className="flex items-center gap-2"
+          >
+            <Receipt size={16} />
+            Generate Receipt
+          </Button>
+        </View>
+      </Modal>
       <IPDModels patientId={patientId}>
         <View className=" bg-slate-50 dark:bg-slate-900 flex flex-col items-center p-4">
           <View className="w-full max-w-5xl">

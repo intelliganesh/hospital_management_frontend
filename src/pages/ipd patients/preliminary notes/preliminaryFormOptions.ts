@@ -1,4 +1,13 @@
-import { Gender } from "@/interfaces";
+import { Gender, MeasurementUnit } from "@/interfaces";
+import { PreliminaryNotes } from "@/interfaces/preliminaryNotes";
+
+// vital fields that are sent to backend along with their unit
+export const vitalUnitFields: Partial<Record<keyof PreliminaryNotes, MeasurementUnit>> = {
+  bp: MeasurementUnit.MMHG,
+  pulse: MeasurementUnit.BPM,
+  temperature: MeasurementUnit.FAHRENHEIT,
+  spo2: MeasurementUnit.PERCENTAGE,
+};
 
 export enum ReactiveOptions {
   REACTIVE = "Reactive",

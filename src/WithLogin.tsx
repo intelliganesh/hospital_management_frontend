@@ -184,6 +184,8 @@ import {
   IPD_BILLS_URL,
   IPD_BILL_DETAILS_URL,
   IPD_BILL_VIEW_URL,
+  LAB_INVESTIGATIONS_URL,
+  LAB_INVESTIGATIONS_FORM_URL,
   ONLINE_APPOINTMENT_TABLE_URL,
   ONLINE_APPOINTMENT_DETAILS_URL,
   PREVIOUS_CONSULTATIONS_URL,
@@ -317,6 +319,8 @@ import DischargeSummaryPage from "./pages/ipd/discharge-summary/DischargeSummary
 import IpdBillViewPage from "./pages/ipd/billing/IpdBillViewPage";
 import IpdBillDetailsPage from "./pages/ipd/billing/IpdBillDetailsPage";
 import IpdBillsPage from "./pages/ipd/billing/IpdBillsPage";
+import LaboratoryInvestigationsPage from "./pages/laboratoryInvestigations/LaboratoryInvestigationsPage";
+import LaboratoryInvestigationsForm from "./pages/forms/laboratoryInvestigationsForm/LaboratoryInvestigationsForm";
 import DoctorNotesForm from "./pages/forms/ipdForm/doctorNotes";
 import FistulaEntryList from "./pages/patient/FistulaEntryList";
 import FistulaEntryForm from "./pages/patient/FistulaEntryForm";
@@ -362,6 +366,22 @@ const WithLogin: React.FC<{}> = () => {
         element={
           <DashboardLayout>
             <IpdBillViewPage />
+          </DashboardLayout>
+        }
+      />
+      <Route
+        path={LAB_INVESTIGATIONS_URL}
+        element={
+          <DashboardLayout>
+            <LaboratoryInvestigationsPage />
+          </DashboardLayout>
+        }
+      />
+      <Route
+        path={LAB_INVESTIGATIONS_URL + LAB_INVESTIGATIONS_FORM_URL + "/:id"}
+        element={
+          <DashboardLayout>
+            <LaboratoryInvestigationsForm />
           </DashboardLayout>
         }
       />

@@ -16,8 +16,8 @@ import {
   IPD_PATIENTS_DETAILS_URL,
   IPD_PATIENTS_URL,
 } from "@/utils/urls/frontend";
-import { formSubmissionFailMessage } from "@/utils/helperFunctions";
-import { LoadingStatus } from "@/interfaces";
+import { appendUnit, formSubmissionFailMessage, removeUnit } from "@/utils/helperFunctions";
+import { LoadingStatus, MeasurementUnit } from "@/interfaces";
 import { useOpd } from "@/actions/calls/opd";
 import SingleSelector from "@/components/SingleSelector";
 import Input from "@/components/input";
@@ -36,6 +36,12 @@ import BouncingLoader from "@/components/BouncingLoader";
 
 import { useIpdPatients } from "@/actions/calls/ipd";
 import { clearIpdPatientDetailDataSlice } from "@/actions/slices/ipd/ipdEnrollment";
+
+// vital fields that are sent to backend along with their unit
+const doctorNotesUnitFields: Partial<Record<keyof DoctorNotes, MeasurementUnit>> = {
+  bp: MeasurementUnit.MMHG,
+  pr: MeasurementUnit.BPM,
+};
 
 const DoctorNotesForm = ({ formType = "add" }: { formType?: string }) => {
   const navigate = useNavigate();
@@ -117,6 +123,9 @@ const DoctorNotesForm = ({ formType = "add" }: { formType?: string }) => {
 
   const doctorNotesFormObj = {
     ...doctorNotesDetail,
+    // backend sends vitals with unit, show only the value in the fields
+    bp: removeUnit(doctorNotesDetail?.bp, MeasurementUnit.MMHG),
+    pr: removeUnit(doctorNotesDetail?.pr, MeasurementUnit.BPM),
     doctor_id: doctorNotesDetail?.doctor_id || dutyDoctor?.user_id || "",
     date: doctorNotesDetail?.date
       ? dayjs(doctorNotesDetail?.date).format("YYYY-MM-DD")
@@ -139,6 +148,12 @@ const DoctorNotesForm = ({ formType = "add" }: { formType?: string }) => {
     for (let [key, value] of formData.entries()) {
       doctorNotesFormObj[key as keyof DoctorNotes] = value as any;
     }
+
+    // send vitals to backend along with their unit (e.g. "72 bpm")
+    Object.entries(doctorNotesUnitFields).forEach(([field, unit]) => {
+      const key = field as keyof DoctorNotes;
+      (doctorNotesFormObj as any)[key] = appendUnit(doctorNotesFormObj[key], unit as MeasurementUnit);
+    });
 
     console.log(ipdID);
 
@@ -345,8 +360,8 @@ const DoctorNotesForm = ({ formType = "add" }: { formType?: string }) => {
                 <Input
                   id="bp"
                   name="bp"
-                  label="BP"
-                  placeholder="120/80 mmHg"
+                  label={`BP (${MeasurementUnit.MMHG})`}
+                  placeholder="e.g., 120/80"
                   onChange={handleChange}
                   value={values?.bp || ""}
                   error={errors?.bp}
@@ -356,8 +371,8 @@ const DoctorNotesForm = ({ formType = "add" }: { formType?: string }) => {
                 <Input
                   id="pr"
                   name="pr"
-                  label="PR"
-                  placeholder="72 bpm"
+                  label={`PR (${MeasurementUnit.BPM})`}
+                  placeholder="e.g., 72"
                   onChange={handleChange}
                   value={values?.pr || ""}
                   error={errors?.pr}

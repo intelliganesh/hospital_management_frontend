@@ -26,8 +26,10 @@ import {
   DownloadIcon,
   UsersRound,
   UserRound,
+  FolderOpen,
 } from "lucide-react";
 import BouncingLoader from "@/components/BouncingLoader";
+import DocumentUploadComponent from "@/components/DocUpload";
 import {
   // CHIEF_COMPLAINT_DETAILS_URL,
   // CHIEF_COMPLAINT_URL,
@@ -106,23 +108,26 @@ const IpdPatientDetailsPage = () => {
     .replace(/[\s-]+/g, "_");
   const isSurgicalIpd = normalizedIpdType === "surgical";
 
-  useEffect(() => {
-    if (patientId) {
-      ipdPatientDetailHandler(
-        patientId,
-        () => { },
-        [],
-        (status: LoadingStatus) => {
-          setIsLoading(
-            status === "pending"
+  const fetchIpdPatientDetails = () => {
+    if (!patientId) return;
+    ipdPatientDetailHandler(
+      patientId,
+      () => { },
+      [],
+      (status: LoadingStatus) => {
+        setIsLoading(
+          status === "pending"
+            ? true
+            : status === "failed"
               ? true
-              : status === "failed"
-                ? true
-                : status === "success" && false,
-          );
-        },
-      );
-    }
+              : status === "success" && false,
+        );
+      },
+    );
+  };
+
+  useEffect(() => {
+    fetchIpdPatientDetails();
     return () => {
       cleanUp();
       dispatch(clearIpdPatientDetailDataSlice());
@@ -678,11 +683,9 @@ const IpdPatientDetailsPage = () => {
                       "Assigned Date"
                     ]}
                     tableData={ipdPatientDetailData?.staffs.length > 0 && ipdPatientDetailData?.staffs?.map((staff: any) => ([
-                      <Link to={`${USER_TABLE_URL}${USER_DETAIL_URL}/${staff?.user_id}`} >
-                        <Text as="p" className="flex items-center gap-2 text-primary cursor-pointer w-fit">
-                          <UserRound className="w-4 h-4" />{staff?.user_name || "N/A"}
-                        </Text>
-                      </Link>,
+                      <Text as="p" className="flex items-center gap-2 w-fit">
+                        <UserRound className="w-4 h-4" />{staff?.user_name || "N/A"}
+                      </Text>,
                       staff?.user_phone || "N/A",
                       staff?.user_role?.replace("_", " ").split(" ").map((word: string) => word.charAt(0).toUpperCase() + word.slice(1)).join(" ") || "N/A",
                       staff?.assigned_date && dayjs(staff?.assigned_date).format("DD-MM-YYYY") || "N/A"
@@ -699,6 +702,33 @@ const IpdPatientDetailsPage = () => {
         </View>
 
         <SurgeryList showAddButton={isSurgicalIpd} />
+
+        {/* Supportive Documents */}
+        <Card className="shadow-md py-4">
+          <CardContent className="p-6">
+            <Text
+              as="h3"
+              className="text-lg font-semibold mb-1 flex items-center gap-2"
+            >
+              <FolderOpen className="w-5 h-5 text-amber-600" />
+              Supportive Documents
+            </Text>
+            <Text as="p" className="text-sm text-muted-foreground mb-4">
+              Upload reports, scans, consent copies and other documents related to this admission
+            </Text>
+            {ipdPatientDetailData?.id && (
+              <DocumentUploadComponent
+                id={ipdPatientDetailData?.id}
+                fileName="document_path"
+                modalType="ipd_supportive_documents"
+                folderName="ipd_supportive_documents"
+                existingDocuments={ipdPatientDetailData?.supportive_documents}
+                onUploadSuccess={fetchIpdPatientDetails}
+                showCard={false}
+              />
+            )}
+          </CardContent>
+        </Card>
 
         {/* Quick Actions Groups */}
         <View className="space-y-12">
