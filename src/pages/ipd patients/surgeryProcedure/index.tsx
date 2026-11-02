@@ -12,13 +12,15 @@ import { useDownloadIpdPdf } from "@/actions/calls/ipd/downloadIpdPdf";
 import { IPD_GENERATE_PDF_URL } from "@/utils/urls/backend";
 import { useSelector } from "react-redux";
 import { RootState } from "@/actions/store";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import BouncingLoader from "@/components/BouncingLoader";
 
 const SurgeryProcedurePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState("consent");
+  const [searchParams] = useSearchParams();
+  const section = searchParams.get("section");
+  const [selectedTab, setActiveTab] = useState("consent");
   const { fetchAndDownloadPdf, isLoading: isPdfDownloading } =
     useDownloadIpdPdf();
 
@@ -69,7 +71,16 @@ const SurgeryProcedurePage: React.FC = () => {
       label: "Surgery Report",
       content: <SurgeryReportForm />,
     },
-  ];
+  ].filter((tab) =>
+    section === "report"
+      ? tab.value === "report"
+      : section === "procedure"
+        ? tab.value !== "report"
+        : true,
+  );
+  const activeTab = tabs.some((tab) => tab.value === selectedTab)
+    ? selectedTab
+    : tabs[0]?.value;
 
   const renderContent = () => {
     const activeTabData = tabs.find((tab) => tab.value === activeTab);

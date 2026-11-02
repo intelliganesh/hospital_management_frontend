@@ -497,7 +497,7 @@ const DischargeSummaryPage: React.FC = () => {
             />
           </View>
 
-          <View className="mt-8">
+          {/* <View className="mt-8">
             <TransferList
               name="tests"
               label="Tests"
@@ -514,7 +514,7 @@ const DischargeSummaryPage: React.FC = () => {
               showCount={false}
               disabled={isViewMode}
             />
-          </View>
+          </View> */}
 
           <View className="mt-8">
             <TransferList

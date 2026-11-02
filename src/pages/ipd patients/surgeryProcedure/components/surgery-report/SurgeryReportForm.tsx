@@ -110,6 +110,7 @@ const SurgeryReportForm: React.FC<Props> = ({ readOnly = false }) => {
         toast({
           title: "Success",
           description: "Surgery report submitted successfully",
+          variant: "success",
         });
 
         // STEP 2: Upload file separately
@@ -127,6 +128,7 @@ const SurgeryReportForm: React.FC<Props> = ({ readOnly = false }) => {
               toast({
                 title: "Success",
                 description: "Report file uploaded successfully",
+                variant: "success",
               });
             }
           });

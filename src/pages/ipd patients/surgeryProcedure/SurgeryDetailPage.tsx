@@ -5,7 +5,7 @@ import {
   SURGERY_LIST_URL,
 } from "@/utils/urls/frontend";
 import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import View from "@/components/view";
 import Text from "@/components/text";
 import Button from "@/components/button";
@@ -87,6 +87,28 @@ const SectionHeader: React.FC<{ label: string }> = ({ label }) => (
 const SurgeryDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>(); // surgery_id
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const section = searchParams.get("section");
+  const sectionQuery =
+    section === "procedure" || section === "report"
+      ? `?section=${section}`
+      : "";
+  const requestedTab = searchParams.get("tab");
+
+  useEffect(() => {
+    const validTabs = section === "report"
+      ? ["report"]
+      : section === "procedure"
+        ? ["consent", "checklist"]
+        : ["consent", "checklist", "report"];
+    if (!requestedTab || !validTabs.includes(requestedTab)) {
+      setSearchParams((previous) => {
+        const next = new URLSearchParams(previous);
+        next.set("tab", validTabs[0]);
+        return next;
+      }, { replace: true });
+    }
+  }, [section, requestedTab, setSearchParams]);
   const dispatch = useDispatch();
 
   const { fetchAndDownloadPdf, isLoading: isPdfDownloading } =
@@ -234,7 +256,13 @@ const SurgeryDetailPage: React.FC = () => {
         <SurgeryReportTab detail={surgeryReportData} />
       ),
     },
-  ];
+  ].filter((tab) =>
+    section === "report"
+      ? tab.value === "report"
+      : section === "procedure"
+        ? tab.value !== "report"
+        : true,
+  );
 
   const surgeryStart = surgeryReportData?.surgery_start_datetime;
   const surgeryEnd = surgeryReportData?.surgery_end_datetime;
@@ -260,7 +288,7 @@ const SurgeryDetailPage: React.FC = () => {
         label={String(surgeryReportData?.surgery_name || surgeryReportData?.id || "Details")}
         parentTo={
           surgeryReportData?.ipd_id
-            ? `${BREADCRUMB_LIST_URL}${IPD_PATIENTS_DETAILS_URL}${SURGERY_LIST_URL}/${surgeryReportData.ipd_id}?currentPage=1`
+                ? `${BREADCRUMB_LIST_URL}${IPD_PATIENTS_DETAILS_URL}${SURGERY_LIST_URL}/${surgeryReportData.ipd_id}${sectionQuery ? `${sectionQuery}&currentPage=1` : "?currentPage=1"}`
             : `${BREADCRUMB_LIST_URL}?currentPage=1`
         }
       />
@@ -288,7 +316,7 @@ const SurgeryDetailPage: React.FC = () => {
             className="flex items-center gap-2 shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all text-sm"
             onPress={() =>
               navigate(
-                `/ipd-patients-list/ipd-patients-details/surgery-procedure/${id}`,
+                `/ipd-patients-list/ipd-patients-details/surgery-procedure/${id}${sectionQuery}`,
               )
             }
           >
