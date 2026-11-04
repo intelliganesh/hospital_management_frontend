@@ -1,3 +1,5 @@
+import DetailsBreadcrumb from "@/components/DetailsBreadcrumb";
+import { YOGA_ASANA_TABLE_URL as BREADCRUMB_LIST_URL } from "@/utils/urls/frontend";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Clock, ArrowLeft, Activity, AlertTriangle, Info } from "lucide-react";
@@ -81,6 +83,12 @@ const YogaAsanaDetail: React.FC = () => {
 
   return (
     <View className="container mx-auto p-4 max-w-4xl">
+      <DetailsBreadcrumb
+        parentLabel="Yoga Asana"
+        label={String(yogasanaDetails?.asana_name || "Details")}
+        parentTo={`${BREADCRUMB_LIST_URL}?currentPage=1`}
+        masters
+      />
       <BouncingLoader isLoading={isLoading} />
 
       {/* Header */}

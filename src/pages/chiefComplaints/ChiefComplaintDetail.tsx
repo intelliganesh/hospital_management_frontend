@@ -1,3 +1,7 @@
+import DetailsBreadcrumb, {
+  DetailsBreadcrumbProps,
+} from "@/components/DetailsBreadcrumb";
+import { CHIEF_COMPLAINT_URL as BREADCRUMB_LIST_URL } from "@/utils/urls/frontend";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/actions/store";
@@ -23,7 +27,9 @@ interface ChiefComplaintData {
   department_type: string;
 }
 
-const ChiefComplaintDetail = () => {
+const ChiefComplaintDetail = ({
+  breadcrumbParent,
+}: { breadcrumbParent?: DetailsBreadcrumbProps }) => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -80,6 +86,13 @@ const ChiefComplaintDetail = () => {
 
   return (
     <View className="container mx-auto p-4 max-w-4xl">
+      <DetailsBreadcrumb
+        parentLabel="Chief Complaints"
+        label={String(complaintData?.complaint_name || "Details")}
+        parentTo={`${BREADCRUMB_LIST_URL}?currentPage=1`}
+        masters
+        {...breadcrumbParent}
+      />
       {/* Header */}
       <View className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
         <View>

@@ -1,3 +1,4 @@
+import MastersBreadcrumb from "@/components/MastersBreadcrumb";
 import { useOnExamination } from "@/actions/calls/onExamination";
 import BouncingLoader from "@/components/BouncingLoader";
 import Button from "@/components/button";
@@ -120,6 +121,7 @@ const OnExaminationPage = () => {
 
   return (
     <React.Fragment>
+      <MastersBreadcrumb label="On Examination" />
       <BouncingLoader isLoading={isLoading} />
       <Modal
         title="On Examination Delete"

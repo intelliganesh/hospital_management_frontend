@@ -1,3 +1,4 @@
+import MastersBreadcrumb from "@/components/MastersBreadcrumb";
 import { useBeds } from "@/actions/calls/beds";
 import { RootState } from "@/actions/store";
 import Button from "@/components/button";
@@ -94,6 +95,7 @@ const BedsPage: React.FC<{}> = () => {
   // };
   return (
     <React.Fragment>
+      <MastersBreadcrumb label="Beds" />
       <Modal
         title="Delete Bed"
         isOpen={deleteId ? true : false}

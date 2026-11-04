@@ -1,3 +1,5 @@
+import DetailsBreadcrumb from "@/components/DetailsBreadcrumb";
+import { BED_TABLE_URL as BREADCRUMB_LIST_URL } from "@/utils/urls/frontend";
 import { useNavigate, useParams } from "react-router-dom";
 import Button from "@/components/button";
 import { useEffect, useState } from "react";
@@ -44,6 +46,12 @@ const BedDetails = () => {
   return (
     <View className="min-h-screen bg-slate-50 dark:bg-slate-900 p-4 flex justify-center">
       <View className="w-full max-w-5xl space-y-6">
+        <DetailsBreadcrumb
+          parentLabel="Beds"
+          label={String(bedData?.bed_no || "Details")}
+          parentTo={`${BREADCRUMB_LIST_URL}?currentPage=1`}
+          masters
+        />
         {/* Header */}
         <View className="flex justify-between items-center">
           <View>

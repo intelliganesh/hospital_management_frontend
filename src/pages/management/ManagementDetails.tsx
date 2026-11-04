@@ -1,3 +1,5 @@
+import DetailsBreadcrumb from "@/components/DetailsBreadcrumb";
+import { MANAGEMENT_TABLE_URL as BREADCRUMB_LIST_URL } from "@/utils/urls/frontend";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -72,6 +74,12 @@ const ManagementDetail: React.FC = () => {
 
   return (
     <View className="container mx-auto p-4 max-w-4xl">
+      <DetailsBreadcrumb
+        parentLabel="Managements"
+        label={String(managementData?.management_name || "Details")}
+        parentTo={`${BREADCRUMB_LIST_URL}?currentPage=1`}
+        masters
+      />
       <BouncingLoader isLoading={isLoading} />
 
       {/* Header */}

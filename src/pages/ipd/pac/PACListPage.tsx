@@ -229,14 +229,14 @@ const PACListPage: React.FC = () => {
           </Text>
         </View>
         <View className="flex gap-2">
-          <Button
+          {/* <Button
             variant="primary"
             className="flex items-center gap-2 px-6 py-3"
             onPress={() => setShowAddModal(true)}
           >
             <PlusCircle className="h-5 w-5" />
             Add PAC
-          </Button>
+          </Button> */}
           <Button
             variant="outline"
             className="flex items-center gap-2"
@@ -284,9 +284,9 @@ const PACListPage: React.FC = () => {
                     onView: () => {
                       navigate(`/ipd/${id}/pac/${row.id}/view`);
                     },
-                    onDelete: () => {
-                      setDeleteId(row.id);
-                    },
+                    // onDelete: () => {
+                    //   setDeleteId(row.id);
+                    // },
                     onEdit: () => {
                       navigate(
                         `/ipd/${id}/pac/${row.id}?tab=pre-op&currentPage=1?mode=edit`,

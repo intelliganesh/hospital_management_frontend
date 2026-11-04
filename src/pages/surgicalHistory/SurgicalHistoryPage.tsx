@@ -1,3 +1,4 @@
+import MastersBreadcrumb from "@/components/MastersBreadcrumb";
 import { useSurgicalHistory } from "@/actions/calls/surgicalHistory";
 import { RootState } from "@/actions/store";
 import BouncingLoader from "@/components/BouncingLoader";
@@ -121,6 +122,7 @@ const SurgicalHistoryPage = () => {
   const [activeSort, setActiveSort] = useState<SortOption | null>(null);
   return (
     <React.Fragment>
+      <MastersBreadcrumb label="Surgical History" />
       <BouncingLoader isLoading={isLoading} />
       <Modal
         title="Surgery Description"

@@ -1,3 +1,5 @@
+import DetailsBreadcrumb from "@/components/DetailsBreadcrumb";
+import { IPD_ENROLLMENTS_URL as BREADCRUMB_LIST_URL } from "@/utils/urls/frontend";
 import React, { useEffect, useState } from "react";
 import View from "@/components/view";
 import Text from "@/components/text";
@@ -80,6 +82,16 @@ const IpdEnrollmentDetailsPage: React.FC = () => {
 
   return (
     <View className="p-4 md:p-6 space-y-6">
+      <DetailsBreadcrumb
+        parentLabel="IPD Enrollments"
+        label={
+          String(
+            enrollmentDetails?.appointment_number ||
+            [enrollmentDetails?.patient?.first_name, enrollmentDetails?.patient?.last_name].filter(Boolean).join(" ") || "Details",
+          )
+        }
+        parentTo={`${BREADCRUMB_LIST_URL}?currentPage=1`}
+      />
       <View className="flex items-center justify-between mb-6">
         <View className="flex items-center gap-4">
           <Button

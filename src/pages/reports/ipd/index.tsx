@@ -28,6 +28,7 @@ import {
   dynamicTableCardStyle,
   handleSortChange,
 } from "@/utils/helperFunctions";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator,  } from "@/components/ui/breadcrumb";
 
 const normalizeRows = (reportData: any) => {
   const candidates = [
@@ -283,6 +284,21 @@ const IpdReport: React.FC = () => {
   return (
     <React.Fragment>
       <BouncingLoader isLoading={loadingStatus} />
+      <Breadcrumb className="mb-4">
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink to="/">Dashboard</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbLink to="#">Reports</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>IPD Report</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
 
       <View className="mb-6">
         <Text as="h1" className="text-2xl font-bold text-slate-900 dark:text-white">

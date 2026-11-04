@@ -1,3 +1,5 @@
+import DetailsBreadcrumb from "@/components/DetailsBreadcrumb";
+import { INVOICE_URL as BREADCRUMB_LIST_URL } from "@/utils/urls/frontend";
 import View from "@/components/view";
 import Text from "@/components/text";
 import SectionOne from "./SectionOne";
@@ -219,6 +221,17 @@ const InvoiceDetail: React.FC = () => {
 
   return (
     <View className="min-h-screen p-8">
+      <DetailsBreadcrumb
+        parentLabel="Invoices"
+        label={
+          String(
+            (typeof invoiceData?.invoice_number === "string" ? invoiceData.invoice_number : invoiceData?.invoice_number?.invoice_number) ||
+            invoiceData?.appointment_number ||
+            invoiceData?.patient_name || "Details",
+          )
+        }
+        parentTo={`${BREADCRUMB_LIST_URL}?currentPage=1`}
+      />
       <BouncingLoader isLoading={isLoading} />
       <ServiceModel>
         <View className="max-w-4xl mx-auto">

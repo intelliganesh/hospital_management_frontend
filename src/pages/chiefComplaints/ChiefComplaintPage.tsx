@@ -1,3 +1,4 @@
+import MastersBreadcrumb from "@/components/MastersBreadcrumb";
 import { useChiefComplaint } from "@/actions/calls/chiefComplaints";
 import BouncingLoader from "@/components/BouncingLoader";
  import Button from "@/components/button";
@@ -88,6 +89,7 @@ const ChiefComplaintPage: React.FC<{}> = () => {
 
   return (
     <React.Fragment>
+      <MastersBreadcrumb label="Chief Complaints" />
       <BouncingLoader isLoading={isLoading} />
       <Modal
         title="Chief Complaint Delete"

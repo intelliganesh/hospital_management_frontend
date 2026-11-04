@@ -1,3 +1,4 @@
+import MastersBreadcrumb from "@/components/MastersBreadcrumb";
 import { useManagement } from "@/actions/calls/management";
 import BouncingLoader from "@/components/BouncingLoader";
 import Button from "@/components/button";
@@ -79,6 +80,7 @@ const ManagementPage: React.FC<{}> = () => {
 
   return (
     <React.Fragment>
+      <MastersBreadcrumb label="Managements" />
       <BouncingLoader isLoading={isLoading} />
       <Modal
         title="Management Delete"

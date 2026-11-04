@@ -35,6 +35,7 @@ import {
   formatInternalOpeningPosition,
 } from "../consultation";
 import TruncatedCell from "@/components/ui/TruncatedCell";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 
 const FistulaReport: React.FC<{}> = ({}) => {
   const dispatch = useDispatch();
@@ -196,6 +197,22 @@ const FistulaReport: React.FC<{}> = ({}) => {
       <View className="fixed top-4 left-0  w-full z-50">
         <BouncingLoader isLoading={loadingStatus} />
       </View>
+
+      <Breadcrumb className="mb-4">
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink to="/">Dashboard</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbLink to="#">Reports</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>Fistula Report</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
 
       <View className="flex flex-col md:flex-row justify-between items-center mb-6">
         <View className="mb-6">

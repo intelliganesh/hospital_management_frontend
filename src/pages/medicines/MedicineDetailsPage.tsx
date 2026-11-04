@@ -1,3 +1,5 @@
+import DetailsBreadcrumb from "@/components/DetailsBreadcrumb";
+import { MEDICINE_TABLE_URL as BREADCRUMB_LIST_URL } from "@/utils/urls/frontend";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -64,6 +66,12 @@ const MedicineDetailsPage = () => {
 
   return (
     <View className="container mx-auto p-4 max-w-4xl">
+      <DetailsBreadcrumb
+        parentLabel="Medicines"
+        label={String(medicineDetails?.medicine_name || "Details")}
+        parentTo={`${BREADCRUMB_LIST_URL}?currentPage=1`}
+        masters
+      />
       <View className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
         <View className="flex items-center gap-3">
           <View className="p-2 bg-blue-50 rounded-lg">

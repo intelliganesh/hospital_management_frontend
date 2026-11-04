@@ -45,6 +45,7 @@ import BouncingLoader from "@/components/BouncingLoader";
 import Modal from "@/components/Modal";
 import DeleteLoader from "@/components/deleteLoader";
 import PaginationComponent from "@/components/Pagination";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 
 const OnlineAppointmentPage: React.FC = () => {
   const navigate = useNavigate();
@@ -78,7 +79,7 @@ const OnlineAppointmentPage: React.FC = () => {
     if (searchParams?.has("currentPage")) {
       onlineAppointmentsListHandler(
         searchParams?.get("currentPage") ?? 1,
-        () => { },
+        () => {},
         searchParams.get("search") ?? null,
         searchParams.get("sort_by") ?? null,
         searchParams.get("sort_order") ?? null,
@@ -96,8 +97,8 @@ const OnlineAppointmentPage: React.FC = () => {
         },
       );
     }
-    PuaListHandler(() => { });
-    onlineAppointmentStatsHandler(() => { });
+    PuaListHandler(() => {});
+    onlineAppointmentStatsHandler(() => {});
     return () => {
       cleanUp();
     };
@@ -113,16 +114,16 @@ const OnlineAppointmentPage: React.FC = () => {
   const refreshList = () => {
     onlineAppointmentsListHandler(
       searchParams.get("currentPage") ?? 1,
-      () => { },
+      () => {},
       searchParams.get("search") ?? null,
       searchParams.get("sort_by") ?? null,
       searchParams.get("sort_order") ?? null,
       searchParams.get("from_date") ?? null,
       searchParams.get("to_date") ?? null,
       [],
-      () => { },
+      () => {},
     );
-    onlineAppointmentStatsHandler(() => { });
+    onlineAppointmentStatsHandler(() => {});
   };
   const handleEdit = (row: OnlineAppointment) => {
     setSelectedAppointment(row);
@@ -136,14 +137,14 @@ const OnlineAppointmentPage: React.FC = () => {
     setSelectedAppointment(row);
     setIsSendPaymentOpen(true);
 
-    onlineAppointmentDetailHandler(row.id, () => { });
+    onlineAppointmentDetailHandler(row.id, () => {});
   };
 
   const handleVerifyPayment = (row: OnlineAppointment) => {
     setSelectedAppointment(row);
     setIsVerifyPaymentOpen(true);
 
-    onlineAppointmentDetailHandler(row.id, () => { });
+    onlineAppointmentDetailHandler(row.id, () => {});
   };
 
   // const handleNotifyDoctor = (row: OnlineAppointment) => {
@@ -249,7 +250,7 @@ const OnlineAppointmentPage: React.FC = () => {
         return (
           <View className="flex items-center gap-1">
             {row.appointment_type === "online" ||
-              row.appointment_type === "ONLINE" ? (
+            row.appointment_type === "ONLINE" ? (
               <Smartphone size={14} className="text-blue-500" />
             ) : (
               <PersonStanding size={14} className="text-purple-500" />
@@ -401,6 +402,17 @@ const OnlineAppointmentPage: React.FC = () => {
           </Button>
         </View>
       </Modal>
+      <Breadcrumb className="mb-4">
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink to="/">Dashboard</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>Online Appointments</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
       <View className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <View className="flex items-center gap-3">
           <View className="p-2 !bg-gradient-to-br !from-primary-100 !via-primary-200 !to-primary-300 dark:!from-primary-800/40 dark:!via-primary-700/40 dark:!to-primary-600/40 !text-primary-600 dark:!text-primary-400 !shadow-lg !shadow-primary-500/25 dark:!shadow-primary-400/20 rounded-lg text-primary-600">

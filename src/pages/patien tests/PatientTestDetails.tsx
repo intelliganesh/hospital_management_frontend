@@ -1,3 +1,5 @@
+import DetailsBreadcrumb from "@/components/DetailsBreadcrumb";
+import { PATIENT_TEST_TABLE_URL as BREADCRUMB_LIST_URL } from "@/utils/urls/frontend";
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { usePatientTest } from "@/actions/calls/patientTest";
@@ -37,6 +39,11 @@ const PatientTestDetails = () => {
 
   return (
     <View className="container mx-auto p-4 space-y-6">
+      <DetailsBreadcrumb
+        parentLabel="Patient Tests"
+        label={String(testData?.test_name || "Details")}
+        parentTo={`${BREADCRUMB_LIST_URL}?currentPage=1`}
+      />
       <View className="flex justify-between items-center">
         <View>
           <Text as="h1" weight="font-semibold" className="text-2xl font-bold">

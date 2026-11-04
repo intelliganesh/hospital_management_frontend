@@ -1,3 +1,4 @@
+import MastersBreadcrumb from "@/components/MastersBreadcrumb";
 import { useConsultationFees } from "@/actions/calls/consultationFees";
 import BouncingLoader from "@/components/BouncingLoader";
  import Button from "@/components/button";
@@ -90,6 +91,7 @@ const ConsultatoinFeesPage: React.FC<{}> = () => {
 
   return (
     <React.Fragment>
+      <MastersBreadcrumb label="Consultation Fees" />
       <BouncingLoader isLoading={isLoading} />
       <Modal
         title="Consultation Fee Delete"

@@ -8,7 +8,7 @@ import DynamicTable from "@/components/ui/DynamicTable";
 import Text from "@/components/text";
 import BouncingLoader from "@/components/BouncingLoader";
 import SingleSelector from "@/components/SingleSelector";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { RootState } from "@/actions/store";
 import { useSelector } from "react-redux";
 import Input from "@/components/input";
@@ -39,6 +39,12 @@ interface SurgeryListProps {
 
 const SurgeryList: React.FC<SurgeryListProps> = ({ showAddButton = true }) => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const section = searchParams.get("section");
+  const detailsQuery =
+    section === "procedure" || section === "report"
+      ? `?section=${section}&tab=${section === "report" ? "report" : "consent"}`
+      : "";
   const { id: patientId } = useParams();
 
   const {
@@ -287,7 +293,7 @@ const SurgeryList: React.FC<SurgeryListProps> = ({ showAddButton = true }) => {
                   IPD_PATIENTS_URL +
                     IPD_PATIENTS_DETAILS_URL +
                     SURGERY_PROCEDURE_URL +
-                    `/${data.id}/view`,
+                    `/${data.id}/view${detailsQuery}`,
                 ),
               onEdit: () => handleOpenEdit(data),
               onDelete: () => setDeleteId(data.id),

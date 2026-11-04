@@ -1,3 +1,5 @@
+import DetailsBreadcrumb from "@/components/DetailsBreadcrumb";
+import { PATIENT_TABLE_URL as BREADCRUMB_LIST_URL } from "@/utils/urls/frontend";
 import View from "@/components/view";
 import Text from "@/components/text";
 import Button from "@/components/button";
@@ -121,6 +123,15 @@ const PatientDetailsPage = () => {
 
   return (
     <React.Fragment>
+      <DetailsBreadcrumb
+        parentLabel="Patients"
+        label={
+          String(
+            [patient?.first_name, patient?.last_name].filter(Boolean).join(" ") || "Details",
+          )
+        }
+        parentTo={`${BREADCRUMB_LIST_URL}?currentPage=1`}
+      />
       <BouncingLoader isLoading={isLoading} />
       <View className="space-y-6">
         <View className="flex justify-between items-center">

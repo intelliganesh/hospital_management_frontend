@@ -1,3 +1,5 @@
+import DetailsBreadcrumb from "@/components/DetailsBreadcrumb";
+import { CONSULTATION_TABLE_URL as BREADCRUMB_LIST_URL } from "@/utils/urls/frontend";
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -546,6 +548,16 @@ const ConsultationDetails = () => {
 
   return (
     <View className="space-y-6 container mx-auto px-4 py-6 md:px-6 md:py-8">
+      <DetailsBreadcrumb
+        parentLabel="Consultations"
+        label={
+          String(
+            consultationData?.consultations?.appointment_number ||
+            consultationData?.consultations?.patient_name || "Details",
+          )
+        }
+        parentTo={`${BREADCRUMB_LIST_URL}?currentPage=1`}
+      />
       <View className="fixed top-4 left-0  w-full z-50">
         <BouncingLoader isLoading={isLoading} />
       </View>

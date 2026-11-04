@@ -1,3 +1,4 @@
+import MastersBreadcrumb from "@/components/MastersBreadcrumb";
 import { useRoom } from "@/actions/calls/room";
 import { RootState } from "@/actions/store";
 import BouncingLoader from "@/components/BouncingLoader";
@@ -109,6 +110,7 @@ const RoomsPage: React.FC<{}> = () => {
   // };
   return (
     <React.Fragment>
+      <MastersBreadcrumb label="Rooms" />
       <BouncingLoader isLoading={isLoading} />
       <Modal
         title="Room Delete"

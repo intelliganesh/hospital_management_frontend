@@ -33,6 +33,14 @@ import { clearPatientDetailsSlice } from "@/actions/slices/patient";
 import InfoCard from "@/components/ui/infoCard";
 import DeleteLoader from "@/components/deleteLoader";
 import ImageComponent from "@/components/ui/ImageComponent";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 const PatientsPage: React.FC<{}> = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -45,17 +53,17 @@ const PatientsPage: React.FC<{}> = () => {
     getPatientStatsHandler,
   } = usePatient();
   const [filterData, setFilterData] = useState<null | Record<string, string>>(
-    null
+    null,
   );
   const dispatch = useDispatch();
   const location = useLocation();
   const [isLoading, setIsLoading] = useState(false);
   const paginateObj = useSelector(
-    (state: RootState) => state.patient.userCompleteObj
+    (state: RootState) => state.patient.userCompleteObj,
   );
 
   const patientStats = useSelector(
-    (state: RootState) => state.patient.patientStatsData
+    (state: RootState) => state.patient.patientStatsData,
   );
 
   useEffect(() => {
@@ -67,10 +75,10 @@ const PatientsPage: React.FC<{}> = () => {
           status === "pending"
             ? true
             : status === "failed"
-            ? true
-            : status === "success" && false
+              ? true
+              : status === "success" && false,
         );
-      }
+      },
     );
   }, []);
 
@@ -88,10 +96,10 @@ const PatientsPage: React.FC<{}> = () => {
             status === "pending"
               ? true
               : status === "failed"
-              ? true
-              : status === "success" && false
+                ? true
+                : status === "success" && false,
           );
-        }
+        },
       );
     }
     return () => {
@@ -143,10 +151,9 @@ const PatientsPage: React.FC<{}> = () => {
   ];
 
   const [activeSort, setActiveSort] = useState<SortOption | null>(
-    sortOptions[0]
+    sortOptions[0],
   );
 
- 
   return (
     <React.Fragment>
       <BouncingLoader isLoading={isLoading} />
@@ -171,6 +178,17 @@ const PatientsPage: React.FC<{}> = () => {
           </View>
         </Modal>
       )}
+      <Breadcrumb className="mb-4">
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink to="/">Dashboard</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>Patients</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
       <View className="mb-8">
         <View className="flex justify-between items-center gap-4">
           <View>
@@ -303,12 +321,12 @@ const PatientsPage: React.FC<{}> = () => {
             <ActionMenu
               onView={() =>
                 navigate(
-                  PATIENT_TABLE_URL + PATIENT_DETAIL_URL + "/" + patient.id
+                  PATIENT_TABLE_URL + PATIENT_DETAIL_URL + "/" + patient.id,
                 )
               }
               onEdit={() =>
                 navigate(
-                  PATIENT_TABLE_URL + PATIENTS_FORM_URL + "/" + patient.id
+                  PATIENT_TABLE_URL + PATIENTS_FORM_URL + "/" + patient.id,
                 )
               }
               // onEdit={
@@ -334,7 +352,7 @@ const PatientsPage: React.FC<{}> = () => {
                       currentPage: "1",
                       search: value,
                     },
-                    { replace: true }
+                    { replace: true },
                   );
                 }}
                 className="shadow-sm dark:shadow-none"
@@ -348,7 +366,7 @@ const PatientsPage: React.FC<{}> = () => {
                     option,
                     setActiveSort,
                     setSearchParams,
-                    searchParams
+                    searchParams,
                   )
                 }
                 activeSort={activeSort ?? undefined}
@@ -418,7 +436,7 @@ const PatientsPage: React.FC<{}> = () => {
                       ...Object.fromEntries(searchParams),
                       currentPage: `${page}`,
                     },
-                    { replace: true }
+                    { replace: true },
                   )
                 }
               />

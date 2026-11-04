@@ -1,3 +1,5 @@
+import DetailsBreadcrumb from "@/components/DetailsBreadcrumb";
+import { BANK_DETAILS_TABLE_URL as BREADCRUMB_LIST_URL } from "@/utils/urls/frontend";
 import { useNavigate, useParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, FileText, Building2 } from "lucide-react";
@@ -60,6 +62,12 @@ const BankDetailsDetails = () => {
 
   return (
     <View className="container mx-auto p-4 max-w-4xl">
+      <DetailsBreadcrumb
+        parentLabel="Bank Details"
+        label={String(bankData?.title || "Details")}
+        parentTo={`${BREADCRUMB_LIST_URL}?currentPage=1`}
+        masters
+      />
       {/* Header */}
       <View className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
         <View className="flex items-center gap-3">

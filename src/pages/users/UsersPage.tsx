@@ -33,6 +33,7 @@ import { useRoles } from "@/actions/calls/roles";
 import BouncingLoader from "@/components/BouncingLoader";
 import getStatusColorScheme from "@/utils/statusColorSchemaDecider";
 import ImageComponent from "@/components/ui/ImageComponent";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbList, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 
 const UsersPage: React.FC<{}> = () => {
   const navigate = useNavigate();
@@ -270,6 +271,17 @@ const UsersPage: React.FC<{}> = () => {
           </Button>
         </View>
       </Modal>
+      <Breadcrumb className="mb-4">
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink to="/">Dashboard</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage> Users</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
       <View className="flex justify-between items-center mb-6">
         <View>
           <Text

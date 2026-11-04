@@ -1,3 +1,5 @@
+import DetailsBreadcrumb from "@/components/DetailsBreadcrumb";
+import { ROOMS_TABLE_URL as BREADCRUMB_LIST_URL } from "@/utils/urls/frontend";
 import { useNavigate, useParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Building, MapPin, BedDouble } from "lucide-react";
@@ -45,6 +47,12 @@ const RoomDetails = () => {
 
   return (
     <View className="container mx-auto p-4 space-y-6">
+      <DetailsBreadcrumb
+        parentLabel="Rooms"
+        label={String(roomData?.name || "Details")}
+        parentTo={`${BREADCRUMB_LIST_URL}?currentPage=1`}
+        masters
+      />
       <BouncingLoader isLoading={isLoading} />
       <View className="flex justify-between items-center">
         <View>

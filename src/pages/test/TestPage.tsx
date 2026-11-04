@@ -1,3 +1,4 @@
+import MastersBreadcrumb from "@/components/MastersBreadcrumb";
 import { useTest } from "@/actions/calls/test";
 import BouncingLoader from "@/components/BouncingLoader";
 import Button from "@/components/button";
@@ -84,6 +85,7 @@ const TestPage: React.FC<{}> = () => {
 
   return (
     <React.Fragment>
+      <MastersBreadcrumb label="Tests" />
       <BouncingLoader isLoading={isLoading} />
       <Modal
         title="Test Name"

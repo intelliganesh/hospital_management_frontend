@@ -172,7 +172,7 @@ const IpdPatientDetailsPage = () => {
           icon: Scissors,
           bgGradient:
             "bg-orange-100 text-orange-700 shadow-orange-500/25 hover:bg-orange-200",
-          url: `${IPD_PATIENTS_URL}${IPD_PATIENTS_DETAILS_URL}${SURGERY_LIST_URL}/${patientId}`,
+          url: `${IPD_PATIENTS_URL}${IPD_PATIENTS_DETAILS_URL}${SURGERY_LIST_URL}/${patientId}?section=procedure`,
         },
         {
           label: "Anesthesia",
@@ -180,6 +180,13 @@ const IpdPatientDetailsPage = () => {
           bgGradient:
             "bg-rose-100 text-rose-700 shadow-rose-500/25 hover:bg-rose-200",
           url: `/ipd/${patientId}/pac?currentPage=1`,
+        },
+        {
+          label: "Surgery Report",
+          icon: FileOutput,
+          bgGradient:
+            "bg-violet-100 text-violet-700 shadow-violet-500/25 hover:bg-violet-200",
+          url: `${IPD_PATIENTS_URL}${IPD_PATIENTS_DETAILS_URL}${SURGERY_LIST_URL}/${patientId}?section=report`,
         },
       ],
     },
@@ -242,7 +249,9 @@ const IpdPatientDetailsPage = () => {
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbLink to="/ipd/patients">IPD Patients</BreadcrumbLink>
+              <BreadcrumbLink to={`${IPD_PATIENTS_URL}?currentPage=1`}>
+                IPD Patients
+              </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>

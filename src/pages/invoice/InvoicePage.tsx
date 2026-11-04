@@ -34,6 +34,7 @@ import { GenericStatus } from "@/interfaces";
 import BouncingLoader from "@/components/BouncingLoader";
 import dayjs from "dayjs";
 import { formatTime } from "@/utils/dateTimeUtils";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 
 const InvoicePage: React.FC<{}> = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -215,6 +216,17 @@ const InvoicePage: React.FC<{}> = () => {
           <Button variant="danger">Delete</Button>
         </View>
       </Modal>
+      <Breadcrumb className="mb-4">
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink to="/">Dashboard</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>Bills</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
       <View className="mb-6 flex justify-between items-center">
         <View>
           <Text

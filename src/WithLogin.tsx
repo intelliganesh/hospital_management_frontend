@@ -1318,7 +1318,13 @@ const WithLogin: React.FC<{}> = () => {
         path={YOGA_ASANA_TABLE_URL + YOGA_ASANA_DETAILS_URL + "/:id"}
         element={
           <DashboardLayout>
-            <AppointmentDetailsPage />
+            <AppointmentDetailsPage
+              breadcrumbParent={{
+                parentLabel: "Yoga Asana",
+                parentTo: `${YOGA_ASANA_TABLE_URL}?currentPage=1`,
+                masters: true,
+              }}
+            />
           </DashboardLayout>
         }
       />
@@ -1352,7 +1358,13 @@ const WithLogin: React.FC<{}> = () => {
         }
         element={
           <DashboardLayout>
-            <AppointmentDetailsPage />
+            <AppointmentDetailsPage
+              breadcrumbParent={{
+                parentLabel: "Surgical History",
+                parentTo: `${SURGICAL_HISTORY_TABLE_URL}?currentPage=1`,
+                masters: true,
+              }}
+            />
           </DashboardLayout>
         }
       />
@@ -1501,7 +1513,13 @@ const WithLogin: React.FC<{}> = () => {
         path={ON_EXAMINATION_TABLE_URL + ON_EXAMINATION_DETAILS_URL + "/:id"}
         element={
           <DashboardLayout>
-            <ChiefComplaintDetail />
+            <ChiefComplaintDetail
+              breadcrumbParent={{
+                parentLabel: "On Examination",
+                parentTo: `${ON_EXAMINATION_TABLE_URL}?currentPage=1`,
+                masters: true,
+              }}
+            />
           </DashboardLayout>
         }
       />
@@ -1636,7 +1654,13 @@ const WithLogin: React.FC<{}> = () => {
         path={FOOD_ADVICE_TABLE_URL + DIAGNOSIS_DETAILS_URL + "/:id"}
         element={
           <DashboardLayout>
-            <ServiceCostDetail />
+            <ServiceCostDetail
+              breadcrumbParent={{
+                parentLabel: "Food Advice",
+                parentTo: `${FOOD_ADVICE_TABLE_URL}?currentPage=1`,
+                masters: true,
+              }}
+            />
           </DashboardLayout>
         }
       />

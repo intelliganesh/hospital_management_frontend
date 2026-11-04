@@ -1,3 +1,5 @@
+import DetailsBreadcrumb from "@/components/DetailsBreadcrumb";
+import { OPD_TABLE_URL as BREADCRUMB_LIST_URL } from "@/utils/urls/frontend";
 import {
   Card,
   CardContent,
@@ -80,6 +82,11 @@ const OpdDetail = () => {
 
   return (
     <View className="container mx-auto p-4 space-y-6">
+      <DetailsBreadcrumb
+        parentLabel="OPD"
+        label={String(opdData?.opd?.opd_number || "Details")}
+        parentTo={`${BREADCRUMB_LIST_URL}?currentPage=1`}
+      />
       <View className="flex justify-between items-center">
         <View>
           <Text as="h1" className="text-2xl font-bold">OPD Details</Text>

@@ -1,3 +1,4 @@
+import MastersBreadcrumb from "@/components/MastersBreadcrumb";
 import { useServiceCost } from "@/actions/calls/serviceCost";
 import BouncingLoader from "@/components/BouncingLoader";
 import Button from "@/components/button";
@@ -92,6 +93,7 @@ const ServiceCostsPage: React.FC<{}> = () => {
 
   return (
     <React.Fragment>
+      <MastersBreadcrumb label="Service Costs" />
       <BouncingLoader isLoading={isLoading} />
       <Modal
         title="Service Cost Delete"

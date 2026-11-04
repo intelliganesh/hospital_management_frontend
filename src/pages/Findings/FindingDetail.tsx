@@ -1,3 +1,5 @@
+import DetailsBreadcrumb from "@/components/DetailsBreadcrumb";
+import { FINDINGS_URL as BREADCRUMB_LIST_URL } from "@/utils/urls/frontend";
 import View from "@/components/view";
 import Text from "@/components/text";
 import Button from "@/components/button";
@@ -35,6 +37,12 @@ const FindingDetail: React.FC = () => {
   return (
     <React.Fragment>
       <View className="space-y-6 container mx-auto py-8">
+        <DetailsBreadcrumb
+          parentLabel="Findings"
+          label={String(findingData?.finding_name || "Details")}
+          parentTo={`${BREADCRUMB_LIST_URL}?currentPage=1`}
+          masters
+        />
         {/* Header Section */}
         <View className="flex justify-between items-center mb-6">
           <View>

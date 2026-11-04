@@ -1,3 +1,5 @@
+import DetailsBreadcrumb from "@/components/DetailsBreadcrumb";
+import { EXAMINATION_TABLE_URL as BREADCRUMB_LIST_URL } from "@/utils/urls/frontend";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import {
@@ -60,6 +62,11 @@ const ExaminationDetailsPage = () => {
 
   return (
     <View className="space-y-6 container mx-auto py-8">
+      <DetailsBreadcrumb
+        parentLabel="Examinations"
+        label={String(examinationDetails?.patient_name || "Details")}
+        parentTo={`${BREADCRUMB_LIST_URL}?currentPage=1`}
+      />
       <View className="flex justify-between items-center">
         <View>
           <Text as="h1" className="text-2xl font-bold">

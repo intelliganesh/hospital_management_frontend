@@ -1,3 +1,4 @@
+import MastersBreadcrumb from "@/components/MastersBreadcrumb";
 import { useMedicineCategory } from "@/actions/calls/medicineCategory";
 import BouncingLoader from "@/components/BouncingLoader";
 import Button from "@/components/button";
@@ -73,6 +74,7 @@ const MedicineCategoryPage: React.FC<{}> = () => {
 
   return (
     <React.Fragment>
+      <MastersBreadcrumb label="Medicine Categories" />
       <BouncingLoader isLoading={isLoading} />
       <Modal
         title="Medicine Category Delete"

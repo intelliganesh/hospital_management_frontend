@@ -1,3 +1,4 @@
+import MastersBreadcrumb from "@/components/MastersBreadcrumb";
 import { useFoodAdvice } from "@/actions/calls/foodAdvice";
 import BouncingLoader from "@/components/BouncingLoader";
 import Button from "@/components/button";
@@ -92,6 +93,7 @@ const FoodAdvicePage = () => {
 
   return (
     <>
+      <MastersBreadcrumb label="Food Advice" />
       <React.Fragment>
         <BouncingLoader isLoading={isLoading} />
         <Modal

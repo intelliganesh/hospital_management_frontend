@@ -1,3 +1,5 @@
+import DetailsBreadcrumb from "@/components/DetailsBreadcrumb";
+import { WARD_TABLE_URL as BREADCRUMB_LIST_URL } from "@/utils/urls/frontend";
 import { useParams } from "react-router-dom";
 import { ArrowLeft, Building, MapPin, Stethoscope, Hash } from "lucide-react";
 import Button from "@/components/button";
@@ -42,6 +44,12 @@ const WardDetails = () => {
 
   return (
     <View className="min-h-screen p-4">
+      <DetailsBreadcrumb
+        parentLabel="Wards"
+        label={String(wardData?.name || "Details")}
+        parentTo={`${BREADCRUMB_LIST_URL}?currentPage=1`}
+        masters
+      />
       <View className=" space-y-6">
         {/* Header */}
         <View className="flex items-center justify-between gap-4 mb-6">

@@ -40,6 +40,7 @@ import { CheckCircle, FileText, Stethoscope } from "lucide-react";
 import DeleteLoader from "@/components/deleteLoader";
 import { departmentTypeOptions } from "../forms/deparmentsForm/deparmentsForm/departementOptions";
 import SingleSelector from "@/components/SingleSelector";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 
 const ConsultationPage: React.FC<{}> = () => {
   const navigate = useNavigate();
@@ -273,6 +274,17 @@ const ConsultationPage: React.FC<{}> = () => {
           </Button>
         </View>
       </Modal>
+      <Breadcrumb className="mb-4">
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink to="/">Dashboard</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>Consultations</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
       <View className="mb-6 flex justify-between items-center">
         <View>
           <Text
@@ -430,7 +442,9 @@ const ConsultationPage: React.FC<{}> = () => {
               >
                 {data?.patient_number || "N/A"}
               </Link>
-              <Text className={`text-sm font-normal ${Number(data?.orphan_patient) === 1 ? "text-orange-500 dark:text-orange-400" : ""}`}>
+              <Text
+                className={`text-sm font-normal ${Number(data?.orphan_patient) === 1 ? "text-orange-500 dark:text-orange-400" : ""}`}
+              >
                 {data?.patient_name || "N/A"}
               </Text>
             </View>,

@@ -1,3 +1,5 @@
+import DetailsBreadcrumb from "@/components/DetailsBreadcrumb";
+import { AMOUNT_TYPE_TABLE_URL as BREADCRUMB_LIST_URL } from "@/utils/urls/frontend";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/actions/store";
@@ -78,6 +80,12 @@ const AmountTypeDetailsPage = () => {
 
   return (
     <View className="container mx-auto p-4 max-w-4xl">
+      <DetailsBreadcrumb
+        parentLabel="Amount Types"
+        label={String(amountTypeData?.amount_for || "Details")}
+        parentTo={`${BREADCRUMB_LIST_URL}?currentPage=1`}
+        masters
+      />
       {/* Header */}
       <View className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
         <View>

@@ -13,6 +13,7 @@ import { clearAnaesthesiaDetailSlice } from "@/actions/slices/ipd/anaesthesia/an
 import BouncingLoader from "@/components/BouncingLoader";
 import { AnaesthesiaDetails } from "@/interfaces/ipd/anaesthesia";
 import dayjs from "dayjs";
+import { toast } from "@/utils/custom-hooks/use-toast";
 
 interface GeneralInfo {
   patient_name?: string;
@@ -125,7 +126,15 @@ const GeneralInfoCard: React.FC<Props> = ({ readOnly }) => {
         position: values?.position || "",
         anaesthetist_assistant: values?.anaesthetist_assistant || "",
       },
-      () => {
+      (success) => {
+        if (!success) return;
+
+        toast({
+          title: "Success!",
+          description: "General information saved successfully.",
+          variant: "success",
+        });
+
         anaesthesiaDetailHandler(
           anaesthesiaDetail?.id || "",
           () => {
