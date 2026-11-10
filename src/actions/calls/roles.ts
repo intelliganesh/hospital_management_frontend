@@ -11,7 +11,11 @@ import {
   ROLES_DROPDOWN_URL,
   PERMISSION_ADD_URL,
   PERMISSION_EDIT_URL,
+  PERMISSIONS_LIST_URL,
+  ROLE_PERMISSIONS_URL,
 } from "@/utils/urls/backend";
+import { PermissionModule } from "@/interfaces/roles";
+import { extractPermissions } from "@/utils/sessionPermissions";
 import {
   addRoleStart,
   deleteRoleStart,
@@ -182,6 +186,76 @@ export const useRoles = () => {
     api.cleanup();
   };
 
+  /** GET /permissions_list -> permission catalogue grouped by module. */
+  const getPermissionsCatalogue = async (
+    callback: (modules: PermissionModule[] | null) => void
+  ): Promise<void> => {
+    try {
+      await api.get(
+        PERMISSIONS_LIST_URL,
+        (response: AuthPayload, success: boolean, statusCode: number) => {
+          if (success && statusCode === 200) {
+            return callback(normalizePermissionModules(response?.data));
+          }
+          response && handleApiError(response);
+          callback(null);
+        }
+      );
+    } catch (error) {
+      error && handleApiError(error);
+      callback(null);
+    }
+  };
+
+  /** GET /role_permissions/{id} -> permission keys currently granted to the role. */
+  const getRolePermissions = async (
+    roleId: string | number,
+    callback: (permissions: string[] | null) => void
+  ): Promise<void> => {
+    try {
+      await api.get(
+        `${ROLE_PERMISSIONS_URL}/${roleId}`,
+        (response: AuthPayload, success: boolean, statusCode: number) => {
+          if (success && statusCode === 200) {
+            const d = response?.data;
+            return callback(
+              Array.isArray(d) ? d : extractPermissions(response) ?? []
+            );
+          }
+          response && handleApiError(response);
+          callback(null);
+        }
+      );
+    } catch (error) {
+      error && handleApiError(error);
+      callback(null);
+    }
+  };
+
+  /** PUT /role_permissions/{id} {permissions: string[]} */
+  const saveRolePermissions = async (
+    roleId: string | number,
+    permissions: string[],
+    callback: ApiCallback
+  ): Promise<void> => {
+    try {
+      await api.put(
+        `${ROLE_PERMISSIONS_URL}/${roleId}`,
+        (response: AuthPayload, success: boolean, statusCode: number) => {
+          if (success && statusCode === 200) {
+            return callback(true, { success: true });
+          }
+          response && handleApiError(response);
+          callback(false, { success: false });
+        },
+        { permissions } as any
+      );
+    } catch (error) {
+      error && handleApiError(error);
+      callback(false, { success: false });
+    }
+  };
+
   const addPermission = async <T>(
     data: T,
     callback: ApiCallback
@@ -236,7 +310,66 @@ export const useRoles = () => {
     getRoleList,
     roleDropdownHandler,
     addPermission,
-    updatePermission
+    updatePermission,
+    getRolePermissions,
+    saveRolePermissions,
+    getPermissionsCatalogue,
     // getRoleDetails,
   };
+};
+
+const toTitle = (key: string) =>
+  key.replace(/[_-]+/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+
+const toItem = (raw: any): { key: string; label: string } | null => {
+  if (typeof raw === "string") return { key: raw, label: toTitle(raw) };
+  const key = raw?.key ?? raw?.name ?? raw?.permission;
+  if (typeof key !== "string") return null;
+  return { key, label: raw?.label ?? raw?.title ?? toTitle(key) };
+};
+
+/**
+ * GET /permissions_list tolerant parser. Accepts
+ *  - [{module, permissions:[{key,label}]}]            (groups)
+ *  - {Module: [{key,label} | "key"]}                  (object keyed by module)
+ *  - [{key,label,module}]                              (flat list)
+ * (also wrapped in {modules|groups|permissions: ...}).
+ */
+export const normalizePermissionModules = (raw: any): PermissionModule[] => {
+  let data = raw;
+  for (const wrap of ["modules", "groups", "permissions"]) {
+    if (data && !Array.isArray(data) && data[wrap]) {
+      data = data[wrap];
+      break;
+    }
+  }
+  const out: PermissionModule[] = [];
+  const add = (module: string, items: any[]) => {
+    const permissions = items
+      .map(toItem)
+      .filter((i): i is { key: string; label: string } => !!i);
+    if (permissions.length) out.push({ module, permissions });
+  };
+  if (Array.isArray(data)) {
+    const groups = data.filter(
+      (g) => g && typeof g === "object" && Array.isArray(g.permissions ?? g.items)
+    );
+    if (groups.length) {
+      groups.forEach((g) =>
+        add(g.module ?? g.name ?? g.label ?? "Other", g.permissions ?? g.items)
+      );
+    } else {
+      const byModule: Record<string, any[]> = {};
+      data.forEach((p) => {
+        const m = (typeof p === "object" && (p.module ?? p.group)) || "Other";
+        (byModule[m] = byModule[m] || []).push(p);
+      });
+      Object.entries(byModule).forEach(([m, items]) => add(m, items));
+    }
+  } else if (data && typeof data === "object") {
+    Object.entries(data).forEach(([m, items]) => {
+      if (Array.isArray(items)) add(m, items);
+    });
+  }
+  return out;
 };

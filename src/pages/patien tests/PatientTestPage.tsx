@@ -205,6 +205,7 @@ const PatientTestPage: React.FC<{}> = () => {
             </Badge>,
             data?.result_uploaded_by,
             <ActionMenu
+              onView={() => navigate(PATIENT_TEST_TABLE_URL + PATIENT_TEST_DETAILS_URL + "/" + data.id)}
               onEdit={() =>
                 navigate(PATIENT_TEST_TABLE_URL + PATIENT_TEST_EDIT_URL + "/" + data.id)
               }

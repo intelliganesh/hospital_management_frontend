@@ -10,11 +10,11 @@ import {
   ROLES_URL,
   EDIT_ROLE_URL,
   ROLES_TABLE_URL,
-  // PERMISSIONS_URL,
+  PERMISSIONS_URL,
 } from "@/utils/urls/frontend";
 import { Plus } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useRoles } from "@/actions/calls/roles";
 // import { RootState } from "@/actions/store";
 import { useSelector } from "react-redux";
@@ -182,7 +182,13 @@ const RolesPage: React.FC<{}> = () => {
             // <div>
             //   <Link to={ROLES_TABLE_URL + PERMISSIONS_URL}>{role.name}</Link>
             // </div>,
-            role.name,
+            <Link
+              to={`${ROLES_TABLE_URL}${PERMISSIONS_URL}?role=${role.id}`}
+              title="Manage permissions"
+              className="text-primary hover:underline"
+            >
+              {role.name}
+            </Link>,
             <Button
               variant="ghost"
               onClick={() => handleDescription(role?.description)}
@@ -240,17 +246,28 @@ const RolesPage: React.FC<{}> = () => {
               />
             ),
             action: (
-              <Button
-                variant="primary"
-                size="small"
-                onPress={() => {
-                  navigate(ROLES_TABLE_URL + ROLES_URL);
-                }}
-                className={commanButtonStyle}
-              >
-                <Plus size={16} />
-                Add New Role
-              </Button>
+              <View className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="small"
+                  onPress={() => {
+                    navigate(ROLES_TABLE_URL + PERMISSIONS_URL);
+                  }}
+                >
+                  Permissions
+                </Button>
+                <Button
+                  variant="primary"
+                  size="small"
+                  onPress={() => {
+                    navigate(ROLES_TABLE_URL + ROLES_URL);
+                  }}
+                  className={commanButtonStyle}
+                >
+                  <Plus size={16} />
+                  Add New Role
+                </Button>
+              </View>
             ),
           }}
           footer={{

@@ -245,7 +245,7 @@ const IpdBillsPage: React.FC = () => {
                 }
                 title="View Details"
               >
-                <Eye size={14} />
+                <Eye size={18} />
               </Button>
               <Button
                 variant="ghost"
@@ -258,7 +258,7 @@ const IpdBillsPage: React.FC = () => {
                 {isPdfDownloading && downloadingBillId === bill.ipd_id ? (
                   <BouncingLoader isLoading={true} />
                 ) : (
-                  <FileText size={14} />
+                  <FileText size={18} />
                 )}
               </Button>
             </View>,

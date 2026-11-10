@@ -189,6 +189,7 @@ const DietPage: React.FC<{}> = () => {
               {data?.is_active || "N/A"}
             </Text>,
             <ActionMenu
+              onView={() => navigate(DIET_TABLE_URL + DIET_DETAILS_URL + "/" + data.id)}
               onEdit={() =>
                 navigate(DIET_TABLE_URL + DIET_EDIT_URL + "/" + data.id)
               }

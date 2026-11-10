@@ -179,6 +179,7 @@ const AllergyPage: React.FC<{}> = () => {
             //   ? data?.allergen_type
             //   : data?.other_allergen_type,
             <ActionMenu
+              onView={() => navigate(ALLERGY_TABLE_URL + ALLERGY_DETAILS_URL + "/" + data.id)}
               onEdit={() =>
                 navigate(ALLERGY_TABLE_URL + ALLERGY_EDIT_URL + "/" + data.id)
               }

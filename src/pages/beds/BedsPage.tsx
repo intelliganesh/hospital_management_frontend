@@ -169,6 +169,7 @@ const BedsPage: React.FC<{}> = () => {
             // </Text>
             // ),
             <ActionMenu
+              onView={() => navigate(`${BED_TABLE_URL + BED_DETAILS_URL}/${bed.id}`)}
               onEdit={() =>
                 navigate(`${BED_TABLE_URL + BED_EDIT_URL}/${bed.id}`)
               }

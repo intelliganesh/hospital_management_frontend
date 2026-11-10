@@ -208,6 +208,7 @@ export const ExaminationsPage = () => {
             withUnit("bp", examination?.bp) || "N/A",
             withUnit("pulse", examination?.pulse) || "N/A",
             <ActionMenu
+              onView={() => navigate(`${EXAMINATION_TABLE_URL}${EXAMINATION_DETAILS_URL}/${examination.id}`)}
               onEdit={() =>
                 navigate(
                   EXAMINATION_TABLE_URL +

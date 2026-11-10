@@ -207,6 +207,9 @@ const UsersPage: React.FC<{}> = () => {
     ) {
       return (
         <ActionMenu
+          onView={() =>
+            navigate(USER_TABLE_URL + USER_DETAIL_URL + "/" + user.id)
+          }
           onEdit={() =>
             navigate(USER_TABLE_URL + EDIT_USER_URL + "/" + user.id)
           }
@@ -217,6 +220,9 @@ const UsersPage: React.FC<{}> = () => {
 
       return (
         <ActionMenu
+          onView={() =>
+            navigate(USER_TABLE_URL + USER_DETAIL_URL + "/" + user.id)
+          }
           onEdit={() =>
             navigate(USER_TABLE_URL + EDIT_USER_URL + "/" + user.id)
           }

@@ -12,7 +12,9 @@ import {
   RESET_PASSWORD_URL,
   FORGOT_PASSWORD_URL,
   VERIFY_PASSWORD_URL,
+  USER_PROFILE_URL,
 } from "@/utils/urls/backend";
+import { extractPermissions, persistPermissions } from "@/utils/sessionPermissions";
 import { handleApiError } from "@/utils/errorHandler";
 
 const api = new LaunchApi();
@@ -205,4 +207,19 @@ export const useAuth = () => {
     resetPasswordHandler,
     forgotPasswordHandler,
   };
+};
+
+/**
+ * Reloads the logged-in user's permissions from the server (profile endpoint)
+ * and stores them with the session user. Silent: when the backend sends no
+ * permissions (older API) the hard-coded role table keeps being used.
+ */
+let lastPermissionSync = 0;
+export const refreshSessionPermissions = (force = false) => {
+  if (!localStorage.getItem("token")) return;
+  if (!force && Date.now() - lastPermissionSync < 60_000) return;
+  lastPermissionSync = Date.now();
+  api.get(USER_PROFILE_URL, (response: AuthPayload, success: boolean) => {
+    if (success) persistPermissions(extractPermissions(response));
+  });
 };

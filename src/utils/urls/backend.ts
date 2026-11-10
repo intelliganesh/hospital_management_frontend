@@ -77,6 +77,9 @@ export const ROLE_DELETE_URL: string = "/roles_delete";
 export const ROLES_DROPDOWN_URL: string = "/get_roles_list";
 export const PERMISSION_ADD_URL: string = "/permissions_add";
 export const PERMISSION_EDIT_URL: string = "/permissions_edit";
+// RBAC: permission catalogue + permissions of one role (GET / PUT /{role_id})
+export const PERMISSIONS_LIST_URL: string = "/permissions_list";
+export const ROLE_PERMISSIONS_URL: string = "/role_permissions";
 
 //opd url
 export const OPD_ADD_URL: string = "/opd_add";

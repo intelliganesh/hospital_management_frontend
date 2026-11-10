@@ -174,6 +174,7 @@ const DepartmentsPage: React.FC<{}> = () => {
             </Text>
             ),
             <ActionMenu
+              onView={() => navigate(`${DEPARTMENT_TABLE_URL + DEPARTMENT_DETAILS_URL}/${department?.id}`)}
               onEdit={() =>
                 navigate(`${DEPARTMENT_TABLE_URL + DEPARTMENT_EDIT_URL}/${department?.id}`)
               }

@@ -216,6 +216,7 @@ const RoomsPage: React.FC<{}> = () => {
               {room.status}
             </Text>,
             <ActionMenu
+              onView={() => navigate(`${ROOMS_TABLE_URL + ROOMS_DETAIL_URL}/${room.id}`)}
               onEdit={() =>
                 navigate(`${ROOMS_TABLE_URL + ROOMS_FORM_URL}/${room.id}`)
               }

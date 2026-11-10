@@ -2,6 +2,11 @@ import axios, { AxiosResponse } from "axios";
 import { ConfigProps, Headers } from "@/interfaces/api";
 import { REFRESH_TOKEN_URL } from "@/utils/urls/backend";
 import { LoadingStatus } from "@/interfaces";
+import { toast } from "@/components/ui/use-toast";
+import { extractPermissions, persistPermissions } from "@/utils/sessionPermissions";
+
+// last time the "no permission" toast was shown (avoid a toast per failed call)
+let lastDeniedToastAt = 0;
 
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_BASE_URL,
@@ -204,6 +209,9 @@ class LaunchApi extends HospitalManagement {
 
           localStorage.setItem("date", currentDate);
           localStorage.setItem("token", tokenData.token);
+          // RBAC: refresh may carry the user's current permissions
+          persistPermissions(extractPermissions(response?.data));
+          window.dispatchEvent(new Event("hms:token-refreshed"));
 
           // Store actual expiration from decoded token, not from response
           if (decodedToken?.exp) {
@@ -295,6 +303,20 @@ class LaunchApi extends HospitalManagement {
         }
         break;
       case 403:
+        // RBAC denial: tell the user, keep the session (no logout)
+        if (data?.code === "PERMISSION_DENIED") {
+          if (Date.now() - lastDeniedToastAt > 3000) {
+            lastDeniedToastAt = Date.now();
+            toast({
+              title: "Not allowed",
+              description:
+                "You don't have permission to do this. Please contact your administrator.",
+              variant: "destructive",
+            });
+          }
+          callback(data, false, status);
+          break;
+        }
         if (path !== "login") {
           this.handleAuthError();
         }

@@ -175,6 +175,7 @@ const ServiceCostsPage: React.FC<{}> = () => {
               {data?.status}
             </Badge>,
             <ActionMenu
+              onView={() => navigate(SERVICE_COST_TABLE_URL + SERVICE_COST_DETAILS_URL + "/" + data.id)}
               onEdit={() =>
                 navigate(
                   SERVICE_COST_TABLE_URL + SERVICE_COST_EDIT_URL + "/" + data.id

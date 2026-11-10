@@ -569,6 +569,7 @@ export const AppointmentPage = () => {
             </Text>,
             // appointment?.status || "N/A",
             <ActionMenu
+              onView={() => navigate(`${APPOINTMENT_TABLE_URL}${APPOINTMENT_DETAILS_URL}/${appointment.id}`)}
               onEdit={
                 appointment.status === GenericStatus.COMPLETED
                   ? undefined

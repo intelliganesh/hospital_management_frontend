@@ -160,6 +160,7 @@ const ManagementPage: React.FC<{}> = () => {
               {data?.is_active || "N/A"}
             </Badge>,
             <ActionMenu
+              onView={() => navigate(MANAGEMENT_TABLE_URL + MANAGEMENT_DETAILS_URL + "/" + data?.id)}
               onEdit={() =>
                 navigate(
                   MANAGEMENT_TABLE_URL + MANAGEMENT_EDIT_URL + "/" + data?.id

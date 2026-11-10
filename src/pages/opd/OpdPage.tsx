@@ -173,6 +173,7 @@ const OpdPage: React.FC<{}> = () => {
             item.status,
             dayjs(item.visit_date).format("YYYY-MM-DD HH:mm:ss"),
             <ActionMenu
+              onView={() => navigate(OPD_TABLE_URL + OPD_DETAIL_URL + "/" + item.id)}
               onEdit={() =>
                 navigate(OPD_TABLE_URL + EDIT_OPD_URL + "/" + item.id)
               }

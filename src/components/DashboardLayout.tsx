@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 // import { Link, useLocation } from "react-router-dom";
 // import {
@@ -43,6 +43,8 @@ import Sidebar from "./Sidebar";
 import View from "./view";
 import { useQuickKeys } from "@/utils/custom-hooks/useQuickKeys";
 import QuickKeysModal from "./QuickKeysModal";
+import RouteGuard from "./RouteGuard";
+import { refreshSessionPermissions } from "@/actions/calls/auth";
 interface DashboardLayoutProps {
   children: React.ReactNode;
   mainCompClasses?: string;
@@ -135,6 +137,14 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, mainCompCla
 
   const { isModalOpen, closeModal, openModal } = useQuickKeys();
 
+  // keep the server permissions fresh: on page load and after each token refresh
+  useEffect(() => {
+    refreshSessionPermissions();
+    const onTokenRefreshed = () => refreshSessionPermissions(true);
+    window.addEventListener("hms:token-refreshed", onTokenRefreshed);
+    return () => window.removeEventListener("hms:token-refreshed", onTokenRefreshed);
+  }, []);
+
   return (
     // <View className="flex h-screen bg-background transition-colors duration-200 ">
     <View className="flex h-screen bg-slate-50 dark:bg-slate-900 transition-colors duration-200">
@@ -151,7 +161,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, mainCompCla
         {/* <main className={`flex-1 overflow-y-auto p-4 md:px-6 text-foreground transition-colors duration-200 bg-primary-10 dark:bg-transparent ${mainCompClasses}`}>{children}</main> */}
         <main className={`flex-1 overflow-y-auto p-4 md:p-6 text-foreground transition-colors duration-200 bg-slate-50 dark:bg-slate-900 ${mainCompClasses}`}>
           <View className=" mx-auto">
-            {children}
+            <RouteGuard>{children}</RouteGuard>
           </View>
         </main>
       </View>

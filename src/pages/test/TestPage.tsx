@@ -225,6 +225,7 @@ const TestPage: React.FC<{}> = () => {
             data?.tax_price || "N/A",
             // data?.test_description,
             <ActionMenu
+              onView={() => navigate(TEST_TABLE_URL + TEST_DETAILS_URL + "/" + data.id)}
               onEdit={() =>
                 navigate(TEST_TABLE_URL + TEST_EDIT_URL + "/" + data.id)
               }

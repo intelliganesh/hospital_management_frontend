@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { clearFindingDetailSlice } from "@/actions/slices/findings";
 import { useFindings } from "@/actions/calls/findings";
+import { FINDINGS_URL, FINDINGS_EDIT_URL } from "@/utils/urls/frontend";
 
 const FindingDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -61,7 +62,7 @@ const FindingDetail: React.FC = () => {
                 variant="primary"
                 size="small"
                 onPress={() => {
-                  navigate("/findings/edit/" + id);
+                  navigate(FINDINGS_URL + FINDINGS_EDIT_URL + "/" + id);
                 }}
                 className="flex items-center gap-2"
               >

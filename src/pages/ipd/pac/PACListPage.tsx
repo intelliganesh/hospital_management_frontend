@@ -289,7 +289,7 @@ const PACListPage: React.FC = () => {
                     },
                     onEdit: () => {
                       navigate(
-                        `/ipd/${id}/pac/${row.id}?tab=pre-op&currentPage=1?mode=edit`,
+                        `/ipd/${id}/pac/${row.id}?tab=pre-op&currentPage=1&mode=edit`,
                       );
                     },
                   }),

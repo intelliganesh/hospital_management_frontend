@@ -183,6 +183,7 @@ const BankDetailsPage: React.FC<{}> = () => {
               </Text>
             ),
             <ActionMenu
+              onView={() => navigate(`${BANK_DETAILS_TABLE_URL + BANK_DETAILS_DETAILS_URL}/${bank?.id}`)}
               onEdit={() =>
                 navigate(
                   `${BANK_DETAILS_TABLE_URL + BANK_DETAILS_EDIT_URL}/${bank?.id}`,

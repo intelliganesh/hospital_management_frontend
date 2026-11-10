@@ -265,6 +265,7 @@ export const MedicinesPage = () => {
             </Text>,
 
             <ActionMenu
+              onView={() => navigate(`${MEDICINE_TABLE_URL}${MEDICINE_DETAILS_URL}/${medicine.id}`)}
               onEdit={() =>
                 navigate(
                   MEDICINE_TABLE_URL + MEDICINE_FORM_URL + "/" + medicine.id

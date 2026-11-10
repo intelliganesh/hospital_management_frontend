@@ -150,6 +150,7 @@ const ComorbiditiesPage = () => {
                 {data.is_active}
               </Text>,
               <ActionMenu
+                onView={() => navigate(`${COMORBIDITIES_TABLE_URL + COMORBIDITIES_DETAILS_URL}/${data.id}`)}
                 onEdit={() =>
                   navigate(
                     `${COMORBIDITIES_TABLE_URL + COMORBIDITIES_EDIT_URL}/${

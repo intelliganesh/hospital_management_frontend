@@ -146,6 +146,7 @@ const DiagnosisPage = () => {
                 {data.is_active}
               </Text>,
               <ActionMenu
+                onView={() => navigate(`${DIAGNOSIS_TABLE_URL + DIAGNOSIS_DETAILS_URL}/${data.id}`)}
                 onEdit={() =>
                   navigate(
                     `${DIAGNOSIS_TABLE_URL + DIAGNOSIS_EDIT_URL}/${data.id}`

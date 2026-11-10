@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AuthPayload, AuthState } from "@/interfaces/slices/auth";
 import { jwtDecode } from "jwt-decode";
+import { extractPermissions, persistPermissions } from "@/utils/sessionPermissions";
 
 const initialState: AuthState = {
   loginToken: "",
@@ -34,9 +35,16 @@ const authenticationSlice = createSlice({
           String(action.payload?.data?.api_key?.original?.expires_in)
         );
         localStorage.setItem("date", new Date().toString());
+        // server permissions (RBAC) are kept with the session user; when the
+        // backend sends none, usePermissions() falls back to ROLE_PERMISSIONS
+        const serverPermissions = extractPermissions(action.payload);
         localStorage.setItem(
           "userDetails",
-          JSON.stringify(action.payload.data?.result)
+          JSON.stringify(
+            serverPermissions
+              ? { ...action.payload.data?.result, permissions: serverPermissions }
+              : action.payload.data?.result
+          )
         );
         state.loginUserDetail = localStorage.getItem("userDetails");
         state.tokenStatus = true;
@@ -73,6 +81,7 @@ const authenticationSlice = createSlice({
           String(action.payload?.data?.api_key?.original?.expires_in)
         );
         localStorage.setItem("date", new Date().toString());
+        persistPermissions(extractPermissions(action.payload));
       }
       window.location.reload();
     },

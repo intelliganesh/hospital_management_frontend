@@ -198,6 +198,7 @@ const ExpensesPage = () => {
               data?.mode_of_payment,
               data?.voucher_number ? data?.voucher_number : "-",
               <ActionMenu
+                onView={() => navigate(`${EXPENSES_TABLE_URL + EXPENSES_DETAILS_URL}/${data.id}`)}
                 onEdit={() =>
                   navigate(
                     `${EXPENSES_TABLE_URL + EXPENSES_EDIT_URL}/${data.id}`

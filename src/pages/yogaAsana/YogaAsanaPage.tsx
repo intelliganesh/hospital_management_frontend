@@ -167,6 +167,7 @@ const YogaAsanaPage: React.FC<{}> = () => {
               {data.status}
             </Text>,
             <ActionMenu
+              onView={() => navigate(`${YOGA_ASANA_TABLE_URL + YOGA_ASANA_DETAILS_URL}/${data.id}`)}
               onEdit={() =>
                 navigate(
                   `${YOGA_ASANA_TABLE_URL + YOGA_ASANA_EDIT_URL}/${data.id}`

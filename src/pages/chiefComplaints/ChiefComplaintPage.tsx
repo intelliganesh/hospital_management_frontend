@@ -166,6 +166,7 @@ const ChiefComplaintPage: React.FC<{}> = () => {
               {data?.is_active || "N/A"}
             </Badge>,
             <ActionMenu
+              onView={() => navigate(CHIEF_COMPLAINT_URL + CHIEF_COMPLAINT_DETAILS_URL + "/" + data?.id)}
               onEdit={() =>
                 navigate(CHIEF_COMPLAINT_URL + CHIEF_COMPLAINT_EDIT_URL + "/" + data?.id)
               }

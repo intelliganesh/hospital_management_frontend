@@ -15,6 +15,18 @@ export interface Permissions {
   delete: boolean;
 }
 
+/** One permission key as returned by GET /permissions_list. */
+export interface PermissionItem {
+  key: string;
+  label: string;
+}
+
+/** Permissions grouped by module (e.g. Patients, Billing) for the matrix. */
+export interface PermissionModule {
+  module: string;
+  permissions: PermissionItem[];
+}
+
 // export interface
 
 export const rolesTypeOptions = [

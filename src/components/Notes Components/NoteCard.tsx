@@ -113,6 +113,8 @@ const NoteCard: React.FC<NoteCardProps> = ({
               variant="ghost"
               onPress={() => onEdit(note.id)}
               className="px-2"
+              title="Edit"
+              aria-label="Edit"
             >
               <Edit className="h-4 w-4" />
             </Button>
@@ -122,6 +124,8 @@ const NoteCard: React.FC<NoteCardProps> = ({
               variant="ghost"
               onPress={() => onDelete(note.id)}
               className="px-2 text-red-600 hover:text-red-700 dark:text-red-400"
+              title="Delete"
+              aria-label="Delete"
             >
               <Trash2 className="h-4 w-4" />
             </Button>

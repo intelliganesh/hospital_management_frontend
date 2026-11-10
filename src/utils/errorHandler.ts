@@ -1,5 +1,7 @@
 import { toast } from "@/components/ui/use-toast";
 export const handleApiError = (Errors: any) => {
+  // permission denials are already toasted by LaunchApi (403 PERMISSION_DENIED)
+  if (Errors?.code === "PERMISSION_DENIED") return;
   if (Errors) {
     // console.log(error, "Errors");
     const { message, errors, error } = Errors;

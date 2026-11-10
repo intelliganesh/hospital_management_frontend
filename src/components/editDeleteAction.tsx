@@ -9,6 +9,9 @@ import {
   Trash,
 } from "lucide-react";
 import View from "./view";
+import { useLocation } from "react-router-dom";
+import { usePermissions } from "@/utils/custom-hooks/use-permissions";
+import { getDeletePermission } from "@/utils/routePermissions";
 interface ActionMenuProps {
   onEdit?: () => void;
   onDelete?: () => void;
@@ -18,6 +21,7 @@ interface ActionMenuProps {
   onDownloadPrescription?: () => void;
   onDownloadConsultation?: () => void;
   onDownloadVoucher?: () => void;
+  viewTitle?: string;
   editTitle?: string;
   deleteTitle?: string;
   dischargeTitle?: string;
@@ -31,6 +35,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({
   onDischarge,
   onView,
   onDownload,
+  viewTitle,
   editTitle,
   deleteTitle,
   dischargeTitle,
@@ -42,6 +47,12 @@ const ActionMenu: React.FC<ActionMenuProps> = ({
   downloadVoucherTitle,
   onDownloadVoucher,
 }: any) => {
+  // hide Delete when the role has no delete permission for this list (RBAC)
+  const { pathname } = useLocation();
+  const { hasPermission } = usePermissions();
+  const deletePermission = getDeletePermission(pathname);
+  const canDelete = !deletePermission || hasPermission(deletePermission);
+
   const handleEdit = () => {
     if (onEdit) onEdit();
   };
@@ -78,7 +89,8 @@ const ActionMenu: React.FC<ActionMenuProps> = ({
             variant="ghost"
             onPress={handleView}
             className="flex items-center w-auto px-2 py-2 text-sm text-green-600 hover:bg-primary-100"
-            title={downloadTitle || ""}
+            title={viewTitle || "View"}
+            aria-label={viewTitle || "View"}
           >
             <Eye size={18} className=" text-primary" />
           </Button>
@@ -88,17 +100,19 @@ const ActionMenu: React.FC<ActionMenuProps> = ({
             variant="ghost"
             onPress={handleEdit}
             className="flex items-center w-auto px-2 py-2 text-sm text-primary-700 hover:bg-primary-100"
-            title={editTitle || ""}
+            title={editTitle || "Edit"}
+            aria-label={editTitle || "Edit"}
           >
             <Edit size={18} className=" text-primary" />
           </Button>
         )}
-        {onDelete && (
+        {onDelete && canDelete && (
           <Button
             variant="ghost"
             onPress={handleDelete}
             className="flex items-center w-auto px-2 py-2 text-sm text-red-600 hover:bg-red-100"
-            title={deleteTitle || ""}
+            title={deleteTitle || "Delete"}
+            aria-label={deleteTitle || "Delete"}
           >
             <Trash size={18} className=" text-danger" />
           </Button>

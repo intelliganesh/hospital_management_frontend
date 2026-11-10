@@ -124,6 +124,7 @@ import {
   FOOD_ADVICE_TABLE_URL,
   FOOD_ADVICE_FORM_URL,
   FOOD_ADVICE_EDIT_URL,
+  FOOD_ADVICE_DETAILS_URL,
   EXPENSES_TABLE_URL,
   EXPENSES_FORM_URL,
   EXPENSES_EDIT_URL,
@@ -159,6 +160,7 @@ import {
   WARD_TABLE_URL,
   WARD_FORM_URL,
   WARD_EDIT_URL,
+  WARD_DETAILS_URL,
   BED_TABLE_URL,
   BED_FORM_URL,
   BED_EDIT_URL,
@@ -304,6 +306,7 @@ import NurseNotesPage from "./pages/ipd/NurseNotesPage";
 import NoteFormPage from "./pages/forms/ipdForm/nurseNotes/NoteFormPage";
 import WardsPage from "./pages/wards/WardsPage";
 import WardsForm from "./pages/forms/wardsForm/wards";
+import WardDetails from "./pages/wards/WardDetail";
 import BedsPage from "./pages/beds/BedsPage";
 import BedsForm from "./pages/forms/bedsForm/beds";
 import BedDetails from "./pages/beds/BedDetails";
@@ -495,6 +498,14 @@ const WithLogin: React.FC<{}> = () => {
         element={
           <DashboardLayout>
             <WardsForm formType="edit" />
+          </DashboardLayout>
+        }
+      />
+      <Route
+        path={WARD_TABLE_URL + WARD_DETAILS_URL + "/:id"}
+        element={
+          <DashboardLayout>
+            <WardDetails />
           </DashboardLayout>
         }
       />
@@ -1339,7 +1350,7 @@ const WithLogin: React.FC<{}> = () => {
         path={YOGA_ASANA_TABLE_URL + YOGA_ASANA_DETAILS_URL + "/:id"}
         element={
           <DashboardLayout>
-            <AppointmentDetailsPage />
+            <YogaAsanaDetail />
           </DashboardLayout>
         }
       />
@@ -1371,11 +1382,7 @@ const WithLogin: React.FC<{}> = () => {
         path={
           SURGICAL_HISTORY_TABLE_URL + SURGICAL_HISTORY_DETAILS_URL + "/:id"
         }
-        element={
-          <DashboardLayout>
-            <AppointmentDetailsPage />
-          </DashboardLayout>
-        }
+        element={<Navigate to={SURGICAL_HISTORY_TABLE_URL} replace />}
       />
 
       {/* <Route
@@ -1520,11 +1527,7 @@ const WithLogin: React.FC<{}> = () => {
       />
       <Route
         path={ON_EXAMINATION_TABLE_URL + ON_EXAMINATION_DETAILS_URL + "/:id"}
-        element={
-          <DashboardLayout>
-            <ChiefComplaintDetail />
-          </DashboardLayout>
-        }
+        element={<Navigate to={ON_EXAMINATION_TABLE_URL} replace />}
       />
       <Route
         path={AMOUNT_TYPE_TABLE_URL + AMOUNT_TYPE_DETAILS_URL + "/:id"}
@@ -1654,12 +1657,8 @@ const WithLogin: React.FC<{}> = () => {
         }
       />
       <Route
-        path={FOOD_ADVICE_TABLE_URL + DIAGNOSIS_DETAILS_URL + "/:id"}
-        element={
-          <DashboardLayout>
-            <ServiceCostDetail />
-          </DashboardLayout>
-        }
+        path={FOOD_ADVICE_TABLE_URL + FOOD_ADVICE_DETAILS_URL + "/:id"}
+        element={<Navigate to={FOOD_ADVICE_TABLE_URL} replace />}
       />
       <Route
         path={COMORBIDITIES_TABLE_URL}

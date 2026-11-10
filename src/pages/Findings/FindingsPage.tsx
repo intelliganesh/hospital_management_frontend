@@ -246,6 +246,7 @@ const FindingsPage: React.FC<{}> = () => {
               {data?.status}
             </Badge>,
             <ActionMenu
+              onView={() => navigate(FINDINGS_URL + FINDINGS_DETAILS_URL + "/" + data.id)}
               onEdit={() =>
                 navigate(FINDINGS_URL + FINDINGS_EDIT_URL + "/" + data.id)
               }

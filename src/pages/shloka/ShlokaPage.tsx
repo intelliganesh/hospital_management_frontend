@@ -146,6 +146,7 @@ const ShlokaPage: React.FC<{}> = () => {
               {data.status}
             </Text>,
             <ActionMenu
+              onView={() => navigate(`${SHLOKA_TABLE_URL + SHLOKA_DETAILS_URL}/${data.id}`)}
               onEdit={() =>
                 navigate(
                   `${SHLOKA_TABLE_URL + SHLOKA_EDIT_URL}/${data.id}`

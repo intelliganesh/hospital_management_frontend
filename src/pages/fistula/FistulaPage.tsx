@@ -227,6 +227,7 @@ const FistulaPage: React.FC<{}> = () => {
               {data.is_active || "N/A"}
             </Text>,
             <ActionMenu
+              onView={() => navigate(FISTULA_TABLE_URL + FISTULA_DETAILS_URL + "/" + data.id)}
               onEdit={() =>
                 navigate(FISTULA_TABLE_URL + FISTULA_EDIT_URL + "/" + data.id)
               }

@@ -83,6 +83,9 @@ export const PERMISSIONS = {
   EDIT_IPD_ENROLLMENT: "ipd_enrollment_edit",
   IPD_PATIENT_DETAILS: "ipd_patient_details",
   DISCHARGE_IPD_PATIENT: "ipd_patient_discharge",
+
+  // Admin: manage roles and their permissions (Roles screen / permission matrix)
+  MANAGE_ROLES: "roles_manage",
 } as const;
 
 const SUPER_ADMIN_PERMISSIONS =  [
@@ -141,7 +144,8 @@ const SUPER_ADMIN_PERMISSIONS =  [
     PERMISSIONS.PRESCRIPTION_DOWNLOAD,
     PERMISSIONS.CONSULTATION_DOWNLOAD,
     PERMISSIONS.INVOICE_DOWNLOAD,
-    PERMISSIONS.VIEW_IPD
+    PERMISSIONS.VIEW_IPD,
+    PERMISSIONS.MANAGE_ROLES,
   ];
 
 // Define role-permission mapping

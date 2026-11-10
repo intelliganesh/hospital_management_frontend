@@ -181,6 +181,7 @@ const  AmountTypePage: React.FC<{}> = () => {
               {data?.status || "N/A"}
             </Text>,
             <ActionMenu
+              onView={() => navigate(AMOUNT_TYPE_TABLE_URL + AMOUNT_TYPE_DETAILS_URL + "/" + data.id)}
               onEdit={() =>
                 navigate(AMOUNT_TYPE_TABLE_URL + AMOUNT_TYPE_EDIT_URL + "/" + data.id)
               }

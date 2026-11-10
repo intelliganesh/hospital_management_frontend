@@ -1,7 +1,17 @@
+import { useEffect, useState } from "react";
 import { ROLE_PERMISSIONS, PERMISSIONS } from "@/rolesRoute";
+import { PERMISSIONS_UPDATED_EVENT } from "@/utils/sessionPermissions";
 export type PermissionValue = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];
 
 export const usePermissions = () => {
+  // re-render consumers when permissions are refreshed from the server
+  const [, setTick] = useState(0);
+  useEffect(() => {
+    const onUpdate = () => setTick((t) => t + 1);
+    window.addEventListener(PERMISSIONS_UPDATED_EVENT, onUpdate);
+    return () => window.removeEventListener(PERMISSIONS_UPDATED_EVENT, onUpdate);
+  }, []);
+
   const getUserData = () => {
     try {
       const userDetailsStr = localStorage.getItem("userDetails");
@@ -38,7 +48,15 @@ export const usePermissions = () => {
     return ROLE_PERMISSIONS[userRole as keyof typeof ROLE_PERMISSIONS] ?? [];
   };
 
+  const isAdminRole = (): boolean => {
+    const role = resolveUserRole();
+    return role === "Super Admin" || role === "Admin";
+  };
+
   const hasPermission = (permission: PermissionValue): boolean => {
+    // Admin roles can always manage roles, so an admin can never lock
+    // themselves out of the permission matrix.
+    if (permission === PERMISSIONS.MANAGE_ROLES && isAdminRole()) return true;
     return getUserPermissions().includes(permission);
   };
 
@@ -50,6 +68,7 @@ export const usePermissions = () => {
     user,
     getUserRole: resolveUserRole,
     getUserPermissions,
+    isAdminRole,
     hasPermission,
     hasAnyPermission,
   };

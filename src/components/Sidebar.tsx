@@ -322,6 +322,7 @@ export const sidebarItems = [
         <SidebarDropdownItem
           to={`${ROLES_TABLE_URL}?currentPage=1`}
           label="Roles"
+          requiredPermission={PERMISSIONS.MANAGE_ROLES}
         />
         <SidebarDropdownItem
           to={`${DEPARTMENT_TABLE_URL}?currentPage=1`}

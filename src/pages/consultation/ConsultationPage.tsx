@@ -475,6 +475,7 @@ const ConsultationPage: React.FC<{}> = () => {
             </Text>,
 
             <ActionMenu
+              onView={() => navigate(CONSULTATION_TABLE_URL + CONSULTATION_DETAILS_URL + "/" + data.id)}
               onEdit={() =>
                 navigate(
                   CONSULTATION_TABLE_URL +

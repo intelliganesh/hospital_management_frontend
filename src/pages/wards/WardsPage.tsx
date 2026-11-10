@@ -199,6 +199,7 @@ const WardsPage: React.FC<{}> = () => {
               {ward.status}
             </Text>,
             <ActionMenu
+              onView={() => navigate(`${WARD_TABLE_URL + WARD_DETAILS_URL}/${ward?.id}`)}
               onEdit={() =>
                 navigate(`${WARD_TABLE_URL + WARD_EDIT_URL}/${ward?.id}`)
               }
