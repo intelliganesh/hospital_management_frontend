@@ -18,6 +18,8 @@ export interface SurgeryReportData {
   post_operative_instructions?: string;
   summary?: string;
   external_anaesthetist?: string;
+  shloka_ids?: number[];
+  shloka_data?: { id: number; title: string; text: string }[] | null;
   consent_summary?: string;
   uploaded_consent_path?: File[] | string[] | null | string;
   uploaded_report_path?: File[] | string[] | null | string;

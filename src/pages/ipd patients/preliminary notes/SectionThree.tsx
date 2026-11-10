@@ -21,7 +21,7 @@ const SectionThree: React.FC = () => {
           <Input
             id="bp"
             name="bp"
-            label="BP"
+            label="BP (mmHg)"
             placeholder="e.g., 120/80"
             onChange={handleChange}
             value={values?.bp}
@@ -31,7 +31,7 @@ const SectionThree: React.FC = () => {
           <Input
             id="pulse"
             name="pulse"
-            label="Pulse"
+            label="Pulse (bpm)"
             placeholder="e.g., 72 bpm"
             onChange={handleChange}
             value={values?.pulse}
@@ -41,7 +41,7 @@ const SectionThree: React.FC = () => {
           <Input
             id="temperature"
             name="temperature"
-            label="Temperature"
+            label="Temperature (°F)"
             placeholder="e.g., 98.6°F"
             onChange={handleChange}
             value={values?.temperature}
@@ -53,7 +53,7 @@ const SectionThree: React.FC = () => {
           <Input
             id="spo2"
             name="spo2"
-            label="SpO2"
+            label="SpO2 (%)"
             placeholder="e.g., 98%"
             onChange={handleChange}
             value={values?.spo2}

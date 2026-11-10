@@ -56,6 +56,7 @@ const ConsultationItem: React.FC<ConsultationItemProps> = ({
       "type_of_fistula_sphincter",
       "type_of_fistula_position",
       "basis_of_high_low_riding",
+      "high_low_riding_type",
       "distant_visceral_communication",
     ];
 
@@ -140,7 +141,13 @@ const ConsultationItem: React.FC<ConsultationItemProps> = ({
         secondary_cause: getSplitValue("crypt_cause", i),
         basis_of_sphincter: getSplitValue("type_of_fistula_sphincter", i),
         position: getSplitValue("type_of_fistula_position", i),
-        high_low_riding: getSplitValue("basis_of_high_low_riding", i),
+        high_low_riding: (() => {
+          const basis = (data.basis_of_high_low_riding || "").split("#")[i] || "";
+          const t =
+            (data.high_low_riding_type || "").split("#")[i] ||
+            (basis ? "High" : "");
+          return t && basis ? `${t} - ${basis}` : t || "N/A";
+        })(),
         visceral_communications: getSplitValue(
           "distant_visceral_communication",
           i,

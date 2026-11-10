@@ -24,6 +24,7 @@ type EntryType = {
   any_other?: string;
   type_of_crypt: string;
   crypt_cause?: string;
+  high_low_riding_type?: string;
   basis_of_high_low_riding: string;
   distant_visceral_communication?: string;
   type_of_fistula_sphincter?: string;
@@ -43,6 +44,7 @@ const emptyEntry: EntryType = {
   any_other: "",
   type_of_crypt: "",
   crypt_cause: "",
+  high_low_riding_type: "",
   basis_of_high_low_riding: "",
   distant_visceral_communication: "",
   type_of_fistula_sphincter: "",
@@ -59,6 +61,7 @@ const REPEATABLE_FIELDS: (keyof EntryType)[] = [
   "any_other",
   "type_of_crypt",
   "crypt_cause",
+  "high_low_riding_type",
   "basis_of_high_low_riding",
   "distant_visceral_communication",
   "type_of_fistula_sphincter",
@@ -138,6 +141,7 @@ const OpeningPosition: React.FC<OpeningPositionProps> = ({ initialData }) => {
     const typeOfCrypt = values.type_of_crypt?.split("#") || [];
     const cryptCause = values.crypt_cause?.split("#") || [];
     const highLow = values.basis_of_high_low_riding?.split("#") || [];
+    const highLowType = values.high_low_riding_type?.split("#") || [];
     const distantVisceral =
       values.distant_visceral_communication?.split("#") || [];
 
@@ -160,6 +164,9 @@ const OpeningPosition: React.FC<OpeningPositionProps> = ({ initialData }) => {
 
       type_of_crypt: typeOfCrypt[i] || "",
       crypt_cause: cryptCause[i] || "",
+      // Legacy records have no per-fistula type: a saved basis implies "High".
+      high_low_riding_type:
+        highLowType[i] || (highLow[i] ? "High" : ""),
       basis_of_high_low_riding: highLow[i] || "",
       distant_visceral_communication: distantVisceral[i] || "",
 
@@ -180,6 +187,7 @@ const OpeningPosition: React.FC<OpeningPositionProps> = ({ initialData }) => {
     values?.type_of_crypt,
     values?.crypt_cause,
     values?.basis_of_high_low_riding,
+    values?.high_low_riding_type,
     values?.distant_visceral_communication,
     values?.type_of_fistula_sphincter,
     values?.type_of_fistula_position,
@@ -521,24 +529,43 @@ const OpeningPosition: React.FC<OpeningPositionProps> = ({ initialData }) => {
               </View>
             </View>
             <View className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-              <View>
+              <View className="flex flex-col gap-4">
                 <SingleSelector
-                  id="basis_of_high_low_riding"
-                  label="On The Basis Of high/Low Riding"
-                  name="basis_of_high_low_riding"
-                  placeholder="Select Fistula High/Low Riding"
-                  value={entry.basis_of_high_low_riding}
-                  onChange={(val: string) =>
-                    handleChange(index, "basis_of_high_low_riding", val)
-                  }
-                  options={fistulaDropDownList
-                    ?.filter((x) => x?.sub_fistula_name === "high_low_riding")
-                    .map((x) => ({
-                      label: x.fistula_name,
-                      value: x.fistula_name,
-                    }))}
-                  // options={fistulaSphincterTypes}
+                  id="high_low_riding_type"
+                  label="High / Low Riding"
+                  name="high_low_riding_type"
+                  placeholder="Select High / Low"
+                  value={entry.high_low_riding_type}
+                  onChange={(val: string) => {
+                    handleChange(index, "high_low_riding_type", val);
+                    // Basis only applies to "High"; clear it for Low / empty.
+                    if (val !== "High") {
+                      handleChange(index, "basis_of_high_low_riding", "");
+                    }
+                  }}
+                  options={[
+                    { label: "High", value: "High" },
+                    { label: "Low", value: "Low" },
+                  ]}
                 />
+                {entry.high_low_riding_type === "High" && (
+                  <SingleSelector
+                    id="basis_of_high_low_riding"
+                    label="On The Basis Of high/Low Riding"
+                    name="basis_of_high_low_riding"
+                    placeholder="Select Fistula High/Low Riding"
+                    value={entry.basis_of_high_low_riding}
+                    onChange={(val: string) =>
+                      handleChange(index, "basis_of_high_low_riding", val)
+                    }
+                    options={fistulaDropDownList
+                      ?.filter((x) => x?.sub_fistula_name === "high_low_riding")
+                      .map((x) => ({
+                        label: x.fistula_name,
+                        value: x.fistula_name,
+                      }))}
+                  />
+                )}
               </View>
               <View>
                 <Input

@@ -126,6 +126,10 @@ export const YOGA_ASANA_TABLE_URL = "/yoga-asana-list";
 export const YOGA_ASANA_FORM_URL = "/yoga-asana-form";
 export const YOGA_ASANA_EDIT_URL = "/yoga-asana-edit";
 export const YOGA_ASANA_DETAILS_URL = "/yoga-asana-details";
+export const SHLOKA_TABLE_URL = "/shloka-list";
+export const SHLOKA_FORM_URL = "/shloka-form";
+export const SHLOKA_EDIT_URL = "/shloka-edit";
+export const SHLOKA_DETAILS_URL = "/shloka-details";
 export const DOSHA_ANALYSIS_URL: string = "/dosha-analysis";
 
 export const PRAKRITI_URL: string = "/prakriti";
@@ -273,6 +277,7 @@ export const SURGERY_LIST_URL: string = "/surgery-list";
 export const DOWNLOAD_SURGERY_FORM: string = "/download-ipd-forms";
 export const DOWNLOAD_SURGERY_REPORTS: string = "/download-surgery-reports";
 export const PREFILLED_UPLOADED_FILES_URL: string = "/prefilled-uploaded-files";
+export const IPD_GENERAL_UPLOADS_URL: string = "/general-uploads";
 
 // IPD Billing URLs
 export const IPD_BILLS_URL: string = "/ipd-bills";

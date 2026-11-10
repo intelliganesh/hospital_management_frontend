@@ -153,7 +153,8 @@ export const useIpdBilling = () => {
         `${IPD_BILLING_ADD_PAYMENT_URL}/${ipdId}`,
         (response: AuthPayload, success: boolean, statusCode: number) => {
           if (success && statusCode === 200) {
-            return callback(true);
+            // data = the saved receipt (id, receipt_number, ...) so the UI can offer "Print receipt"
+            return callback(true, { success: true, data: response?.data });
           } else {
             response && handleApiError(response);
             return callback(false);

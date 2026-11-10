@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import View from "@/components/view";
 import Input from "@/components/input";
 import SingleSelector from "@/components/SingleSelector";
@@ -6,7 +6,9 @@ import Textarea from "@/components/Textarea";
 import Upload from "@/components/Upload";
 import Button from "@/components/button";
 import FormSection from "@/pages/ipd/pac/components/FormSection";
-import { FileText, Users, Stethoscope, ClipboardList } from "lucide-react";
+import { FileText, Users, Stethoscope, ClipboardList, BookOpen } from "lucide-react";
+import MultiSelector from "@/components/MultiSelector";
+import { useShloka } from "@/actions/calls/shloka";
 import useForm from "@/utils/custom-hooks/use-form";
 import { useParams, useNavigate } from "react-router-dom";
 import { useSurgeryReport } from "@/actions/calls/ipd/surgeryProcedure/surgeryReport";
@@ -29,6 +31,8 @@ const SurgeryReportForm: React.FC<Props> = ({ readOnly = false }) => {
   const { updateSurgeryReport, surgeryReportDetail } = useSurgeryReport();
   const { PuaListHandler } = useOpd();
   const { departmentDropdownHandler } = useDepartment();
+  const { shlokaDropdownHandler } = useShloka();
+  const [shlokaError, setShlokaError] = useState<string>("");
   const { toast } = useToast();
 
   const surgeryReportData = useSelector(
@@ -58,8 +62,34 @@ const SurgeryReportForm: React.FC<Props> = ({ readOnly = false }) => {
     value: department.name,
   }));
 
+  const shlokaDropdownData = useSelector(
+    (state: RootState) => state.shloka.shlokaDropdownData,
+  );
+
   const { values, handleChange, onSetHandler } =
     useForm<SurgeryReportData>(surgeryReportData);
+
+  // Selected shloka ids: edited value, else the ids already saved on the surgery.
+  const selectedShlokaIds: number[] =
+    values?.shloka_ids ??
+    (Array.isArray(values?.shloka_data)
+      ? values.shloka_data.map((s: any) => s.id)
+      : []);
+
+  // Active masters + any saved shloka that is no longer active/available, so it still shows.
+  const shlokaOptions = [
+    ...(Array.isArray(shlokaDropdownData) ? shlokaDropdownData : []).map(
+      (s: any) => ({ label: s.title, value: s.id }),
+    ),
+    ...(Array.isArray(values?.shloka_data) ? values.shloka_data : [])
+      .filter(
+        (s: any) =>
+          !(Array.isArray(shlokaDropdownData) ? shlokaDropdownData : []).some(
+            (m: any) => m.id === s.id,
+          ),
+      )
+      .map((s: any) => ({ label: s.title, value: s.id })),
+  ];
 
   useEffect(() => {
     if (surgeryId) {
@@ -70,6 +100,7 @@ const SurgeryReportForm: React.FC<Props> = ({ readOnly = false }) => {
   useEffect(() => {
     PuaListHandler(() => {});
     departmentDropdownHandler(() => {});
+    shlokaDropdownHandler(() => {});
   }, []);
 
   const toDateTimeInputValue = (value?: string) => {
@@ -96,13 +127,27 @@ const SurgeryReportForm: React.FC<Props> = ({ readOnly = false }) => {
   const handleSubmit = async () => {
     if (!surgeryId) return;
 
-    const payload = {
+    if (selectedShlokaIds.length === 0) {
+      setShlokaError("Please select at least one Shloka");
+      toast({
+        title: "Error",
+        description: "Please select at least one Shloka",
+        variant: "destructive",
+      });
+      return;
+    }
+    setShlokaError("");
+
+    const payload: any = {
       ...values,
+      surgery_report: 1,
+      shloka_ids: selectedShlokaIds,
       doctor_id: selectedSurgeonDoctorId,
       surgery_start_datetime: toApiDateTime(values?.surgery_start_datetime),
       surgery_end_datetime: toApiDateTime(values?.surgery_end_datetime),
     };
     delete payload.uploaded_report_path; // remove file
+    delete payload.shloka_data; // server rebuilds it from shloka_ids
 
     await updateSurgeryReport(surgeryId, payload, (success: boolean) => {
       if (success) {
@@ -147,6 +192,24 @@ const SurgeryReportForm: React.FC<Props> = ({ readOnly = false }) => {
 
   return (
     <View className="space-y-6">
+      {/* Shloka */}
+      <FormSection title="Shloka" icon={BookOpen}>
+        <MultiSelector
+          name="shloka_ids"
+          label="Shloka"
+          required
+          value={selectedShlokaIds}
+          options={shlokaOptions}
+          placeholder="Select Shloka"
+          disabled={readOnly}
+          error={shlokaError}
+          onChange={(vals: any) => {
+            onSetHandler("shloka_ids", Array.isArray(vals) ? vals : []);
+            setShlokaError("");
+          }}
+        />
+      </FormSection>
+
       {/* Basic Information */}
       <FormSection title="Basic Information" icon={FileText}>
         <View className="grid grid-cols-1 md:grid-cols-2 gap-4">

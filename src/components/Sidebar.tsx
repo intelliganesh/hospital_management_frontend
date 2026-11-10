@@ -46,6 +46,7 @@ import {
   KOSHTA_URL,
   AVASTHA_URL,
   YOGA_ASANA_TABLE_URL,
+  SHLOKA_TABLE_URL,
   INVOICE_URL,
   DEPARTMENT_TABLE_URL,
   CONSULTATION_FEES_URL,
@@ -427,6 +428,11 @@ export const sidebarItems = [
         <SidebarDropdownItem
           to={`${YOGA_ASANA_TABLE_URL}?currentPage=1`}
           label="Yoga Asana"
+        />
+        <SidebarDropdownItem
+          to={`${SHLOKA_TABLE_URL}?currentPage=1`}
+          label="Shloka"
+          requiredPermission={PERMISSIONS.VIEW_SHLOKA}
         />
         <SidebarDropdownItem
           to={`${SERVICE_COST_TABLE_URL}?currentPage=1`}

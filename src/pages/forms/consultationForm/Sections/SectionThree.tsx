@@ -310,7 +310,7 @@ const SectionThree: React.FC<SectionTwoProps> = ({
               <Input
                 id="bp"
                 name="bp"
-                label="Blood Pressure"
+                label="Blood Pressure (mmHg)"
                 onChange={handleChange}
                 error={errorsBp}
                 value={values?.bp ? values?.bp + "" : ""}
@@ -324,7 +324,7 @@ const SectionThree: React.FC<SectionTwoProps> = ({
               <Input
                 id="pulse"
                 name="pulse"
-                label="Pulse"
+                label="Pulse (bpm)"
                 onChange={handleChange}
                 error={errorsPulse}
                 value={values?.pulse ? values?.pulse + "" : ""}

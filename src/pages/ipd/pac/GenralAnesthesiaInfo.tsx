@@ -1,4 +1,5 @@
 import React from "react";
+import { withUnit } from "@/utils/measurementUnits";
 import { Card } from "@/components/ui/card";
 import View from "@/components/view";
 import Text from "@/components/text";
@@ -52,7 +53,7 @@ const GenralAnesthesiaInfo: React.FC<Props> = ({ anaesthesiaDetail }) => {
               label="Height"
               value={
                 anaesthesiaDetail?.patient_height
-                  ? `${anaesthesiaDetail.patient_height} cm`
+                  ? withUnit("height", anaesthesiaDetail.patient_height)
                   : null
               }
             />
@@ -60,7 +61,7 @@ const GenralAnesthesiaInfo: React.FC<Props> = ({ anaesthesiaDetail }) => {
               label="Weight"
               value={
                 anaesthesiaDetail?.patient_weight
-                  ? `${anaesthesiaDetail.patient_weight} kg`
+                  ? withUnit("weight", anaesthesiaDetail.patient_weight)
                   : null
               }
             />

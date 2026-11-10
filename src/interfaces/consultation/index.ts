@@ -79,6 +79,7 @@ export interface Consultation {
   no_of_secondary_opening_position?: string;
   type_of_crypt: string;
   crypt_cause: string;
+  high_low_riding_type?: string;
   basis_of_high_low_riding?: string;
   distant_visceral_communication?: string;
   sono_fistula_gram?: string;

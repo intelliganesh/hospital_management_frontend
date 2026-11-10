@@ -1,4 +1,5 @@
 import Button from "@/components/button";
+import { withUnit } from "@/utils/measurementUnits";
 import Modal from "@/components/Modal";
 import DataSort, { SortOption } from "@/components/SortData";
 import Text from "@/components/text";
@@ -193,8 +194,8 @@ export const ExaminationsPage = () => {
           tableHeaders={[
             "Patient Number",
             "Temperature",
-            "BP",
-            "Pulse",
+            "BP (mmHg)",
+            "Pulse (bpm)",
             "Actions",
           ]}
           tableData={paginateObj?.data.map((examination: any) => [
@@ -203,9 +204,9 @@ export const ExaminationsPage = () => {
             >
               {examination?.patient_number || "N/A"}
             </Link>,
-            examination?.temperature || "N/A",
-            examination?.bp || "N/A",
-            examination?.pulse || "N/A",
+            withUnit("temperature", examination?.temperature) || "N/A",
+            withUnit("bp", examination?.bp) || "N/A",
+            withUnit("pulse", examination?.pulse) || "N/A",
             <ActionMenu
               onEdit={() =>
                 navigate(

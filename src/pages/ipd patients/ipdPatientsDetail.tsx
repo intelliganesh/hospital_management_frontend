@@ -26,6 +26,7 @@ import {
   DownloadIcon,
   UsersRound,
   UserRound,
+  Upload,
 } from "lucide-react";
 import BouncingLoader from "@/components/BouncingLoader";
 import {
@@ -42,6 +43,7 @@ import {
   DOWNLOAD_SURGERY_FORM,
   DOWNLOAD_SURGERY_REPORTS,
   PREFILLED_UPLOADED_FILES_URL,
+  IPD_GENERAL_UPLOADS_URL,
   IPD_BILL_DETAILS_URL,
   USER_TABLE_URL,
   USER_DETAIL_URL,
@@ -60,6 +62,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import SurgeryList from "./SurgeryList";
+import DischargeDateTimeEdit from "./DischargeDateTimeEdit";
 import DynamicTable from "@/components/ui/DynamicTable";
 import dayjs from "dayjs";
 
@@ -222,6 +225,13 @@ const IpdPatientDetailsPage = () => {
           bgGradient:
             "bg-amber-100 text-amber-700 shadow-amber-500/25 hover:bg-amber-200",
           url: `${IPD_PATIENTS_URL}${IPD_PATIENTS_DETAILS_URL}${PREFILLED_UPLOADED_FILES_URL}/${patientId}`,
+        },
+        {
+          label: "General Uploads / Scanned Records",
+          icon: Upload,
+          bgGradient:
+            "bg-emerald-100 text-emerald-700 shadow-emerald-500/25 hover:bg-emerald-200",
+          url: `${IPD_PATIENTS_URL}${IPD_PATIENTS_DETAILS_URL}${IPD_GENERAL_UPLOADS_URL}/${patientId}`,
         },
       ],
     },
@@ -405,6 +415,15 @@ const IpdPatientDetailsPage = () => {
                       })
                       : "Not Discharged"}
                   </Text>
+                  <DischargeDateTimeEdit
+                    ipdId={patientId}
+                    status={ipdPatientDetailData?.status}
+                    admissionDateTime={ipdPatientDetailData?.admission_date_time}
+                    dischargeDateTime={ipdPatientDetailData?.discharge_date_time}
+                    onUpdated={() =>
+                      patientId && ipdPatientDetailHandler(patientId, () => { }, [])
+                    }
+                  />
                 </View>
                 <View>
                   <Text as="p" className="text-sm text-muted-foreground">

@@ -40,6 +40,7 @@ import { Separator } from "@/components/ui/separator";
 import SingleSelector from "@/components/SingleSelector";
 import { useIpdBilling } from "@/actions/calls/ipd/billing";
 import { useBillingServiceCategory } from "@/actions/calls/billingServiceCategory";
+import ReceiptPrintButton from "@/components/ReceiptPrintButton";
 
 const getBillingCategoryName = (category: any) =>
   category?.category_name ||
@@ -122,6 +123,8 @@ const IpdBillDetailsPage: React.FC = () => {
 
   // Modal States
   const [isReceivePaymentOpen, setIsReceivePaymentOpen] = React.useState(false);
+  // Receipt of the payment just recorded (drives the "Print receipt" success dialog)
+  const [savedReceipt, setSavedReceipt] = React.useState<any>(null);
   const [isDischargeOpen, setIsDischargeOpen] = React.useState(false);
   const [isChargeModalOpen, setIsChargeModalOpen] = React.useState(false);
   const [editingCharge, setEditingCharge] = React.useState<{
@@ -273,9 +276,10 @@ const IpdBillDetailsPage: React.FC = () => {
       notes: paymentForm.notes,
     };
 
-    addIpdBillingPayment(id, payload, (success) => {
+    addIpdBillingPayment(id, payload, (success, result) => {
       if (success) {
         setIsReceivePaymentOpen(false);
+        if (result?.data?.id) setSavedReceipt(result.data);
         // Reset the form
         setPaymentForm({
           amount: 0,
@@ -451,15 +455,20 @@ const IpdBillDetailsPage: React.FC = () => {
       {ipdBillingPaymentDetailData.length > 0 ? (
         <DynamicTable
           tableHeaders={[
+            { label: "Receipt No", key: "receipt_number" },
             { label: "Date", key: "date" },
             { label: "Transaction ID", key: "transaction_id" },
             { label: "Payment Mode", key: "payment_type" },
             { label: "Status", key: "status" },
             { label: "Notes", key: "notes" },
             { label: "Amount", key: "amount" },
+            { label: "Actions", key: "" },
           ]}
           tableData={ipdBillingPaymentDetailData.map(
             (payment: any, pIndex: number) => [
+              <Text className="text-sm" key={`rno-${pIndex}`}>
+                {payment.receipt_number ?? "-"}
+              </Text>,
               <Text className="text-sm" key={`date-${pIndex}`}>
                 {dayjs(payment.date).format("DD MMM YYYY")}
               </Text>,
@@ -492,6 +501,10 @@ const IpdBillDetailsPage: React.FC = () => {
               >
                 {payment.currency || "INR"} {payment.amount}
               </Text>,
+              <ReceiptPrintButton
+                key={`receipt-${pIndex}`}
+                receiptId={payment.id}
+              />,
             ],
           )}
         />
@@ -872,6 +885,31 @@ const IpdBillDetailsPage: React.FC = () => {
               disabled={!canRecordPayment}
             >
               Record Payment
+            </Button>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Payment recorded -> print receipt */}
+      <Modal
+        isOpen={!!savedReceipt}
+        onClose={() => setSavedReceipt(null)}
+        closeOnOutsideClick={false}
+        title="Payment recorded"
+        description="Print the receipt for the payment you just collected."
+      >
+        <View className="space-y-3">
+          <View className="flex items-center justify-between border-b border-slate-100 pb-2">
+            <Text className="text-sm">
+              Receipt #{savedReceipt?.receipt_number} -{" "}
+              {savedReceipt?.currency || "INR"} {savedReceipt?.amount} (
+              {savedReceipt?.payment_type || "-"})
+            </Text>
+            <ReceiptPrintButton receiptId={savedReceipt?.id} />
+          </View>
+          <View className="flex justify-end pt-2">
+            <Button variant="outline" onPress={() => setSavedReceipt(null)}>
+              Close
             </Button>
           </View>
         </View>

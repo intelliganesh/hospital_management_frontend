@@ -55,6 +55,7 @@ import TabbedCollapsible from "@/components/TabbedCollapsible";
 // import { usePostSurgery } from "@/actions/calls/postSurgeryFollowUp";
 // import { PostSurgeryFollowUpForm } from "@/interfaces/consultation/postSurgeryFollowUp";
 import FistulaDetails from "./FistulaDetails";
+import { withUnit } from "@/utils/measurementUnits";
 // import PostSurgeryFollowUpComp from "@/pages/postSurgeryFollowUp";
 // import { usePostSurgery } from "@/actions/calls/postSurgeryFollowUp";
 
@@ -1139,19 +1140,19 @@ const ConsultationDetails = () => {
             <View className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <InfoCard
                 label="Temperature"
-                value={consultationData?.vitals?.temperature || "N/A"}
+                value={withUnit("temperature", consultationData?.vitals?.temperature) || "N/A"}
                 icon={<Thermometer className="h-5 w-5 text-red-500" />}
                 iconStyle="bg-red-100"
               />
               <InfoCard
                 label="Blood Pressure"
-                value={`${consultationData?.vitals?.bp || "N/A"} mmHg`}
+                value={withUnit("bp", consultationData?.vitals?.bp) || "N/A"}
                 icon={<HeartPulse className="h-5 w-5 text-red-500" />}
                 iconStyle="bg-red-100"
               />
               <InfoCard
                 label="Pulse"
-                value={`${consultationData?.vitals?.pulse || "N/A"} bpm`}
+                value={withUnit("pulse", consultationData?.vitals?.pulse) || "N/A"}
                 icon={<HeartPulse className="h-5 w-5 text-red-500" />}
                 iconStyle="bg-red-100"
               />

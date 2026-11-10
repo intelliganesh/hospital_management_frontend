@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { withUnit } from "@/utils/measurementUnits";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   Card,
@@ -177,17 +178,17 @@ const ExaminationDetailsPage = () => {
           <View className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <InfoCard
               label="Temperature"
-              value={`${examinationDetails?.temperature}` || "N/A"}
+              value={withUnit("temperature", examinationDetails?.temperature) || "N/A"}
               icon={<Thermometer className="h-5 w-5 text-red-500" />}
             />
             <InfoCard
               label="Blood Pressure"
-              value={`${examinationDetails?.bp} mmHg ` || "N/A"}
+              value={withUnit("bp", examinationDetails?.bp) || "N/A"}
               icon={<HeartPulse className="h-5 w-5 text-red-500" />}
             />
             <InfoCard
               label="Pulse"
-              value={`${examinationDetails?.pulse} bpm` || "N/A"}
+              value={withUnit("pulse", examinationDetails?.pulse) || "N/A"}
               icon={<HeartPulse className="h-5 w-5 text-red-500" />}
             />
           </View>

@@ -1,5 +1,6 @@
 import React from "react";
 import View from "@/components/view";
+import Text from "@/components/text";
 import ReadOnlyField from "@/pages/ipd/pac/components/ReadOnlyField";
 import SectionDivider from "@/pages/ipd/pac/components/SectionDivider";
 import dayjs from "dayjs";
@@ -15,6 +16,25 @@ const SurgeryReportTab: React.FC<Props> = ({ detail }) => {
 
   return (
     <View className="space-y-8 p-6">
+      {/* Shloka (older surgeries have none) */}
+      {Array.isArray(detail?.shloka_data) && detail.shloka_data.length > 0 && (
+        <>
+          <SectionDivider label="Shloka" />
+          <View className="space-y-4">
+            {detail.shloka_data.map((shloka: any) => (
+              <View key={shloka.id} className="flex flex-col gap-1">
+                <Text className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+                  {shloka.title}
+                </Text>
+                <Text className="text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap">
+                  {shloka.text}
+                </Text>
+              </View>
+            ))}
+          </View>
+        </>
+      )}
+
       {/* Basic Info */}
       <SectionDivider label="Basic Information" />
       <View className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

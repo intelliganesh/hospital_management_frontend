@@ -29,6 +29,8 @@ import { genderOptions } from "../patientForm/patientFormOptions";
 import { useOpd } from "@/actions/calls/opd";
 import { RootState } from "@/actions/store";
 import { clearIpdPatientDetailDataSlice } from "@/actions/slices/ipd/ipdEnrollment";
+import Modal from "@/components/Modal";
+import ReceiptPrintButton from "@/components/ReceiptPrintButton";
 
 interface IpdEnrollmentFormProps {
   formType?: "addEnrollment" | "editEnrollment" | "addPatientWithEnrollment";
@@ -42,6 +44,8 @@ const IpdEnrollmentForm: React.FC<IpdEnrollmentFormProps> = ({
   const navigate = useNavigate();
   const { patientDetailHandler, cleanUp } = usePatient();
   const [isLoading, setIsLoading] = useState(false);
+  // Advance paid at admission: receipt id returned by POST /ipd_add (drives the "Print receipt" dialog)
+  const [advanceReceiptId, setAdvanceReceiptId] = useState<string | null>(null);
   const [, setFormErrors] = useState<Record<string, string>>({});
   const [patientDetailsStepErrors, setPatientDetailsStepErrors] = useState<Record<string, string>>({});
   const [medicalAssignementStepErrors, setMedicalAssignementStepErrors] = useState<Record<string, string>>({});
@@ -242,14 +246,20 @@ const IpdEnrollmentForm: React.FC<IpdEnrollmentFormProps> = ({
       setIsLoading(true);
 
       if (formType === "addEnrollment" || formType === "addPatientWithEnrollment") {
-        ipdPatientEnrollmentHandler(formData, (success) => {
+        ipdPatientEnrollmentHandler(formData, (success, result) => {
           if (success) {
             toast({
               title: "Success!",
               description: "Patient enrolled to IPD successfully.",
               variant: "success",
             });
-            navigate(-1);
+            const receiptId = result?.data?.advance_receipt_id;
+            if (receiptId) {
+              setIsLoading(false);
+              setAdvanceReceiptId(receiptId);
+            } else {
+              navigate(-1);
+            }
           }
         });
       } else if (ipdCaseId && formType === "editEnrollment") {
@@ -844,6 +854,32 @@ const IpdEnrollmentForm: React.FC<IpdEnrollmentFormProps> = ({
           </View>
         </View>
       </IPDModels>
+      <Modal
+        isOpen={!!advanceReceiptId}
+        onClose={() => {
+          setAdvanceReceiptId(null);
+          navigate(-1);
+        }}
+        closeOnOutsideClick={false}
+        title="Patient enrolled"
+        description="Print the receipt for the advance payment collected at admission."
+      >
+        <View className="flex items-center justify-between gap-3">
+          <Text className="text-sm">Advance payment receipt</Text>
+          <ReceiptPrintButton receiptId={advanceReceiptId} />
+        </View>
+        <View className="flex justify-end pt-4">
+          <Button
+            variant="outline"
+            onPress={() => {
+              setAdvanceReceiptId(null);
+              navigate(-1);
+            }}
+          >
+            Close
+          </Button>
+        </View>
+      </Modal>
     </>
   );
 };

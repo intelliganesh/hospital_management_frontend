@@ -30,6 +30,8 @@ import {
 } from "@/components/ui/table";
 import dayjs from "dayjs";
 import { clearInvoiceDetail } from "@/actions/slices/invoice";
+import Modal from "@/components/Modal";
+import ReceiptPrintButton from "@/components/ReceiptPrintButton";
 
 const api = new LaunchApi();
 
@@ -58,6 +60,8 @@ const InvoiceDetail: React.FC = () => {
   const { amountTypeDropdownHandler } = useAmountType();
   const [paymentDetails, setPaymentDetails] = useState<any[]>([]);
   const [currencySymbol, setCurrencySymbol] = useState<string | null>(null);
+  // Receipts created by the payment just submitted (shown in the "Print receipt" success dialog)
+  const [newReceipts, setNewReceipts] = useState<any[]>([]);
   // console.log(paymentDetails, "paymentDetails")
 
   const invoiceData = useSelector(
@@ -153,16 +157,36 @@ const InvoiceDetail: React.FC = () => {
       transaction_id: item.transaction_id,
     }));
 
+    const existingReceiptIds = new Set(
+      (invoiceData?.paymentArray || []).map((r: any) => r?.id),
+    );
+
     api.post(
       `${INVOICE_ADD_OR_UPDATE_URL}/${invoiceData?.id}`,
       (_, success) => {
         if (success) {
-          navigate(-1);
           toast({
             title: "Success!",
             description: "Successfully Amount added",
             variant: "success",
           });
+          // Offer "Print receipt" for any payment that was just collected; otherwise leave as before.
+          if (id) {
+            getInvoiceDetailHandler(id, (ok, latest: any) => {
+              const created = ok
+                ? (latest?.paymentArray || []).filter(
+                    (r: any) => r?.id && !existingReceiptIds.has(r.id),
+                  )
+                : [];
+              if (created.length > 0) {
+                setNewReceipts(created);
+              } else {
+                navigate(-1);
+              }
+            });
+          } else {
+            navigate(-1);
+          }
           // if (id) {
           //   getInvoiceDetailHandler(id, () => {});
           //   getPaymentDetailHandler(id, () => {});
@@ -469,6 +493,12 @@ const InvoiceDetail: React.FC = () => {
                     <TableHead className="py-4 px-6 text-sm font-semibold text-slate-700 dark:text-slate-300 text-left">
                       Payment Type
                     </TableHead>
+                    <TableHead className="py-4 px-6 text-sm font-semibold text-slate-700 dark:text-slate-300 text-left">
+                      Receipt No
+                    </TableHead>
+                    <TableHead className="py-4 px-6 text-sm font-semibold text-slate-700 dark:text-slate-300 text-left">
+                      Action
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -484,6 +514,12 @@ const InvoiceDetail: React.FC = () => {
                         </TableCell>
                         <TableCell className="py-4 px-6 text-sm font-medium text-slate-700 dark:text-slate-300">
                           {item.payment_type}
+                        </TableCell>
+                        <TableCell className="py-4 px-6 text-sm font-medium text-slate-700 dark:text-slate-300">
+                          {item.receipt_number ?? "-"}
+                        </TableCell>
+                        <TableCell className="py-4 px-6 text-sm font-medium text-slate-700 dark:text-slate-300">
+                          <ReceiptPrintButton receiptId={item.id} />
                         </TableCell>
                       </TableRow>
                     ),
@@ -512,6 +548,42 @@ const InvoiceDetail: React.FC = () => {
           </View>
         </View>
       </ServiceModel>
+      <Modal
+        isOpen={newReceipts.length > 0}
+        onClose={() => {
+          setNewReceipts([]);
+          navigate(-1);
+        }}
+        closeOnOutsideClick={false}
+        title="Payment recorded"
+        description="Print the receipt for the payment you just collected."
+      >
+        <View className="space-y-3">
+          {newReceipts.map((r: any) => (
+            <View
+              key={r.id}
+              className="flex items-center justify-between border-b border-slate-100 pb-2"
+            >
+              <Text className="text-sm">
+                Receipt #{r.receipt_number} - {currencySymbol}
+                {r.amount} ({r.payment_type || "-"})
+              </Text>
+              <ReceiptPrintButton receiptId={r.id} />
+            </View>
+          ))}
+          <View className="flex justify-end pt-2">
+            <Button
+              variant="outline"
+              onPress={() => {
+                setNewReceipts([]);
+                navigate(-1);
+              }}
+            >
+              Close
+            </Button>
+          </View>
+        </View>
+      </Modal>
       {/* Footer */}
       <View className="mt-12 pt-4 border-t border-gray-300">
         <Text as="p" className="text-center text-gray-500 text-sm">

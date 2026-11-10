@@ -336,7 +336,7 @@ const NoteFormPage: React.FC<FormTypeProps> = ({ formType = "add" }) => {
                   <Input
                     id="bp"
                     name="bp"
-                    label="Blood Pressure"
+                    label="Blood Pressure (mmHg)"
                     type="text"
                     value={values?.bp || ""}
                     onChange={handleChange}

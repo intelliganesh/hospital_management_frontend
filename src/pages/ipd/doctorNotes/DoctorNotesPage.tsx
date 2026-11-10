@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { withUnit } from "@/utils/measurementUnits";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import View from "@/components/view";
 import Text from "@/components/text";
@@ -421,7 +422,7 @@ const DoctorNotesPage: React.FC = () => {
                                     Blood Pressure
                                   </Text>
                                   <Text className="text-sm font-semibold text-slate-900 dark:text-white">
-                                    {note.bp}
+                                    {withUnit("bp", note.bp)}
                                   </Text>
                                 </View>
                               )}
@@ -431,7 +432,7 @@ const DoctorNotesPage: React.FC = () => {
                                     PR
                                   </Text>
                                   <Text className="text-sm font-semibold text-slate-900 dark:text-white">
-                                    {note.pr}
+                                    {withUnit("pulse", note.pr)}
                                   </Text>
                                 </View>
                               )}

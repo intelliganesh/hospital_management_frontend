@@ -20,6 +20,7 @@ import {
   CreditCard,
   ExternalLink,
   MessageCircle,
+  Printer,
   // MessageSquare,
   // Link as LinkIcon,
   Calendar,
@@ -30,6 +31,7 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "@/actions/store";
 import { toast } from "@/utils/custom-hooks/use-toast";
+import { useReceipt } from "@/actions/calls/receipt";
 
 
 const getPaymentPayloadType = (paymentType?: string | null) => {
@@ -70,6 +72,7 @@ const VerifyPaymentModal: React.FC<VerifyPaymentModalProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSendingWhatsApp, setIsSendingWhatsApp] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
+  const { printExternalAppointmentReceipt, isReceiptLoading } = useReceipt();
   const [verifiedAppointment, setVerifiedAppointment] =
     useState<OnlineAppointment | null>(null);
   const whatsappNotificationEnabled = useSelector((state: RootState) =>
@@ -355,6 +358,16 @@ const VerifyPaymentModal: React.FC<VerifyPaymentModalProps> = ({
             >
               <CheckCircle size={18} /> Confirm & Verify
             </Button>
+            {isVerified && appointment?.id && (
+              <Button
+                variant="outline"
+                onPress={() => printExternalAppointmentReceipt(appointment.id)}
+                loading={isReceiptLoading}
+                className="gap-2 flex flex-row items-center h-11 px-6"
+              >
+                <Printer size={18} /> Print Receipt
+              </Button>
+            )}
             {!whatsappNotificationEnabled && isVerified && (
               <Button
                 onPress={handleSendLinkViaWhatsApp}

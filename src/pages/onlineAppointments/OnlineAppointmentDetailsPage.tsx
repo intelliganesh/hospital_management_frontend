@@ -1,3 +1,4 @@
+import { useReceipt } from "@/actions/calls/receipt";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/actions/store";
@@ -28,6 +29,7 @@ import {
   UserCheck,
   Stethoscope as DoctorIcon,
   MessageCircle,
+  Printer,
 } from "lucide-react";
 import getStatusColorScheme from "@/utils/statusColorSchemaDecider";
 import { Card } from "@/components/ui/card";
@@ -125,6 +127,7 @@ const OnlineAppointmentDetailsPage: React.FC = () => {
   } = useOnlineAppointments();
 
   const { downloadInvoiceHandler } = useInvoice();
+  const { printExternalAppointmentReceipt, isReceiptLoading } = useReceipt();
 
   const appointment = useSelector(
     (state: RootState) => state.onlineAppointments.appointmentDetail,
@@ -517,6 +520,14 @@ ${appointment.meeting_link}
             {/* c. Create Meeting Link */}
             {appointment?.status === "Paid" && (
               <>
+                <button
+                  type="button"
+                  onClick={() => printExternalAppointmentReceipt(appointment.id)}
+                  disabled={isReceiptLoading}
+                  className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-semibold border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+                >
+                  <Printer size={15} className="shrink-0 text-primary" /> Print Receipt
+                </button>
                 <button
                   type="button"
                   onClick={() => setIsMeetingLinkOpen(true)}

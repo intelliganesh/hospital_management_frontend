@@ -36,6 +36,7 @@ export interface FistulaRawData {
   crypt_cause?: string | null;
   type_of_fistula_sphincter?: string | null;
   type_of_fistula_position?: string | null;
+  high_low_riding_type?: string | null;
   basis_of_high_low_riding?: string | null;
   distant_visceral_communication?: string | null;
 }
@@ -198,7 +199,14 @@ const FistulaDetails: React.FC<FistulaDetailsProps> = ({
   const cryptCause = splitHash(data.crypt_cause);
   const sphincter = splitHash(data.type_of_fistula_sphincter);
   const position = splitHash(data.type_of_fistula_position);
-  const highLow = splitHash(data.basis_of_high_low_riding);
+  const highLowBasis = splitHash(data.basis_of_high_low_riding);
+  const highLowType = splitHash(data.high_low_riding_type);
+  // Legacy rows have only the basis (implies High). "High - <basis>" / "Low".
+  const highLowLen = Math.max(highLowBasis.length, highLowType.length);
+  const highLow = Array.from({ length: highLowLen }, (_, i) => {
+    const t = highLowType[i] || (highLowBasis[i] ? "High" : "");
+    return t && highLowBasis[i] ? `${t} - ${highLowBasis[i]}` : t;
+  });
   const distant = splitHash(data.distant_visceral_communication);
 
   /* Use internal rows as the row anchor; fall back to max array length */

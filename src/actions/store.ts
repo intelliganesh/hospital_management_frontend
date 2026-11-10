@@ -19,6 +19,7 @@ import medicineCategory from "@/actions/slices/medicineCategory";
 import medicineCategoryMapping from "@/actions/slices/medicineCategoryMapping";
 import findingReducer from "@/actions/slices/findings";
 import yogaAsana from "@/actions/slices/yogaAsana";
+import shloka from "@/actions/slices/shloka";
 import doshaAnalysisReducer from "./slices/doshaAnalysis";
 import invoice from "./slices/invoice";
 import departmentReducer from "./slices/departments";
@@ -85,6 +86,7 @@ const rootReducer = combineReducers({
   medicineCategoryMapping,
   referedByDoc,
   yogaAsana,
+  shloka,
   invoice,
   surgicalHistory,
   onExamination,

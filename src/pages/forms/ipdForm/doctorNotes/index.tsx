@@ -345,7 +345,7 @@ const DoctorNotesForm = ({ formType = "add" }: { formType?: string }) => {
                 <Input
                   id="bp"
                   name="bp"
-                  label="BP"
+                  label="BP (mmHg)"
                   placeholder="120/80 mmHg"
                   onChange={handleChange}
                   value={values?.bp || ""}
@@ -356,7 +356,7 @@ const DoctorNotesForm = ({ formType = "add" }: { formType?: string }) => {
                 <Input
                   id="pr"
                   name="pr"
-                  label="PR"
+                  label="PR (bpm)"
                   placeholder="72 bpm"
                   onChange={handleChange}
                   value={values?.pr || ""}

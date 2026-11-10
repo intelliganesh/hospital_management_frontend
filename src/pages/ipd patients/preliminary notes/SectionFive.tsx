@@ -22,7 +22,7 @@ const SectionFive: React.FC = () => {
           <Input
             id="hb"
             name="hb"
-            label="Hb %"
+            label="Hb (g/dL)"
             placeholder="Hemoglobin"
             onChange={handleChange}
             value={values?.hb}
@@ -54,7 +54,7 @@ const SectionFive: React.FC = () => {
           <Input
             id="rbs"
             name="rbs"
-            label="RBS"
+            label="RBS (mg/dL)"
             placeholder="Random Blood Sugar"
             onChange={handleChange}
             value={values?.rbs}

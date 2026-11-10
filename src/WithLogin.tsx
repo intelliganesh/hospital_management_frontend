@@ -73,6 +73,10 @@ import {
   YOGA_ASANA_FORM_URL,
   YOGA_ASANA_EDIT_URL,
   YOGA_ASANA_DETAILS_URL,
+  SHLOKA_TABLE_URL,
+  SHLOKA_FORM_URL,
+  SHLOKA_EDIT_URL,
+  SHLOKA_DETAILS_URL,
   INVOICE_URL,
   INVOICE_DETAIL_URL,
   DEPARTMENT_TABLE_URL,
@@ -175,6 +179,7 @@ import {
   DOWNLOAD_SURGERY_REPORTS,
   PREFILLED_UPLOADED_FILES_URL,
   DOCTOR_NOTES_EDIT_URL,
+  IPD_GENERAL_UPLOADS_URL,
   FISTULA_ENTRY_LIST_URL,
   FISTULA_ENTRY_FORM_URL,
   BANK_DETAILS_TABLE_URL,
@@ -233,6 +238,9 @@ import DoshaAnalysisForm from "./pages/forms/doshaAnalysisForm/doshaAnalysisForm
 import YogaAsanaPage from "./pages/yogaAsana/YogaAsanaPage";
 import YogaAsanaForm from "./pages/forms/yogaAsana/yogaAsana";
 import YogaAsanaDetail from "./pages/yogaAsana/YogaAsanaDetail";
+import ShlokaPage from "./pages/shloka/ShlokaPage";
+import ShlokaForm from "./pages/forms/shloka/shloka";
+import ShlokaDetail from "./pages/shloka/ShlokaDetail";
 import InvoicePage from "./pages/invoice/InvoicePage";
 import InvoiceDetail from "./pages/invoice/InvoiceDetail";
 import DepartmentsPage from "./pages/departments/departments/DepartmentsPage";
@@ -313,6 +321,7 @@ import SurgeryList from "./pages/ipd patients/SurgeryList";
 import DownloadSurgeryReports from "./pages/ipd patients/downloads/SurgeryReportsDownload";
 import DownloadSurgeryForm from "./pages/ipd patients/downloads/SurgeryFormDownload";
 import PrefilledUploadedFiles from "./pages/ipd patients/downloads/PrefilledUploadedFiles";
+import GeneralUploadsPage from "./pages/ipd patients/generalUploads/GeneralUploadsPage";
 import DischargeSummaryPage from "./pages/ipd/discharge-summary/DischargeSummaryPage";
 import IpdBillViewPage from "./pages/ipd/billing/IpdBillViewPage";
 import IpdBillDetailsPage from "./pages/ipd/billing/IpdBillDetailsPage";
@@ -1271,6 +1280,38 @@ const WithLogin: React.FC<{}> = () => {
         }
       />
       <Route
+        path={SHLOKA_TABLE_URL}
+        element={
+          <DashboardLayout>
+            <ShlokaPage />
+          </DashboardLayout>
+        }
+      />
+      <Route
+        path={SHLOKA_TABLE_URL + SHLOKA_FORM_URL}
+        element={
+          <DashboardLayout>
+            <ShlokaForm />
+          </DashboardLayout>
+        }
+      />
+      <Route
+        path={SHLOKA_TABLE_URL + SHLOKA_EDIT_URL + "/:id"}
+        element={
+          <DashboardLayout>
+            <ShlokaForm formType="edit" />
+          </DashboardLayout>
+        }
+      />
+      <Route
+        path={SHLOKA_TABLE_URL + SHLOKA_DETAILS_URL + "/:id"}
+        element={
+          <DashboardLayout>
+            <ShlokaDetail />
+          </DashboardLayout>
+        }
+      />
+      <Route
         path={YOGA_ASANA_TABLE_URL}
         element={
           <DashboardLayout>
@@ -2063,6 +2104,19 @@ const WithLogin: React.FC<{}> = () => {
         element={
           <DashboardLayout>
             <PrefilledUploadedFiles />
+          </DashboardLayout>
+        }
+      />
+      <Route
+        path={
+          IPD_PATIENTS_URL +
+          IPD_PATIENTS_DETAILS_URL +
+          IPD_GENERAL_UPLOADS_URL +
+          "/:id"
+        }
+        element={
+          <DashboardLayout>
+            <GeneralUploadsPage />
           </DashboardLayout>
         }
       />

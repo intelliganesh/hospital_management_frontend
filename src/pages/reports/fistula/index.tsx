@@ -368,8 +368,16 @@ const FistulaReport: React.FC<{}> = ({}) => {
             fistula.type_of_fistula_position
               ? fistula.type_of_fistula_position.split("#").join(", ")
               : "-",
-            fistula.basis_of_high_low_riding
-              ? fistula.basis_of_high_low_riding.split("#").join(", ")
+            fistula.basis_of_high_low_riding || fistula.high_low_riding_type
+              ? (fistula.basis_of_high_low_riding || "")
+                  .split("#")
+                  .map((b: string, i: number) => {
+                    const t =
+                      (fistula.high_low_riding_type || "").split("#")[i] ||
+                      (b ? "High" : "");
+                    return t && b ? `${t} - ${b}` : t;
+                  })
+                  .join(", ")
               : "-",
             fistula.distant_visceral_communication
               ? fistula.distant_visceral_communication.split("#").join(", ")

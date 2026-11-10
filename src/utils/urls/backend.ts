@@ -193,6 +193,13 @@ export const YOGA_ASANA_DETAILS_URL: string = "/yoga_asana_details";
 export const YOGA_ASANA_DELETE_URL: string = "/yoga_asana_delete";
 export const YOGA_ASANA_DROPDOWN_URL: string = "/yoga_asana_options_list";
 
+export const SHLOKA_LIST_URL: string = "/shloka_list";
+export const SHLOKA_ADD_URL: string = "/shloka_add";
+export const SHLOKA_EDIT_URL: string = "/shloka_update";
+export const SHLOKA_DETAILS_URL: string = "/shloka_details";
+export const SHLOKA_DELETE_URL: string = "/shloka_delete";
+export const SHLOKA_DROPDOWN_URL: string = "/shloka_options_list";
+
 // dosha analysis url
 export const PRAKRITI_LIST_URL: string = "/prakriti_list";
 export const PRAKRITI_ADD_URL: string = "/prakriti_add";
@@ -472,6 +479,15 @@ export const IPD_DOWNLOAD_EMPTY_PDF_URL: string = "ipd_download_empty_pdf";
 export const IPD_PREFILLED_UPLOADED_PDF_URL: string =
   "/ipd_prefilled_uploaded_pdf";
 
+// IPD general uploads / scanned records + discharge date-time correction
+export const IPD_GENERAL_UPLOAD_ADD_URL: string = "/ipd_general_upload_add";
+export const IPD_GENERAL_UPLOAD_LIST_URL: string = "/ipd_general_upload_list";
+export const IPD_GENERAL_UPLOAD_FILE_URL: string = "/ipd_general_upload_file";
+export const IPD_GENERAL_UPLOAD_DELETE_URL: string =
+  "/ipd_general_upload_delete";
+export const IPD_UPDATE_DISCHARGE_DATETIME_URL: string =
+  "/ipd_update_discharge_datetime";
+
 export const IPD_SURGERY_LIST_URL: string = "/ipd_surgery_list";
 export const IPD_SURGERY_ADD_URL: string = "/ipd_surgery_add";
 export const IPD_SURGERY_DELETE_URL: string = "/ipd_surgery_delete";
@@ -557,3 +573,10 @@ export const IPD_BILLING_PAYMENT_DETAILS_URL: string =
   "/ipd_billing_get_payment_details";
 export const IPD_BILLING_DELETE_CHARGES_URL: string =
   "ipd_billing_delete_charges";
+
+// Receipts (payment receipt PDF)
+export const RECEIPT_DOWNLOAD_URL: string = "receipt_download";
+export const RECEIPT_DOWNLOAD_BY_INVOICE_URL: string =
+  "receipt_download_by_invoice";
+export const RECEIPT_DOWNLOAD_BY_EXTERNAL_APPOINTMENT_URL: string =
+  "receipt_download_by_external_appointment";

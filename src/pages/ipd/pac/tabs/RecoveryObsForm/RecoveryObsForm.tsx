@@ -561,21 +561,21 @@ const RecoveryObsForm: React.FC = () => {
                     },
                     {
                       key: "respiration",
-                      label: "Respiration",
+                      label: "Respiration (/min)",
                       type: "text",
                       placeholder: "Rate",
                       colSpan: 1,
                     },
                     {
                       key: "pulseRate",
-                      label: "Pulse Rate",
+                      label: "Pulse Rate (bpm)",
                       type: "text",
                       placeholder: "BPM",
                       colSpan: 1,
                     },
                     {
                       key: "spo2",
-                      label: "SpO2",
+                      label: "SpO2 (%)",
                       type: "text",
                       placeholder: "%",
                       colSpan: 1,
@@ -643,7 +643,7 @@ const RecoveryObsForm: React.FC = () => {
                   </Text>
                   <View className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <Input
-                      label="Pulse"
+                      label="Pulse (bpm)"
                       value={values?.pulse_at_shifting}
                       onChange={(e) =>
                         onSetHandler("pulse_at_shifting", e.target.value)
@@ -653,7 +653,7 @@ const RecoveryObsForm: React.FC = () => {
                       error={errors?.pulse_at_shifting ?? ""}
                     />
                     <Input
-                      label="SBP"
+                      label="SBP (mmHg)"
                       value={values?.sbp_at_shifting}
                       onChange={(e) =>
                         onSetHandler("sbp_at_shifting", e.target.value)
@@ -663,7 +663,7 @@ const RecoveryObsForm: React.FC = () => {
                       error={errors?.sbp_at_shifting ?? ""}
                     />
                     <Input
-                      label="DBP"
+                      label="DBP (mmHg)"
                       value={values?.dbp_at_shifting}
                       onChange={(e) =>
                         onSetHandler("dbp_at_shifting", e.target.value)
@@ -673,7 +673,7 @@ const RecoveryObsForm: React.FC = () => {
                       error={errors?.dbp_at_shifting ?? ""}
                     />
                     <Input
-                      label="RR"
+                      label="RR (/min)"
                       value={values?.rr_at_shifting}
                       onChange={(e) =>
                         onSetHandler("rr_at_shifting", e.target.value)

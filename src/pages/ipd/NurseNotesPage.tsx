@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { withUnit } from "@/utils/measurementUnits";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import View from "@/components/view";
 import Text from "@/components/text";
@@ -406,7 +407,7 @@ const NurseNotesPage: React.FC = () => {
                                   Temperature
                                 </Text>
                                 <Text className="text-sm font-semibold text-slate-900 dark:text-white">
-                                  {note?.temperature}
+                                  {withUnit("temperature", note?.temperature)}
                                 </Text>
                               </View>
                             )}
@@ -416,7 +417,7 @@ const NurseNotesPage: React.FC = () => {
                                   Blood Pressure
                                 </Text>
                                 <Text className="text-sm font-semibold text-slate-900 dark:text-white">
-                                  {note?.bp}
+                                  {withUnit("bp", note?.bp)}
                                 </Text>
                               </View>
                             )}
@@ -426,7 +427,7 @@ const NurseNotesPage: React.FC = () => {
                                   Pulse
                                 </Text>
                                 <Text className="text-sm font-semibold text-slate-900 dark:text-white">
-                                  {note?.pulse}
+                                  {withUnit("pulse", note?.pulse)}
                                 </Text>
                               </View>
                             )}
@@ -436,7 +437,7 @@ const NurseNotesPage: React.FC = () => {
                                   SpO₂
                                 </Text>
                                 <Text className="text-sm font-semibold text-slate-900 dark:text-white">
-                                  {note?.spo2}
+                                  {withUnit("spo2", note?.spo2)}
                                 </Text>
                               </View>
                             )}

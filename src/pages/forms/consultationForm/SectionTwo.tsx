@@ -150,7 +150,7 @@ const [selectedTests, setSelectedTests] = React.useState<string[]>([]);
           <Input
             id="bp"
             name="bp"
-            label="Blood Pressure"
+            label="Blood Pressure (mmHg)"
             onChange={handleChange}
             error={errorsBp}
             value={values?.bp ? values?.bp + "" : ""}
@@ -161,7 +161,7 @@ const [selectedTests, setSelectedTests] = React.useState<string[]>([]);
           <Input
             id="pulse"
             name="pulse"
-            label="Pulse"
+            label="Pulse (bpm)"
             onChange={handleChange}
             error={errorsPulse}
             value={values?.pulse ? values?.pulse + "" : ""}
