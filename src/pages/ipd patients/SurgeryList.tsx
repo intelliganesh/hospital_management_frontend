@@ -276,17 +276,19 @@ const SurgeryList: React.FC<SurgeryListProps> = ({ showAddButton = true }) => {
             data.surgeon,
             data.surgery_name,
             data.status,
-            ActionMenu({
-              onView: () =>
+            <ActionMenu
+              key={data.id}
+              onView={() =>
                 navigate(
                   IPD_PATIENTS_URL +
                     IPD_PATIENTS_DETAILS_URL +
                     SURGERY_PROCEDURE_URL +
                     `/${data.id}/view`,
-                ),
-              onEdit: () => handleOpenEdit(data),
-              onDelete: () => setDeleteId(data.id),
-            }),
+                )
+              }
+              onEdit={() => handleOpenEdit(data)}
+              onDelete={() => setDeleteId(data.id)}
+            />,
           ])}
           emptyMessage="No surgeries found!"
         />

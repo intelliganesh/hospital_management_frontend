@@ -280,19 +280,20 @@ const PACListPage: React.FC = () => {
                   </Link>,
                   row?.surgery?.surgeon || "N/A",
                   row?.surgery?.anaesthetist || "N/A",
-                  ActionMenu({
-                    onView: () => {
+                  <ActionMenu
+                    key={row.id}
+                    onView={() => {
                       navigate(`/ipd/${id}/pac/${row.id}/view`);
-                    },
-                    onDelete: () => {
+                    }}
+                    onDelete={() => {
                       setDeleteId(row.id);
-                    },
-                    onEdit: () => {
+                    }}
+                    onEdit={() => {
                       navigate(
                         `/ipd/${id}/pac/${row.id}?tab=pre-op&currentPage=1&mode=edit`,
                       );
-                    },
-                  }),
+                    }}
+                  />,
                 ])
               : []
           }
