@@ -717,7 +717,11 @@ const IpdPatientDetailsPage = () => {
           </Card>
         </View>
 
-        <SurgeryList showAddButton={isSurgicalIpd} />
+        <SurgeryList
+          showAddButton={
+            isSurgicalIpd || ipdPatientDetailData?.status !== "Discharged"
+          }
+        />
 
         {/* Quick Actions Groups */}
         <View className="space-y-12">
