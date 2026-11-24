@@ -206,31 +206,31 @@ export const sidebarItems = [
     //   )}&to_date=${dayjs().format("YYYY-MM-DD")}`,
   },
   // IPD
-  {
-    icon: <Hospital size={20} />,
-    label: "IPD",
-    requiredPermission: PERMISSIONS.VIEW_IPD,
-    children: (
-      <SidebarDropdown
-        title="IPD"
-        icon={<Hospital size={20} />}
-        variant="secondary"
-      >
-        <SidebarDropdownItem
-          to={`${IPD_ENROLLMENTS_URL}?currentPage=1`}
-          label="IPD Enrollments"
-        />
-        <SidebarDropdownItem
-          to={`${IPD_PATIENTS_URL}?currentPage=1`}
-          label="IPD Patients"
-        />
-        <SidebarDropdownItem
-          to={`${IPD_BILLS_URL}?currentPage=1`}
-          label="IPD Bills"
-        />
-      </SidebarDropdown>
-    ),
-  },
+  // {
+  //   icon: <Hospital size={20} />,
+  //   label: "IPD",
+  //   requiredPermission: PERMISSIONS.VIEW_IPD,
+  //   children: (
+  //     <SidebarDropdown
+  //       title="IPD"
+  //       icon={<Hospital size={20} />}
+  //       variant="secondary"
+  //     >
+  //       <SidebarDropdownItem
+  //         to={`${IPD_ENROLLMENTS_URL}?currentPage=1`}
+  //         label="IPD Enrollments"
+  //       />
+  //       <SidebarDropdownItem
+  //         to={`${IPD_PATIENTS_URL}?currentPage=1`}
+  //         label="IPD Patients"
+  //       />
+  //       <SidebarDropdownItem
+  //         to={`${IPD_BILLS_URL}?currentPage=1`}
+  //         label="IPD Bills"
+  //       />
+  //     </SidebarDropdown>
+  //   ),
+  // },
   {
     icon: <FileText size={20} />,
     label: "Bills",
