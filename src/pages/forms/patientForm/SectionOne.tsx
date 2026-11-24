@@ -227,7 +227,7 @@ const SectionOne: React.FC<SectionOneProps> = ({
                 options={countryCodeOptions}
                 label="Phone No"
                 onChange={(value) =>
-                  onSetHandler("countryContactCode", value?.value)
+                  onSetHandler("countryContactCode", value)
                 }
                 className=""
                 // required
@@ -368,7 +368,7 @@ const SectionOne: React.FC<SectionOneProps> = ({
                 options={countryCodeOptions}
                 label="Attendant Phone"
                 onChange={(value) =>
-                  onSetHandler("attendantCountryContactCode", value?.value)
+                  onSetHandler("attendantCountryContactCode", value)
                 }
                 className=""
               />
