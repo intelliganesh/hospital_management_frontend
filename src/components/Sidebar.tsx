@@ -23,7 +23,7 @@ import {
   Proportions,
   NotebookText,
   CalendarRange,
-  Hospital,
+  // Hospital,
   // Hospital,
 } from "lucide-react";
 import {
@@ -79,9 +79,9 @@ import {
   ROOMS_TABLE_URL,
   BED_TABLE_URL,
   ONLINE_APPOINTMENT_TABLE_URL,
-  IPD_ENROLLMENTS_URL,
-  IPD_PATIENTS_URL,
-  IPD_BILLS_URL,
+  // IPD_ENROLLMENTS_URL,
+  // IPD_PATIENTS_URL,
+  // IPD_BILLS_URL,
   // ONLINE_APPOINTMENT_TABLE_URL,
 } from "@/utils/urls/frontend";
 import { useSelector } from "react-redux";
